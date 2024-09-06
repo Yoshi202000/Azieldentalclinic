@@ -1,0 +1,109 @@
+/* Styles for the container */
+.container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+	background-color: #f0f0f0;
+	gap: 0px; /* Adds space between the two sections */
+	padding: 0px; /* Adds padding to the container */
+}
+
+/* Styles for the sign-in container */
+.sign-in-container {
+	width: 300px;
+	height: 300px;
+	padding: 30px;
+	background-color: white;
+	border-radius: 12% 88% 0% 100% / 92% 0% 100% 8% ;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+/* Font styles */
+.sign-in-container h2, .sign-up-container h2, .sign-up-container p, .sign-in-container input, .sign-in-container a {
+	font-family: Arial, Helvetica, sans-serif;
+}
+.sign-up-container h2, .sign-up-container p{
+	color: white;
+}
+
+/* Styles for the sign-up container */
+.sign-up-container {
+	width: 300px;
+	height: 300px;
+	padding: 30px;
+	background-color: rgb(92, 179, 157);
+	border-radius: 0% 100% 15% 85% / 100% 10% 90% 0%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center; /* Centers the content vertically */
+	text-align: center; /* Ensures text is centered */
+}
+
+/* Adjustments for headers and buttons */
+.sign-in-container h2, .sign-up-container h2 {
+	margin-bottom: 20px;
+}
+
+.sign-in-container input, .sign-up-container button {
+	width: 100%;
+	padding: 10px;
+	margin: 10px 0;
+	border: none;
+	border-radius: 5px;
+	box-sizing: border-box;
+}
+
+.sign-in-container input {
+	background-color: #f2f2f2;
+}
+
+.sign-in-container button, .sign-up-container button {
+	background-color: rgb(92, 179, 157);
+	color: white;
+	cursor: pointer;
+	border: 1px solid;
+	border-color: white;
+	border-radius: 20px;
+	width: 150px;
+	
+}
+
+.sign-in-container button:hover, .sign-up-container button:hover {
+	background-color: #0056b3;
+}
+
+.sign-in-container a {
+	color: #333;
+	font-size: 14px;
+	text-decoration: none;
+	margin-bottom: 20px;
+}
+
+/* Responsive Styles for Small Screens */
+@media (max-width: 600px) {
+	.container {
+		flex-direction: column;
+		gap: 0px;
+		padding: 0%;
+		margin: 0px;
+	}
+
+	.sign-in-container {
+		width: 80%; /* Adjusts width to be responsive */
+		max-width: 350px; /* Sets a maximum width */
+		margin-bottom: 20px; /* Adds space between sections on small screens */
+		border-radius: 21% 79% 1% 99% / 100% 17% 83% 0%;
+		margin-bottom: 0px;
+	}
+
+	.sign-up-container {
+		width: 80%; /* Adjusts width to be responsive */
+		max-width: 350px; /* Sets a maximum width */
+		margin-top: 0px; /* Adds space between sections on small screens */
+		border-radius: 0% 100% 21% 79% / 82% 0% 100% 18%;
+	}
+}

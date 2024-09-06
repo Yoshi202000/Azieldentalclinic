@@ -1,0 +1,164 @@
+/* Reset default margin and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  html, body {
+    height: 100%;
+    width: 100%;
+    background-color: #f0f0f0; /* Background color for the page */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; 
+    
+  }
+  
+  
+  .appointment-container {
+    width: 1200px;
+    min-height: 600px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    margin: 2em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+    align-items: center;
+  }
+  
+  
+  .progress-bar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .step {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    border-bottom: 4px solid #ddd;
+    transition: border-color 0.3s;
+  }
+  
+  .step.active {
+    border-color: #007bff;
+    font-weight: bold;
+  }
+  
+  .appointment-type, .appointment-date, .appointment-details {
+    text-align: center;
+  }
+  .appointment-type {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+  }
+  .appointment-date ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 400px;
+    text-align: left;
+  }
+  .card-container {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .appointment-date ul li {
+    margin: 15px 0;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+  
+  .appointment-date ul li.available {
+    background-color: #e8f4ff;
+    border-color: #007bff;
+    color: #007bff;
+  }
+  
+  .appointment-date ul li.available .time-slot {
+    background-color: #007bff;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
+  
+  .appointment-details form input {
+    width: 100%;
+    max-width: 600px;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+  }
+  
+  button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  button.previous-button {
+    background-color: #6c757d;
+  }
+  
+  button.complete-button {
+    background-color: #28a745;
+  }
+  
+  .appointment-date ul li.available.selected {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+  }
+  
+  .time-slots {
+    margin-top: 20px;
+  }
+  
+  .time-slots ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 400px;
+    text-align: left;
+  }
+  
+  .time-slots ul li {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+  
+  .time-slots ul li.available.selected {
+    background-color: #28a745;
+    color: white;
+  }

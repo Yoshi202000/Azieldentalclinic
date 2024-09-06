@@ -1,0 +1,71 @@
+/* Updated styles for card-container */
+.body{
+  width: 100%;
+}
+/* App.css */
+html, body, #root {
+  height: 100%; /* Ensure the page height is 100% */
+  overflow-y: auto; /* Allow vertical scrolling */
+}
+
+.main-content {
+  display: flex;
+    flex-direction: column; /* Stack children vertically */
+    align-items: center;    /* Center horizontally */
+    gap: 20px;
+}
+
+.card-container {
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px;
+    width: 900px;
+    display: flex;
+    flex-direction: row; /* Stack cards vertically (or row if needed) */
+    align-items: center;    /* Center cards horizontally */
+    gap: 20px;   
+}
+
+.card-container .card {
+  width: 100%;
+  max-width: 300px;
+  margin: 10px;
+}
+
+  
+  @media (max-width: 1034px) {
+    .main-content{
+      padding-top: -1000px;
+    }
+    .card-container {
+      flex-direction: column; 
+      align-items: center; 
+      width: 900px;
+    }
+  
+    .card {
+      width: 100%; 
+      max-width: 300px;
+    }
+  }
+  @media (max-width: 768px) {
+    .main-content{
+      padding-top: 0px;
+    }
+    .card-container {
+      flex-direction: column; /* Stack cards vertically on smaller screens */
+      align-items: center; /* Center the cards */
+    }
+  
+    .card {
+      width: 100%; /* Full width for smaller screens */
+      max-width: 300px; /* Limit the max width */
+    }
+  }
+
+  @media (max-width: 1440) {
+    .card-container{
+      width: 1024px;
+    }
+  }
+  

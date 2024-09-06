@@ -1,0 +1,22 @@
+/* Ensure the body and root elements take up full width and height */
+html, body, #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Set box-sizing globally */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Example for any container element */
+.container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+}

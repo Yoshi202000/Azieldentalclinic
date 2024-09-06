@@ -1,0 +1,23 @@
+/* Card.css */
+.card {
+    width: 250px;
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    text-align: center;
+    transition: background-color 0.3s, border-color 0.3s;
+    cursor: pointer;
+  }
+  
+  .card img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+  
+  .card.selected {
+    background-color: #007bff;
+    color: white;
+    border-color: #0056b3;
+  }
+  

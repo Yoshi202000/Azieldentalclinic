@@ -1,0 +1,151 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0; /* Remove padding if there is any extra space */
+  background-color: black;
+  color: #fff;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  margin-left: 1px;
+}
+
+/* Logo container */
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 100px; /* Adjust logo size */
+  width: 300px;
+  padding-left: 5em;
+}
+
+/* Navbar menu on the right */
+.navbar-menu {
+  display: flex;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  flex-grow: 1; /* Allow the menu to take up available space */
+  justify-content: flex-end; /* Align menu items to the right */
+}
+
+.navbar-item {
+  margin: 0 15px;
+  display: flex;
+  align-items: center;
+  padding-right: 5em;
+}
+
+.navbar-link {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.navbar-link:hover {
+  text-decoration: underline;
+}
+
+/* Drawer styles for smaller screens */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: -250px; /* Hide the drawer off-screen */
+  height: 100%;
+  background-color: #0F1035;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  transition: right 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow-x: hidden; /* Ensure no horizontal scroll */
+  z-index: 2000; /* Ensure the drawer is above other content */
+}
+
+.drawer.open {
+  right: 0; /* Slide in the drawer */
+}
+
+.close-btn {
+  align-self: flex-end;
+  padding: 10px;
+  font-size: 24px; /* Larger size for the close icon */
+  cursor: pointer;
+  color: white;
+  border: none;
+  background: none;
+  z-index: 1001; /* Ensure the close button is on top of the drawer */
+}
+
+.drawer-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.drawer-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.drawer-link {
+  color: #DCF2F1;
+  text-decoration: none;
+  font-size: 16px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.drawer-link:hover {
+  text-decoration: underline;
+}
+
+/* Drawer toggle button styles */
+.drawer-toggle {
+  display: none; /* Hide the drawer toggle button by default */
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  padding: 10px;
+  font-size: 24px; /* Larger size for the hamburger icon */
+  background-color: #333;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  z-index: 3000; /* Ensure the button is on top of everything */
+}
+
+/* Hide the drawer toggle button when the drawer is open */
+.drawer-toggle.hidden {
+  display: none;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .navbar {
+    display: none; /* Hide the navbar on smaller screens */
+  }
+
+  .drawer-toggle {
+    display: block; /* Show the drawer toggle button on smaller screens */
+  }
+}
+
+@media (min-width: 1024px) {
+  .navbar {
+    display: flex; /* Show the navbar for lg screens and larger */
+  }
+
+  .drawer-toggle {
+    display: none; /* Hide the drawer toggle button for lg screens and larger */
+  }
+}
