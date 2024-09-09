@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../styles/login.css'
+import '../styles/AdminLogin.css'; // Renamed to AdminLogin.css
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -13,7 +13,7 @@ const AdminLogin = () => {
     // Check if the token already exists
     const token = localStorage.getItem('token');
     if (token) {
-      navigate('/home'); // Redirect if already logged in
+      navigate('/admin-dashboard'); // Redirect if already logged in
     }
   }, [navigate]);
 
@@ -21,12 +21,12 @@ const AdminLogin = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:5000/login', { email, password });
+      const response = await axios.post('http://localhost:5000/admin-login', { email, password });
 
       if (response.status === 200) {
-        // Save the token to localStorage and redirect to the home page
+        // Save the token to localStorage and redirect to the admin dashboard
         localStorage.setItem('token', response.data.token);
-        navigate('/home');
+        navigate('/admin-dashboard');
       }
     } catch (error) {
       if (error.response && error.response.data) {
@@ -38,33 +38,28 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="container">
-      <div className="sign-in-container">
-        <h2>Sign in</h2>
+    <div className="admin-container">
+      <div className="admin-login-container">
+        <h2>Admin Sign In</h2>
         <form onSubmit={handleLogin}>
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Admin Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
           <input
             type="password"
-            placeholder="Password"
+            placeholder="Admin Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          {errorMessage && <p className="error">{errorMessage}</p>}
-          <a href="#">Forgot your password?</a>
-          <button type="submit">Sign In</button>
+          {errorMessage && <p className="admin-error">{errorMessage}</p>}
+          <button type="submit" className="admin-login-btn">Sign In</button>
         </form>
-      </div>
-      <div className="sign-up-container">
-        <h2>Hello, Friend!</h2>
-        <p>Enter your personal details and start your journey with us</p>
-        <button onClick={() => window.location.href = '/signup'}>Sign Up</button>
+        <a href="#" className="forgot-password">Forgot your password?</a>
       </div>
     </div>
   );

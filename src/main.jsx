@@ -15,6 +15,8 @@ import Appointment from './pages/Appointment.jsx';
 import Drawer from './component/Drawers.jsx';
 import First from './component/First.jsx';
 import Test from './pages/test.jsx';
+import Chat from './component/chat.jsx';
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -33,6 +35,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/first" element={<First />} />
         <Route path="/drawer" element={<Drawer />} />
         <Route path="/test" element={<Test />} />
+        <Route path="/chat" element={<Chat />} />
+
       </Routes>
     </BrowserRouter>
   </StrictMode>

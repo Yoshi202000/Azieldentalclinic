@@ -9,7 +9,7 @@ body, html {
   justify-content: space-between;
   align-items: center;
   padding: 0; /* Remove padding if there is any extra space */
-  background-color: black;
+  background-color: #7AB2B2;
   color: #fff;
   top: 0;
   width: 100%;

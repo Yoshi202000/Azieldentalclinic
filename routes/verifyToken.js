@@ -20,7 +20,12 @@ router.get('/verify-token', (req, res) => {
             return res.status(401).json({ message: 'Invalid token' });
         }
 
-        res.status(200).json({ user: { firstName: decoded.firstName, lastName: decoded.lastName, phoneNumber: decoded.phoneNumber, email: decoded.email } });
+        res.status(200).json({ 
+            user: { 
+                firstName: decoded.firstName, 
+                lastName: decoded.lastName, 
+                phoneNumber: decoded.phoneNumber, 
+                email: decoded.email } });
     });
 });
 

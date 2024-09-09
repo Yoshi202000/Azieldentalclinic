@@ -22,7 +22,7 @@ const DrawerComponent = () => {
   const handleLogout = () => {
     localStorage.removeItem('token'); // Remove the token from localStorage
     setIsLoggedIn(false); // Update the state to reflect that the user is logged out
-    window.location.href = '/home'; // Redirect the user to the home page or login page
+    window.location.href = '/login'; // Redirect the user to the login page after logging out
   };
 
   return (
@@ -61,7 +61,7 @@ const DrawerComponent = () => {
                 <a href="/login" className="navbar-link">Login</a>
               </li>
               <li className="navbar-item">
-                <a href="#admin" className="navbar-link">Admin</a>
+                <a href="/admin" className="navbar-link">Admin</a>
               </li>
             </>
           ) : (
@@ -99,7 +99,7 @@ const DrawerComponent = () => {
                   <a href="/login" className="drawer-link">Login</a>
                 </li>
                 <li className="drawer-item">
-                  <a href="#admin" className="drawer-link">Admin</a>
+                  <a href="/admin" className="drawer-link">Admin</a>
                 </li>
               </>
             ) : (

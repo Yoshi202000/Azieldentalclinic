@@ -28,11 +28,19 @@ router.post('/login', async (req, res) => {
 
         const token = jwt.sign(
             { userId: user._id, firstName: user.firstName, lastName: user.lastName, phoneNumber: user.phoneNumber, email: user.email },
-            'your_jwt_secret',
+            process.env.JWT_SECRET || 'your_jwt_secret',
             { expiresIn: '1h' }
         );
 
-        res.status(200).json({ message: 'Login successful', token });
+        // Set the token in a cookie
+        res.cookie('token', token, {
+            httpOnly: true, // prevents JavaScript access to the cookie (for security)
+            secure: process.env.NODE_ENV === 'production', // set true in production to ensure HTTPS
+            sameSite: 'Strict', // to prevent CSRF attacks
+            maxAge: 3600000 // 1 hour
+        });
+
+        res.status(200).json({ message: 'Login successful' });
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ message: 'An error occurred during login' });

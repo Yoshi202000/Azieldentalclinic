@@ -18,9 +18,9 @@ const authenticateToken = (req, res, next) => {
 
 // Appointment booking route
 router.post('/appointments', authenticateToken, async (req, res) => {
-    const { appointmentType, appointmentDate, appointmentTime, patientDOB } = req.body;
+    const { appointmentType, appointmentDate, appointmentTimeFrom, appointmentTimeTo, patientDOB } = req.body;
 
-    if (!appointmentType || !appointmentDate || !appointmentTime || !patientDOB) {
+    if (!appointmentType || !appointmentDate || !appointmentTimeFrom || !appointmentTimeTo || !patientDOB) {
         return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -29,7 +29,8 @@ router.post('/appointments', authenticateToken, async (req, res) => {
             userId: req.user.userId,
             appointmentType,
             appointmentDate,
-            appointmentTime,
+            appointmentTimeFrom,
+            appointmentTimeTo,
             patientFirstName: req.user.firstName,
             patientLastName: req.user.lastName,
             patientEmail: req.user.email,

@@ -1,12 +1,15 @@
 /* Styles for the container */
 .container {
+	margin: 1px;
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	min-height: 100vh;
-	background-color: #f0f0f0;
-	gap: 0px; /* Adds space between the two sections */
-	padding: 0px; /* Adds padding to the container */
+	width: 100%;
+	height: 100%;
+	background-color: #CDE8E5;
+	gap: 0px;
+	padding: 01px;
 }
 
 /* Styles for the sign-in container */
@@ -15,7 +18,7 @@
 	height: 300px;
 	padding: 30px;
 	background-color: white;
-	border-radius: 12% 88% 0% 100% / 92% 0% 100% 8% ;
+	border-radius: 12% 88% 0% 100% / 92% 0% 100% 8%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -25,7 +28,7 @@
 .sign-in-container h2, .sign-up-container h2, .sign-up-container p, .sign-in-container input, .sign-in-container a {
 	font-family: Arial, Helvetica, sans-serif;
 }
-.sign-up-container h2, .sign-up-container p{
+.sign-up-container h2, .sign-up-container p {
 	color: white;
 }
 
@@ -34,13 +37,13 @@
 	width: 300px;
 	height: 300px;
 	padding: 30px;
-	background-color: rgb(92, 179, 157);
+	background-color: #4D869C;
 	border-radius: 0% 100% 15% 85% / 100% 10% 90% 0%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center; /* Centers the content vertically */
-	text-align: center; /* Ensures text is centered */
+	justify-content: center;
+	text-align: center;
 }
 
 /* Adjustments for headers and buttons */
@@ -62,18 +65,16 @@
 }
 
 .sign-in-container button, .sign-up-container button {
-	background-color: rgb(92, 179, 157);
+	background-color: #4D869C;
 	color: white;
 	cursor: pointer;
-	border: 1px solid;
-	border-color: white;
+	border: 1px solid white;
 	border-radius: 20px;
 	width: 150px;
-	
 }
 
 .sign-in-container button:hover, .sign-up-container button:hover {
-	background-color: #0056b3;
+	background-color: #7AB2B2;
 }
 
 .sign-in-container a {
@@ -84,26 +85,95 @@
 }
 
 /* Responsive Styles for Small Screens */
-@media (max-width: 600px) {
+
+/* For screens less than or equal to 425px */
+@media (max-width: 425px) {
 	.container {
 		flex-direction: column;
-		gap: 0px;
-		padding: 0%;
-		margin: 0px;
 	}
 
 	.sign-in-container {
-		width: 80%; /* Adjusts width to be responsive */
-		max-width: 350px; /* Sets a maximum width */
-		margin-bottom: 20px; /* Adds space between sections on small screens */
 		border-radius: 21% 79% 1% 99% / 100% 17% 83% 0%;
-		margin-bottom: 0px;
+		margin-bottom: 0;
 	}
 
 	.sign-up-container {
-		width: 80%; /* Adjusts width to be responsive */
-		max-width: 350px; /* Sets a maximum width */
-		margin-top: 0px; /* Adds space between sections on small screens */
 		border-radius: 0% 100% 21% 79% / 82% 0% 100% 18%;
+	}
+}
+@media (min-width: 425px) {
+	.container {
+		flex-direction: column;
+	}
+
+	.sign-in-container {
+		border-radius: 21% 79% 1% 99% / 100% 17% 83% 0%;
+		margin-bottom: 0;
+	}
+
+	.sign-up-container {
+		border-radius: 0% 100% 21% 79% / 82% 0% 100% 18%;
+	}
+}
+
+/* For medium screens (768px and below) */
+@media (min-width: 768px) {
+	.container {
+		flex-direction: column;
+	}
+
+	.sign-in-container {
+		max-width: 350px;
+		border-radius: 21% 79% 1% 99% / 100% 17% 83% 0%;
+	}
+
+	.sign-up-container {
+		max-width: 350px;
+		border-radius: 0% 100% 21% 79% / 82% 0% 100% 18%;
+	}
+}
+
+/* For larger screens (1024px and above) */
+@media (min-width: 1024px) {
+	.container {
+		flex-direction: row;
+	}
+
+	.sign-in-container {
+		border-radius: 12% 88% 0% 100% / 92% 0% 100% 8%;
+	}
+
+	.sign-up-container {
+		border-radius: 0% 100% 15% 85% / 100% 10% 90% 0%;
+	}
+}
+
+/* Extra-large screens (1280px and above) */
+@media (min-width: 1280px) {
+	.container {
+		flex-direction: row;
+	}
+
+	.sign-in-container {
+		border-radius: 12% 88% 0% 100% / 92% 0% 100% 8%;
+	}
+
+	.sign-up-container {
+		border-radius: 0% 100% 15% 85% / 100% 10% 90% 0%;
+	}
+}
+
+/* 2xl screens (1536px and above) */
+@media (min-width: 1536px) {
+	.container {
+		flex-direction: row;
+	}
+
+	.sign-in-container {
+		border-radius: 12% 88% 0% 100% / 92% 0% 100% 8%;
+	}
+
+	.sign-up-container {
+		border-radius: 0% 100% 15% 85% / 100% 10% 90% 0%;
 	}
 }

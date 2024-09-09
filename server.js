@@ -2,6 +2,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+
+// Import routes    
 import signupRoutes from './routes/signup.js';
 import loginRoutes from './routes/login.js';
 import verifyTokenRoutes from './routes/verifyToken.js';
@@ -13,7 +15,12 @@ dotenv.config();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+    origin: 'http://localhost:5175', // Change this to your frontend's actual origin
+    credentials: true // Allow credentials such as cookies or authentication headers
+}));
+
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
@@ -28,7 +35,7 @@ app.use(appointmentRoutes);
 app.use(appTime);
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

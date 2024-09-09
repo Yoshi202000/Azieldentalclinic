@@ -1,7 +1,10 @@
+// src/pages/Login.jsx
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../styles/login.css'
+import '../styles/login.css';
+import { setToken, isLoggedIn } from '../utils/auth'; // Import utility functions
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,23 +13,30 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if the token already exists
-    const token = localStorage.getItem('token');
-    if (token) {
-      navigate('/home'); // Redirect if already logged in
+    // If the user is already logged in, redirect to home
+    if (isLoggedIn()) {
+      navigate('/home');
     }
+
+    // Log the backend URL to ensure environment variables are loaded correctly
+    console.log(import.meta.env.VITE_BACKEND_URL);
   }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:5000/login', { email, password });
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/login`,
+        { email, password },
+        {
+          withCredentials: true, // Include cookies in the request if necessary
+        }
+      );
 
       if (response.status === 200) {
-        // Save the token to localStorage and redirect to the home page
-        localStorage.setItem('token', response.data.token);
-        navigate('/home');
+        setToken(response.data.token); // Store token using auth.js
+        navigate('/home'); // Redirect to home after successful login
       }
     } catch (error) {
       if (error.response && error.response.data) {
@@ -64,7 +74,7 @@ const Login = () => {
       <div className="sign-up-container">
         <h2>Hello, Friend!</h2>
         <p>Enter your personal details and start your journey with us</p>
-        <button onClick={() => window.location.href = '/signup'}>Sign Up</button>
+        <button onClick={() => navigate('/signup')}>Sign Up</button>
       </div>
     </div>
   );

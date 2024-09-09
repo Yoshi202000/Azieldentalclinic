@@ -162,3 +162,93 @@
     background-color: #28a745;
     color: white;
   }
+  .time-selectors {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .time-selector {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .time-selector label {
+    margin-bottom: 5px;
+  }
+  
+  .time-selector select {
+    padding: 5px;
+  }
+  
+  /* Appointment date section container */
+.calendar-time-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Style for calendar container */
+.calendar-container {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Style for available date list */
+.calendar {
+  list-style: none;
+  padding: 0;
+}
+
+.calendar li {
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  background-color: #e8f4ff;
+  color: #007bff;
+  cursor: pointer;
+  text-align: center;
+}
+
+.calendar li.selected {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Style for time slots */
+.time-slots-container {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 200px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.time-slots {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.time-slots li {
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #e8f4ff;
+  color: #007bff;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.time-slots li.selected {
+  background-color: #28a745;
+  color: #fff;
+}
+
