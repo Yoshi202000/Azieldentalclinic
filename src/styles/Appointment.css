@@ -19,14 +19,14 @@
   
   
   .appointment-container {
-    width: 1200px;
+    width: 100%;
     min-height: 600px;
     background-color: #f9f9f9;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 20px;
+    padding: 40px;  
     margin: 2em;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     justify-content: center;
@@ -36,6 +36,7 @@
   
   .progress-bar {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
     width: 100%;
     margin-bottom: 20px;
@@ -50,7 +51,7 @@
   }
   
   .step.active {
-    border-color: #007bff;
+    border-color: #4D869C;
     font-weight: bold;
   }
   
@@ -59,8 +60,13 @@
   }
   .appointment-type {
     text-align: center;
+    width: 100%;
+    margin: 10px;
     display: flex;
     flex-direction: column;
+  }
+  .appointment-type h2 {
+    padding-bottom: 10px;
   }
   .appointment-date ul {
     list-style: none;
@@ -72,6 +78,8 @@
   .card-container {
     display: flex;
     flex-direction: row;
+    gap: 10px;
+    width: 100%;
   }
   
   .appointment-date ul li {
@@ -86,12 +94,12 @@
   
   .appointment-date ul li.available {
     background-color: #e8f4ff;
-    border-color: #007bff;
-    color: #007bff;
+    border-color: #4D869C;
+    color: #4D869C;
   }
   
   .appointment-date ul li.available .time-slot {
-    background-color: #007bff;
+    background-color: #4D869C;
     color: #fff;
     padding: 5px 10px;
     border-radius: 5px;
@@ -117,7 +125,7 @@
     padding: 10px 20px;
     border: none;
     border-radius: 4px;
-    background-color: #007bff;
+    background-color: #4D869C;
     color: #fff;
     cursor: pointer;
   }
@@ -127,13 +135,13 @@
   }
   
   button.complete-button {
-    background-color: #28a745;
+    background-color: #4D869C;
   }
   
   .appointment-date ul li.available.selected {
-    background-color: #007bff;
+    background-color: #7AB2B2;
     color: #fff;
-    border-color: #007bff;
+    border-color: #4D869C;
   }
   
   .time-slots {
@@ -159,7 +167,7 @@
   }
   
   .time-slots ul li.available.selected {
-    background-color: #28a745;
+    background-color: #4D869C;
     color: white;
   }
   .time-selectors {
@@ -248,7 +256,7 @@
 }
 
 .time-slots li.selected {
-  background-color: #28a745;
+  background-color: #4D869C;
   color: #fff;
 }
 

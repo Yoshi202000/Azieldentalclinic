@@ -8,42 +8,37 @@ body, html {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0; /* Remove padding if there is any extra space */
+  padding: 0 20px; /* Add horizontal padding */
   background-color: #7AB2B2;
   color: #fff;
-  top: 0;
   width: 100%;
   z-index: 1000;
-  margin-left: 1px;
 }
 
-/* Logo container */
+/* Center the logo within its container */
 .logo-container {
+  flex: 1; /* Allow the logo container to grow */
   display: flex;
-  align-items: center;
+  justify-content: flex-start; /* Align logo to the left */
+  
 }
 
 .logo {
   height: 100px; /* Adjust logo size */
-  width: 300px;
-  padding-left: 5em;
 }
 
 /* Navbar menu on the right */
 .navbar-menu {
+  flex: 1; /* Allow the menu to grow */
   display: flex;
+  justify-content: flex-start; /* Align menu items to the right */
   list-style-type: none;
   margin: 0;
   padding: 0;
-  flex-grow: 1; /* Allow the menu to take up available space */
-  justify-content: flex-end; /* Align menu items to the right */
 }
 
 .navbar-item {
-  margin: 0 15px;
-  display: flex;
-  align-items: center;
-  padding-right: 5em;
+  padding: 0 15px; /* Add horizontal padding */
 }
 
 .navbar-link {
@@ -55,6 +50,7 @@ body, html {
 .navbar-link:hover {
   text-decoration: underline;
 }
+
 
 /* Drawer styles for smaller screens */
 .drawer {

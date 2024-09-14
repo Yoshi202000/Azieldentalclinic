@@ -18,15 +18,15 @@ html, body, #root {
 .card-container {
     flex-wrap: wrap;
     background-color: white;
-    margin: -100px;
+    margin: -10px;
     justify-content: space-around;
     padding: 20px;
     width: 900px;
     display: flex;
     flex-direction: row; /* Stack cards vertically (or row if needed) */
     align-items: center;    /* Center cards horizontally */
-    gap: 20px;   
-    z-index: 56;
+    gap: 0;   
+    z-index: 2;
 }
 
 .card-container .card {

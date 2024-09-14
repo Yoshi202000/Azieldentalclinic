@@ -43,12 +43,12 @@ const Footer = () => {
                     <FooterCol key={2} menuTitle="Services" menuItems={services}/>
                     <FooterCol key={3} menuTitle="Oral Health" menuItems={oralHealth}/>
                     <FooterCol key={4} menuTitle="Our Address" menuItems={ourAddress}> 
-                        <ul className="social-media list-inline">
+                        <ul className="social-media list-inline" >
                         <li className="list-inline-item"><a href="//facebook.com"><FontAwesomeIcon className="icon active-icon" icon={faFacebook} /></a></li>
                             <li className="list-inline-item"><a href="//google.com"><FontAwesomeIcon className="icon" icon={faGoogle} /></a></li>
                             <li className="list-inline-item "><a href="//instagram.com"><FontAwesomeIcon className="icon" icon={faInstagram} /></a></li>
                         </ul>
-                        <div>
+                        <div className='phonecontainer'>
                             <h6>Call now</h6>
                             <button className="btn btn-primary">+939457803446</button>
                         </div>

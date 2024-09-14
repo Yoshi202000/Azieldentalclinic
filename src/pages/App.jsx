@@ -9,10 +9,12 @@ import profilePic2 from '../assets/hero-bg.png';
 import extract from '../assets/toothExtraction.png'
 import '../styles/App.css';
 import Doctors from '../component/Doctors';
+import Chat from '../component/chat';
 
 function App() {
   return (
-    <>
+    <>  
+      <Chat />
       {/* Ensure the DrawerComponent is positioned correctly and doesn't overlap content */}
       <DrawerComponent />
       
@@ -46,7 +48,7 @@ function App() {
         {/* Doctors component */}
         <Doctors />
       </div>
-
+      
       {/* Footer */}
       <Footer />
     </>

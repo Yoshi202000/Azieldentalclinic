@@ -29,7 +29,7 @@ const AppointmentStepTwo = ({ availableDates, selectedDate, handleDateSelect, ge
                   className={selectedTimeFrom === time ? 'available selected' : 'available'}
                   onClick={() => handleTimeSelect('from', time)}
                   style={{
-                    backgroundColor: selectedTimeFrom === time ? 'green' : '#E3E3E3',
+                    backgroundColor: selectedTimeFrom === time ? '#4D869C' : '#E3E3E3',
                     color: selectedTimeFrom === time ? 'white' : 'black',
                     padding: '10px',
                     margin: '5px 0',

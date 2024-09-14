@@ -16,9 +16,16 @@ dotenv.config();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
 app.use(cors({
-    origin: 'http://localhost:5175', // Change this to your frontend's actual origin
-    credentials: true // Allow credentials such as cookies or authentication headers
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
 }));
 
 
