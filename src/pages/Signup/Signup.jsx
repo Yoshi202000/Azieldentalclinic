@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/Signup.css';
+import HomeButton from '../../component/HomeButton';
+import './Signup.css';
+import { Home } from '@mui/icons-material';
 
 function Signup() {
     const [formData, setFormData] = useState({
@@ -64,6 +66,8 @@ function Signup() {
     };
 
     return (
+        <>
+        <HomeButton/>
         <div className="signup-container">
             <h2 className="signup-title">Create an Account</h2>
             {error && <div className="error-message">{error}</div>} {/* Display error message */}
@@ -132,6 +136,7 @@ function Signup() {
                 <button type="submit" className="signup-button">Sign Up</button>
             </form>
         </div>
+        </>
     );
 }
 

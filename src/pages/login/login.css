@@ -1,3 +1,11 @@
+/* styles for main container */
+
+.mainContainer{
+	width: 100px;
+	height: 100%;
+	background-color: red;
+}
+
 /* Styles for the container */
 .container {
 	margin: 1px;
@@ -12,12 +20,29 @@
 	padding: 01px;
 }
 
+.HomeBtnContainer{
+	width: 100%;
+	height: 25%;
+}
+.sign-in-form{
+	margin: 1px;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	background-color: #CDE8E5;
+	gap: 0px;
+	padding: 01px;
+}
+
 /* Styles for the sign-in container */
 .sign-in-container {
 	width: 300px;
 	height: 300px;
 	padding: 30px;
-	background-color: white;
+	background-color: rgb(236, 236, 236);
 	border-radius: 12% 88% 0% 100% / 92% 0% 100% 8%;
 	display: flex;
 	flex-direction: column;
@@ -25,11 +50,30 @@
 }
 
 /* Font styles */
-.sign-in-container h2, .sign-up-container h2, .sign-up-container p, .sign-in-container input, .sign-in-container a {
+.sign-in-container h2, .sign-up-container h2 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: xx-large;
+
+}
+
+.sign-up-container p, .sign-in-container input {
 	font-family: Arial, Helvetica, sans-serif;
 }
-.sign-up-container h2, .sign-up-container p {
+.sign-in-container a {
+	font-size: x-small;
+	font-family: Arial, Helvetica, sans-serif;
+
+}
+
+.sign-up-container h2 {
 	color: white;
+
+}
+.sign-up-container p {
+	color: white;
+	margin-bottom: 30px;
+	margin-top: 33px;
+	font-size: medium;
 }
 
 /* Styles for the sign-up container */
@@ -42,13 +86,12 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
 	text-align: center;
 }
 
 /* Adjustments for headers and buttons */
 .sign-in-container h2, .sign-up-container h2 {
-	margin-bottom: 20px;
+	margin-bottom: 15px;
 }
 
 .sign-in-container input, .sign-up-container button {
@@ -70,7 +113,7 @@
 	cursor: pointer;
 	border: 1px solid white;
 	border-radius: 20px;
-	width: 150px;
+	width: 90%;
 }
 
 .sign-in-container button:hover, .sign-up-container button:hover {
@@ -79,9 +122,10 @@
 
 .sign-in-container a {
 	color: #333;
-	font-size: 14px;
+	font-size: x-small;
 	text-decoration: none;
-	margin-bottom: 20px;
+	margin-top: 5px;
+	margin-bottom: 15px;
 }
 
 /* Responsive Styles for Small Screens */
@@ -136,7 +180,7 @@
 /* For larger screens (1024px and above) */
 @media (min-width: 1024px) {
 	.container {
-		flex-direction: row;
+		flex-direction: column;
 	}
 
 	.sign-in-container {
@@ -151,7 +195,7 @@
 /* Extra-large screens (1280px and above) */
 @media (min-width: 1280px) {
 	.container {
-		flex-direction: row;
+		flex-direction: column;
 	}
 
 	.sign-in-container {
@@ -166,7 +210,7 @@
 /* 2xl screens (1536px and above) */
 @media (min-width: 1536px) {
 	.container {
-		flex-direction: row;
+		flex-direction: column;
 	}
 
 	.sign-in-container {

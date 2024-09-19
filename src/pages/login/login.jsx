@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../styles/login.css';
-import { setToken, isLoggedIn } from '../utils/auth'; // Import utility functions
+import './login.css';
+import { setToken, isLoggedIn } from '../../utils/auth'; // Import utility functions
+import HomeButton from '../../component/HomeButton';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -24,7 +25,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/login`,
@@ -35,6 +36,7 @@ const Login = () => {
       );
 
       if (response.status === 200) {
+        console.log(response);
         setToken(response.data.token); // Store token using auth.js
         navigate('/home'); // Redirect to home after successful login
       }
@@ -48,7 +50,14 @@ const Login = () => {
   };
 
   return (
+    <>
     <div className="container">
+      <div className="HomeBtnContainer">
+        <HomeButton />   
+      </div>
+    
+    <div className="sign-in-form">
+  
       <div className="sign-in-container">
         <h2>Sign in</h2>
         <form onSubmit={handleLogin}>
@@ -67,8 +76,8 @@ const Login = () => {
             required
           />
           {errorMessage && <p className="error">{errorMessage}</p>}
-          <a href="#">Forgot your password?</a>
           <button type="submit">Sign In</button>
+          <a href="#">Forgot your password?</a>
         </form>
       </div>
       <div className="sign-up-container">
@@ -76,8 +85,10 @@ const Login = () => {
         <p>Enter your personal details and start your journey with us</p>
         <button onClick={() => navigate('/signup')}>Sign Up</button>
       </div>
+      </div>
     </div>
-  );
+    </>
+    );
 };
 
 export default Login;

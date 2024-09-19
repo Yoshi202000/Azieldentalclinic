@@ -36,6 +36,7 @@ const DrawerComponent = () => {
       </button>
 
       {/* Navigation bar for larger screens */}
+      <nav className="navcontainer">
       <nav className="navbar">
         <div className="logo-container">
           <img src="src/assets/azieldental.png" alt="Logo" className="logo" />
@@ -54,6 +55,7 @@ const DrawerComponent = () => {
             <a href="#branches" className="navbar-link">Branches</a>
           </li>
           
+          
           {/* Conditionally render the Login/Logout button */}
           {!isLoggedIn ? (
             <>
@@ -63,6 +65,7 @@ const DrawerComponent = () => {
               <li className="navbar-item">
                 <a href="/admin" className="navbar-link">Admin</a>
               </li>
+              
             </>
           ) : (
             <li className="navbar-item">
@@ -70,6 +73,7 @@ const DrawerComponent = () => {
             </li>
           )}
         </ul>
+      </nav>
       </nav>
 
       {/* Drawer for smaller screens */}

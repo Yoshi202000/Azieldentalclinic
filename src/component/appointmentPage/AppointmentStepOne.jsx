@@ -1,7 +1,7 @@
 // AppointmentStepOne.jsx
 import React from 'react';
-import Card from '../component/Card';
-import profilePic1 from '../assets/azielDental.png';
+import Card from '../Card';
+import profilePic1 from '../../assets/azielDental.png';
 
 const AppointmentStepOne = ({ selectedCard, handleCardSelect }) => {
   return (

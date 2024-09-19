@@ -31,7 +31,7 @@ router.post('/login', async (req, res) => {
             process.env.JWT_SECRET || 'your_jwt_secret',
             { expiresIn: '1h' }
         );
-
+        
         // Set the token in a cookie
         res.cookie('token', token, {
             httpOnly: true, // prevents JavaScript access to the cookie (for security)
@@ -40,7 +40,7 @@ router.post('/login', async (req, res) => {
             maxAge: 3600000 // 1 hour
         });
 
-        res.status(200).json({ message: 'Login successful' });
+        res.status(200).json({ message: 'success' ,token});
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ message: 'An error occurred during login' });

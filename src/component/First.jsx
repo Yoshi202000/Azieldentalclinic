@@ -28,6 +28,7 @@ const First = () => {
   return (
     <div className="first-container">
       <div className="background-overlay"></div>
+
       <div className="content">
         <div className="text-section">
           <h1>Welcome to Aziel Dental Clinic</h1>
@@ -40,6 +41,7 @@ const First = () => {
         <div className="image-section">
           <img src={dentist} alt="Dentist Team" className="dentist-image" />
         </div>
+        
       </div>
     </div>
   );

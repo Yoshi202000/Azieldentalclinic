@@ -1,0 +1,104 @@
+
+/* main container */
+.profilecontainer{
+    background-color: green;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 90%;
+    height: 95%;
+    margin: 10px;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+/* one container */
+.oneContainer {
+    flex: 1;
+    background-color: red;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+    max-width: 20%;
+    height: 100%;
+    padding-top: 10px;
+}
+
+.oneContainer button {
+    padding: 10px;
+    background-color: blue;
+    color: white;
+    width: 100%;
+    border: 1px solid black;
+    
+}
+/* one container image div */
+.image {
+    width: 100%;
+    padding-top: 100%; /* This creates a height equal to the width */
+    position: relative; /* Required for absolute positioning */
+    margin: 10px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 90%;
+    height: 90%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  
+
+
+/* main container */
+.ProfilemainContainer {
+    flex: 2;
+    background-color: rgb(0, 247, 255);
+    padding: 20px;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+    max-width: 80%;
+}
+
+.ProfilemainContainer p {
+    margin-bottom: 10px;
+}
+
+.ProfilemainContainer button {
+    padding: 10px;
+    background-color: blue;
+    color: white;
+    border: 1px solid black;
+    margin-top: 10px;
+    width: 300px;
+    max-width: 40%;
+}
+
+.ProfilemainContainer h1 {
+    font-size: xx-large;
+}
+
+@media (max-width:425px) {
+    .container {
+        flex-direction: column;
+    }
+   .oneContainer {
+    width: 100%;
+    max-width: 100%;
+   }
+
+   .ProfilemainContainer {
+    width: 100%;
+    max-width: 100%;
+   }
+    
+}
+

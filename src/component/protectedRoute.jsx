@@ -16,7 +16,7 @@ const ProtectedRoute = ({ children }) => {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/verify-token`, {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`, // If using Bearer tokens
+                        'Authorization': `${localStorage.getItem('token')}`, // If using Bearer tokens
                     },
                     withCredentials: true, // If backend uses cookies
                 });

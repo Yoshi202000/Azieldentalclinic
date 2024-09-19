@@ -5,12 +5,7 @@ const router = express.Router();
 
 // Verify token
 router.get('/verify-token', (req, res) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-        return res.status(401).json({ message: 'Authorization header missing' });
-    }
-
-    const token = authHeader.split(' ')[1];
+    const token = req.cookies.token; // Read the token from cookies
     if (!token) {
         return res.status(401).json({ message: 'No token provided' });
     }
@@ -26,7 +21,8 @@ router.get('/verify-token', (req, res) => {
                 lastName: decoded.lastName, 
                 phoneNumber: decoded.phoneNumber, 
                 email: decoded.email 
-            } 
+            },
+            token
         });
     });
 });

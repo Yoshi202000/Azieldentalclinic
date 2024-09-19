@@ -2,13 +2,14 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser'; // Import cookie-parser
 
 // Import routes    
 import signupRoutes from './routes/signup.js';
 import loginRoutes from './routes/login.js';
 import verifyTokenRoutes from './routes/verifyToken.js';
 import appointmentRoutes from './routes/appointment.js';
-import appTime from './routes/appointment.js'; 
+import logoutRoutes from './routes/logout.js'; // Import logout route
 
 const app = express();
 dotenv.config();
@@ -16,7 +17,11 @@ dotenv.config();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
+
+app.use(cookieParser()); // Use cookie-parser middleware
+
+// CORS configuration
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176'];
 app.use(cors({
     origin: function (origin, callback) {
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
@@ -28,10 +33,9 @@ app.use(cors({
     credentials: true
 }));
 
-
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('Connected to MongoDB'))
+    .then(() => console.log('Connected to MongoDB server'))
     .catch(err => console.error('Error connecting to MongoDB', err));
 
 // Routes
@@ -39,10 +43,10 @@ app.use(signupRoutes);
 app.use(loginRoutes);
 app.use(verifyTokenRoutes);
 app.use(appointmentRoutes);
-app.use(appTime);
+app.use(logoutRoutes); // Add logout route
 
 // Start server
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000; // Fallback to port 5000
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

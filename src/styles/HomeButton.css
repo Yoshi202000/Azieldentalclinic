@@ -1,0 +1,11 @@
+.home-Button {
+    background-color: #4D869C;
+    width: 120px;
+    height: 50px;
+    color: black;
+    margin: 15px;
+}
+
+.home-Button:hover {
+    background-color: #7AB2B2;
+}

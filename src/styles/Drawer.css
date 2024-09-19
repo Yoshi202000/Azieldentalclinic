@@ -4,15 +4,23 @@ body, html {
   overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
-.navbar {
+.navcontainer {
+  width: 100%;
   display: flex;
+  position: absolute;
+  background-color: #7AB2B2;
+  z-index: 1000;
+}
+
+.navbar {
   justify-content: space-between;
   align-items: center;
   padding: 0 20px; /* Add horizontal padding */
-  background-color: #7AB2B2;
   color: #fff;
-  width: 100%;
+  width: 80%;
   z-index: 1000;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Center the logo within its container */

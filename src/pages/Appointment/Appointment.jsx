@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/Appointment.css'; 
-import DrawerComponent from '../component/Drawers';
-import Footer from '../test/Footer';
-import AppointmentStepOne from '../component/AppointmentStepOne';
-import AppointmentStepTwo from '../component/AppointmentStepTwo';
-import AppointmentStepThree from '../component/AppointmentStepThree';
-import { generateAvailableDates } from '../utils/appDate';
+import './Appointment.css'; 
+import DrawerComponent from '../../component/Drawers';
+import Footer from '../../test/Footer';
+import AppointmentStepOne from '../../component/appointmentPage/AppointmentStepOne';
+import AppointmentStepTwo from '../../component/appointmentPage/AppointmentStepTwo';
+import AppointmentStepThree from '../../component/appointmentPage/AppointmentStepThree';
+import { generateAvailableDates } from '../../utils/appDate';
 
 const Appointment = () => {
   const [step, setStep] = useState(1);
@@ -62,22 +62,45 @@ const Appointment = () => {
     });
   };
   const handleAppointmentSubmit = async () => {
-    // Basic form validation
+    // Check for missing fields and display appropriate messages
+    
+    if (!selectedCard) {
+      alert('Please select an appointment type.');
+      return;
+    }
+    if (!formData.lastName) {
+      alert('Please enter your last name.');
+      return;
+    }
     if (!formData.dob) {
       alert('Please enter your date of birth.');
       return;
     }
-
+    if (!formData.firstName) {
+      alert('Please enter your first name.');
+      return;
+    }
+    if (!selectedDate) {
+      alert('Please select an appointment date.');
+      return;
+    }
+    if (!selectedTimeFrom) {
+      alert('Please select an appointment time.');
+      return;
+    }
+    
+    
     const token = localStorage.getItem('token'); // Get token from localStorage
+    console.log(token);
     const appointmentDetails = {
       patientFirstName: formData.firstName,
       patientLastName: formData.lastName,
       patientEmail: formData.email,
       patientPhone: formData.phoneNumber,
       patientDOB: formData.dob,
-      appointmentDate: selectedDate, // Change this field
-      appointmentTimeFrom: selectedTimeFrom, // Change this field
-      appointmentType: selectedCard
+      appointmentDate: selectedDate,
+      appointmentTimeFrom: selectedTimeFrom,
+      appointmentType: selectedCard,
     };
 
     try {
@@ -85,7 +108,7 @@ const Appointment = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+          'Authorization': `${token}`, // Include the token in the Authorization header
         },
         body: JSON.stringify(appointmentDetails),
       });
@@ -94,7 +117,7 @@ const Appointment = () => {
       if (response.ok) {
         alert('Appointment booked successfully!');
       } else {
-        alert(`Error: ${result.message}`);
+        alert(`Error test: ${result.message}`);
       }
     } catch (error) {
       console.error('Error booking appointment:', error);
