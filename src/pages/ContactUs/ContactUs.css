@@ -1,0 +1,68 @@
+/* Main container for Contact Us page */
+.ContactMain {
+    width: 100%;
+    background-color: aqua;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Contact background section */
+.ContactBG {
+    width: 100%;
+    background-image: url('../../assets/clinic.png');
+    background-size: cover;
+    text-align: center;
+    padding: 40px;
+}
+
+.ContactBG h1 {
+    color: black;
+    font-size: 2rem;
+}
+
+.ContactBG p {
+    color: black;
+    font-size: 1.2rem;
+}
+
+/* Container for the form inputs */
+.ContactUsContainer {
+    background-color: rgb(80, 183, 195);
+    width: 70%;
+    padding: 40px;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;                                    
+    border-radius: 10px;
+}
+
+.ContactUsContainer h1 {
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+/* Form inputs */
+.ContactUsContainer input {
+    width: 100%;
+    height: 35px;
+    margin: 10px;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.ContactUsContainer button {
+    width: 200px;
+}
+
+.ContactUsContainer textarea {
+    width: 100%;
+    height: 100px;
+    margin: 10px;
+    padding: 8px;
+    border-radius: 8px;
+ }

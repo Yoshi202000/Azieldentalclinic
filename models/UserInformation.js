@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
     emailVerified: { type: Boolean, default: false },
 }, { timestamps: true }); // Automatically adds createdAt and updatedAt fields
 
-// Create a model for the 'UserInformation' collection
-const User = mongoose.model('userinformations', userSchema);
+// Check if the model has already been compiled to avoid OverwriteModelError
+const User = mongoose.models.UserInformation || mongoose.model('UserInformation', userSchema);
 
 export default User;

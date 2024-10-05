@@ -17,6 +17,7 @@
 	height: 100%;
 	background-color: #CDE8E5;
 	gap: 0px;
+	background-image: url('../../assets/clinic.png');
 	padding: 01px;
 }
 
@@ -24,6 +25,7 @@
 	width: 100%;
 	height: 25%;
 }
+
 .sign-in-form{
 	margin: 1px;
 	display: flex;
@@ -32,20 +34,19 @@
 	align-items: center;
 	width: 100%;
 	height: 100%;
-	background-color: #CDE8E5;
 	gap: 0px;
 	padding: 01px;
 }
 
 /* Styles for the sign-in container */
 .sign-in-container {
-	width: 300px;
-	height: 300px;
+	width: 50%;
+	height: 80%;
 	padding: 30px;
-	background-color: rgb(236, 236, 236);
-	border-radius: 12% 88% 0% 100% / 92% 0% 100% 8%;
+	background-color: rgb(236, 236, 236, 0.5);
 	display: flex;
 	flex-direction: column;
+	justify-content: center;
 	align-items: center;
 }
 
@@ -66,6 +67,7 @@
 }
 
 .sign-up-container h2 {
+	font-size: xx-large;
 	color: white;
 
 }
@@ -73,18 +75,18 @@
 	color: white;
 	margin-bottom: 30px;
 	margin-top: 33px;
-	font-size: medium;
+	font-size: large;
 }
 
 /* Styles for the sign-up container */
 .sign-up-container {
-	width: 300px;
-	height: 300px;
+	width: 50%;
+	height: 80%;
 	padding: 30px;
-	background-color: #4D869C;
-	border-radius: 0% 100% 15% 85% / 100% 10% 90% 0%;
+	background-color: rgb(110, 181, 202, 0.5);
 	display: flex;
 	flex-direction: column;
+	justify-content: center;
 	align-items: center;
 	text-align: center;
 }
@@ -110,11 +112,15 @@
 .sign-in-container button, .sign-up-container button {
 	background-color: #4D869C;
 	color: white;
+	margin-right: auto;
+	margin-left: auto;
 	cursor: pointer;
 	border: 1px solid white;
 	border-radius: 20px;
 	width: 90%;
 }
+
+
 
 .sign-in-container button:hover, .sign-up-container button:hover {
 	background-color: #7AB2B2;
@@ -137,12 +143,10 @@
 	}
 
 	.sign-in-container {
-		border-radius: 21% 79% 1% 99% / 100% 17% 83% 0%;
 		margin-bottom: 0;
 	}
 
 	.sign-up-container {
-		border-radius: 0% 100% 21% 79% / 82% 0% 100% 18%;
 	}
 }
 @media (min-width: 425px) {
@@ -151,12 +155,10 @@
 	}
 
 	.sign-in-container {
-		border-radius: 21% 79% 1% 99% / 100% 17% 83% 0%;
 		margin-bottom: 0;
 	}
 
 	.sign-up-container {
-		border-radius: 0% 100% 21% 79% / 82% 0% 100% 18%;
 	}
 }
 
@@ -167,13 +169,11 @@
 	}
 
 	.sign-in-container {
-		max-width: 350px;
-		border-radius: 21% 79% 1% 99% / 100% 17% 83% 0%;
+		max-width: 40%;
 	}
 
 	.sign-up-container {
-		max-width: 350px;
-		border-radius: 0% 100% 21% 79% / 82% 0% 100% 18%;
+		max-width: 40%;
 	}
 }
 
@@ -184,11 +184,9 @@
 	}
 
 	.sign-in-container {
-		border-radius: 12% 88% 0% 100% / 92% 0% 100% 8%;
 	}
 
 	.sign-up-container {
-		border-radius: 0% 100% 15% 85% / 100% 10% 90% 0%;
 	}
 }
 
@@ -199,11 +197,9 @@
 	}
 
 	.sign-in-container {
-		border-radius: 12% 88% 0% 100% / 92% 0% 100% 8%;
 	}
 
 	.sign-up-container {
-		border-radius: 0% 100% 15% 85% / 100% 10% 90% 0%;
 	}
 }
 
@@ -214,10 +210,8 @@
 	}
 
 	.sign-in-container {
-		border-radius: 12% 88% 0% 100% / 92% 0% 100% 8%;
 	}
 
 	.sign-up-container {
-		border-radius: 0% 100% 15% 85% / 100% 10% 90% 0%;
 	}
 }

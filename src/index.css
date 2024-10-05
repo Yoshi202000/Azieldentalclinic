@@ -14,10 +14,4 @@ html, body, #root {
     box-sizing: border-box;
 }
 
-/* Example for any container element */
-.container {
-    width: 100%;
-    max-width: 100%;
-    padding: 0;
-    margin: 0;
-}
+

@@ -34,6 +34,11 @@
     border: 1px solid black;
     
 }
+
+.oneContainer button.active {
+    background-color: red; /* Changes color when active */
+  }
+
 /* one container image div */
 .image {
     width: 100%;
@@ -87,9 +92,7 @@
 }
 
 @media (max-width:425px) {
-    .container {
-        flex-direction: column;
-    }
+    
    .oneContainer {
     width: 100%;
     max-width: 100%;

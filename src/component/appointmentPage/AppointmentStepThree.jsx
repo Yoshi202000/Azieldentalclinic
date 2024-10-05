@@ -4,8 +4,8 @@ import axios from 'axios';
 import '../../pages/Appointment/Appointment.css';
 
 const AppointmentStepThree = ({ formData, handleInputChange }) => {
-  const [loading, setLoading] = useState(true); // Track loading state
-  const [isForOther, setIsForOther] = useState(false); // Track if appointment is for another person
+  const [loading, setLoading] = useState(true);
+  const [isForOther, setIsForOther] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,31 +16,40 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
       return;
     }
 
-    axios.get('http://localhost:5000/verify-token', {
+    // Fetch user data only once on component mount
+    axios
+      .get('http://localhost:5000/verify-token', {
         headers: {
           Authorization: `${token}`,
         },
-        withCredentials: true, // If using cookies
+        withCredentials: true,
       })
       .then((response) => {
+        const { firstName, lastName, email, phoneNumber } = response.data.user;
+
+        console.log('Fetched Data:', { firstName, lastName, email, phoneNumber });
+
         if (!isForOther) {
-          handleInputChange({ target: { name: 'firstName', value: response.data.user.firstName } });
-          handleInputChange({ target: { name: 'lastName', value: response.data.user.lastName } });
-          handleInputChange({ target: { name: 'email', value: response.data.user.email } });
-          handleInputChange({ target: { name: 'phoneNumber', value: response.data.user.phoneNumber } });
+          handleInputChange({ target: { name: 'firstName', value: firstName || '' } });
+          handleInputChange({ target: { name: 'lastName', value: lastName || '' } });
+          handleInputChange({ target: { name: 'email', value: email || '' } });
+          handleInputChange({ target: { name: 'phoneNumber', value: phoneNumber || '' } });
         }
+
         setLoading(false);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Error fetching user data:', error);
         alert('Error fetching user data. Please log in again.');
         navigate('/login');
       });
-  }, [navigate, isForOther, handleInputChange]);
+  }, [navigate]);  // Only include necessary dependencies
+
+  // No need to put handleInputChange here if it's not changing frequently
 
   const handleCheckboxChange = () => {
     setIsForOther(!isForOther);
     if (!isForOther) {
-      // Clear the form data when the checkbox is selected
       handleInputChange({ target: { name: 'firstName', value: '' } });
       handleInputChange({ target: { name: 'lastName', value: '' } });
       handleInputChange({ target: { name: 'dob', value: '' } });
@@ -56,17 +65,17 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
   return (
     <div className="appointment-details">
       <h2>Patient Details</h2>
-      
+
       <label>
-        <input 
-          type="checkbox" 
-          checked={isForOther} 
-          onChange={handleCheckboxChange} 
+        <input
+          type="checkbox"
+          checked={isForOther}
+          onChange={handleCheckboxChange}
         />
         Appointment is for someone else
       </label>
 
-      <div className='stepthree'>
+      <div className="stepthree">
         <div>
           <label>Date of Birth</label>
           <input

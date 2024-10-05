@@ -10,6 +10,11 @@ import loginRoutes from './routes/login.js';
 import verifyTokenRoutes from './routes/verifyToken.js';
 import appointmentRoutes from './routes/appointment.js';
 import logoutRoutes from './routes/logout.js'; // Import logout route
+import ForgotRoutes from './routes/ForgotPass.js';
+import userInformationRoutes from './routes/userInformation.js';
+import ViewAppointmentRoutes from './routes/viewAppointment.js';
+import updateAccountRoutes from './routes/updateAccount.js';
+
 
 const app = express();
 dotenv.config();
@@ -44,6 +49,10 @@ app.use(loginRoutes);
 app.use(verifyTokenRoutes);
 app.use(appointmentRoutes);
 app.use(logoutRoutes); // Add logout route
+app.use(ForgotRoutes);
+app.use(userInformationRoutes);
+app.use(ViewAppointmentRoutes);
+app.use(updateAccountRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000; // Fallback to port 5000

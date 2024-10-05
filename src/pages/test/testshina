@@ -1,0 +1,42 @@
+<div class="pinakacontainer>
+    <div class="containernghello>
+        <div class="etonaungmgalamannghello">   
+            <h1></h1>
+        </div>
+    </div>
+
+    <div class="containerngsignup>
+        <div class="etonaungmgalamanngsignup">   
+            <h1></h1>
+        </div>
+    </div>
+
+
+</div>
+
+.pinakacontainer{
+    width: 80%;
+    height: 80%;
+}
+
+.containernghello{
+    width: 50%; 
+    height: auto;
+    backgroud-color: rgb(182, 228, 230, 0.5);
+}
+
+.etonaungmgalamannghello{
+    width: 100%;
+    height: 100%;
+}
+
+.containerngsignup{
+    width: 50%;
+    height: auto;
+    backgroud-color: rgb(182, 228, 230, 0.5);
+}
+
+.etonaungmgalamanngsignup{
+    width: 100%;
+    height: 100%;
+}

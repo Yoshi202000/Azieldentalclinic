@@ -1,62 +1,62 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import DrawerComponent from '../../component/Drawers';
-import Footer from '../../test/Footer';
+import React, { useState } from 'react';
 import './dashboard.css';
+import AccountSettings from '../../component/admin/AccountSettings';
+import ChangePassword from '../../component/admin/ChangePassword';
+import PatientsInformation from '../../component/admin/PatientsInformation';
+import ViewAppointment from '../../component/admin/ViewAppointment';
 
-import './Manager.css';
 function Dashboard() {
-
-    const [activeComponent, setActiveComponent] = useState('AccountSettings'); // Default is AccountSettings
+  const [activeComponent, setActiveComponent] = useState('AccountSettings');
 
   const renderComponent = () => {
     switch (activeComponent) {
-      case 'Dashboard':
-        return <Dashboard />;
       case 'AccountSettings':
         return <AccountSettings />;
       case 'ChangePassword':
         return <ChangePassword />;
-      case 'Logout':
-        return <Logout />;
+      case 'PatientsInformation':
+        return <PatientsInformation />;
+        case 'ViewAppointment':
+          return <ViewAppointment />;    
       default:
-        return <AccountSettings />;
+        return <h2>Select an option</h2>;
     }
   };
 
   return (
     <>  
-    <title>Dashboard</title>
-    <DrawerComponent/>
-        <div className='DashContainer'>
-            <div className='DashContent'>
-                <h1>Dashboard content</h1>
-                <button onClick={() => setActiveComponent('Dashboard')}>
-                    Appointment Status
-                </button>
-                <button onClick={() => setActiveComponent('Dashboard')}>
-                    Appointments
-                </button>
-                <button onClick={() => setActiveComponent('Dashboard')}>
-                    Patients
-                </button>
-                <button onClick={() => setActiveComponent('Dashboard')}>
-                    Doctors
-                </button>
-                <button onClick={() => setActiveComponent('Dashboard')}>
-                    Reports
-                </button>
-                <button onClick={() => setActiveComponent('Dashboard')}>
-                    summary
-                </button>
-            </div>
-            <div className='DashMainContainer'>
-                {renderComponent()}
-            </div>
-
+      <div className='DashContainer'>
+        <div className='DashContent'>
+          <h1>Dashboard content</h1>
+          <button
+            className={activeComponent === 'AccountSettings' ? 'active' : ''}
+            onClick={() => setActiveComponent('AccountSettings')}
+          >
+            Account Settings
+          </button>
+          <button
+            className={activeComponent === 'ChangePassword' ? 'active' : ''}
+            onClick={() => setActiveComponent('ChangePassword')}
+          >
+            Change Password
+          </button>
+          <button
+            className={activeComponent === 'PatientsInformation' ? 'active' : ''}
+            onClick={() => setActiveComponent('PatientsInformation')}
+          >
+            Patients Information
+          </button>
+          <button
+          className={activeComponent === 'ViewAppointment' ? 'active' : ''}
+            onClick={() => setActiveComponent('ViewAppointment')}
+          >
+            Patients Information
+          </button>
         </div>
-
-    <Footer/>
+        <div className='DashMainContainer'>
+          {renderComponent()}
+        </div>
+      </div>
     </>
   );
 }

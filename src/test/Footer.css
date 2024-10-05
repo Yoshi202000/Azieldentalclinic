@@ -6,7 +6,7 @@
   font-size: 14px;
 }
 
-.container {
+.FooterContainer {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -107,7 +107,7 @@
     font-size: 15px;
   }
 
-  container {
+  .FooterContainer {
     align-items: center;
     padding: 3%;
     padding-left: 3%;

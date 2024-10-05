@@ -37,7 +37,7 @@ const services = [
 const Footer = () => {
   return (
     <footer className="footer-area clear-both">
-            <div className="container">
+            <div className="Footerontainer">
                 <div className="row">
                     <FooterCol key={1} menuTitle={"Services"} menuItems={noNamed}/>
                     <FooterCol key={2} menuTitle="Services" menuItems={services}/>

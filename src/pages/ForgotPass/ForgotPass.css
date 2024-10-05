@@ -1,0 +1,47 @@
+.forgotMainContainer {
+    width: 100%;
+    height: 100%;
+    padding: 100px;
+    display: flex;
+    position: relative;
+}
+
+.forgotContainer {
+    padding: 100px;
+    width: 55%;
+    border-radius: 9px;
+    height: 50%;
+    background-color: #85F4FF;
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    margin: auto;
+}
+
+.forgotContainer h1 {
+    color: black;
+    font-size: x-large;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.forgotContainer form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.forgotContainer form input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.forgotContainer p {
+    color: black;
+    font-size: small;
+    margin-top: 10px;
+}
+
+

@@ -1,11 +1,37 @@
-.signup-container {
+.signupMainContainer {
     width: 100%;
-    max-width: 400px;
-    margin: 50px auto;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #85F4FF;
+}
+
+.HomeButtonContainer {
+    height: 9%;
+}
+
+.signupDesignContainer {
+    width: 50%;
+    height: 100%;
+    background-image: url('../../assets/clinic.png');
+    padding: 30px;
+    text-align: center; 
+}
+
+.signUpForm {
+    background-color: transparent;
+    display: flex;
+    flex-direction: row;
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.signup-container {
+    width: 50%;
+    height: 100%;
     padding: 20px;
-    background-color: #EFFFFD; /* Light background for contrast */
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: rgb(199, 239, 232, 0.5)
 }
 
 .signup-title {

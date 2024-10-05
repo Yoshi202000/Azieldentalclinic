@@ -31,7 +31,6 @@ const Profile = () => {
 
   return (
     <>
-      <DrawerComponent />
       <div className='profilecontainer'>
         <div className='oneContainer'>
           <div className='image'>

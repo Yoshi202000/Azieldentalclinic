@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 import './Appointment.css'; 
 import DrawerComponent from '../../component/Drawers';
 import Footer from '../../test/Footer';
 import AppointmentStepOne from '../../component/appointmentPage/AppointmentStepOne';
 import AppointmentStepTwo from '../../component/appointmentPage/AppointmentStepTwo';
-import AppointmentStepThree from '../../component/appointmentPage/AppointmentStepThree';
+import AppointmentStepThree from '../../component/appointmentPage/AppointmentStepThree'; // Direct import
 import { generateAvailableDates } from '../../utils/appDate';
 
 const Appointment = () => {
@@ -13,6 +16,7 @@ const Appointment = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedCard, setSelectedCard] = useState(null);
   const [availableDates, setAvailableDates] = useState({});
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -52,46 +56,29 @@ const Appointment = () => {
     setSelectedDate(date);
     setSelectedTimeFrom(null); 
   };
+  
   const handleTimeSelect = (type, time) => {
     if (type === 'from') setSelectedTimeFrom(time);
   };
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
   };
   const handleAppointmentSubmit = async () => {
-    // Check for missing fields and display appropriate messages
-    
-    if (!selectedCard) {
-      alert('Please select an appointment type.');
+    if (!selectedCard || !formData.dob || !formData.lastName || !formData.firstName || !selectedDate || !selectedTimeFrom) {
+      alert('Please fill in all required fields.');
       return;
     }
-    if (!formData.lastName) {
-      alert('Please enter your last name.');
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please log in.');
       return;
     }
-    if (!formData.dob) {
-      alert('Please enter your date of birth.');
-      return;
-    }
-    if (!formData.firstName) {
-      alert('Please enter your first name.');
-      return;
-    }
-    if (!selectedDate) {
-      alert('Please select an appointment date.');
-      return;
-    }
-    if (!selectedTimeFrom) {
-      alert('Please select an appointment time.');
-      return;
-    }
-    
-    
-    const token = localStorage.getItem('token'); // Get token from localStorage
-    console.log(token);
+
     const appointmentDetails = {
       patientFirstName: formData.firstName,
       patientLastName: formData.lastName,
@@ -108,7 +95,7 @@ const Appointment = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `${token}`, // Include the token in the Authorization header
+          'Authorization': `${token}`,
         },
         body: JSON.stringify(appointmentDetails),
       });
@@ -117,13 +104,13 @@ const Appointment = () => {
       if (response.ok) {
         alert('Appointment booked successfully!');
       } else {
-        alert(`Error test: ${result.message}`);
+        alert(`Error: ${result.message}`);
       }
     } catch (error) {
       console.error('Error booking appointment:', error);
       alert('An error occurred while booking the appointment.');
     }
-};
+  };
 
   return (
     <>

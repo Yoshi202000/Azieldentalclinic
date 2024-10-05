@@ -53,38 +53,37 @@ const Login = () => {
     <>
     <div className="container">
       <div className="HomeBtnContainer">
-        <HomeButton />   
+        <HomeButton />  
       </div>
     
     <div className="sign-in-form">
-  
-      <div className="sign-in-container">
-        <h2>Sign in</h2>
-        <form onSubmit={handleLogin}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          {errorMessage && <p className="error">{errorMessage}</p>}
-          <button type="submit">Sign In</button>
-          <a href="#">Forgot your password?</a>
-        </form>
-      </div>
       <div className="sign-up-container">
-        <h2>Hello, Friend!</h2>
-        <p>Enter your personal details and start your journey with us</p>
-        <button onClick={() => navigate('/signup')}>Sign Up</button>
-      </div>
+          <h2>Hello, Friend!</h2>
+          <p>Enter your personal details and start your journey with us</p>
+          <button onClick={() => navigate('/signup')}>Sign Up</button>
+        </div>
+        <div className="sign-in-container">
+          <h2>Sign in</h2>
+          <form onSubmit={handleLogin}>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            {errorMessage && <p className="error">{errorMessage}</p>}
+            <button type="submit">Sign In</button><br />
+            <a href="/forgot">Forgot your password?</a>
+          </form>
+        </div>
       </div>
     </div>
     </>
