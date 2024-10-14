@@ -27,16 +27,21 @@
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
+    "gauge": "^5.0.2",
+    "glob": "^11.0.0",
     "hbs": "^4.2.0",
+    "inflight": "^1.0.6",
     "jquery": "^3.7.1",
     "jsonwebtoken": "^9.0.2",
     "mailtrap": "^3.4.0",
     "mongoose": "^8.6.3",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.15",
+    "npmlog": "^7.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.1"
+    "react-router-dom": "^6.26.1",
+    "rimraf": "^6.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

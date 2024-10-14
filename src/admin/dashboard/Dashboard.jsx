@@ -50,7 +50,7 @@ function Dashboard() {
           className={activeComponent === 'ViewAppointment' ? 'active' : ''}
             onClick={() => setActiveComponent('ViewAppointment')}
           >
-            Patients Information
+            View Appointment
           </button>
         </div>
         <div className='DashMainContainer'>

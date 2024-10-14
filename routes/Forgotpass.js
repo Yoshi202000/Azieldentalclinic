@@ -57,9 +57,6 @@ router.post('/api/send-code', async (req, res) => {
   });
 });
 
-  
-  
-
 // Verify code
 router.post('/api/verify-code', async (req, res) => {
   const { email, code } = req.body;
@@ -84,18 +81,29 @@ router.post('/api/change-password', async (req, res) => {
   const normalizedEmail = email.toLowerCase(); // Normalize email before looking it up
   console.log('Received email:', normalizedEmail); // Log the normalized email
   console.log('Entered code:', code);
+  console.log({ email, newPassword, code: enteredCode });
 
-  const storedCode = verificationCodes.get(normalizedEmail); // Retrieve using normalized email
-
+ 
+ 
+  const storedCode = verificationCodes.get(normalizedEmail); 
   console.log('Stored code:', storedCode); // Log the stored code (this was undefined before)
-  
-  if (!storedCode || storedCode !== code) {
-    console.log('Codes do not match:', storedCode, code);
-    return res.status(400).json({ success: false, message: 'Invalid code' });
-  }
+if (!storedCode || storedCode !== code) {
+  console.log('Codes do not match:', storedCode, code);
+  console.log({ email, newPassword, code: enteredCode });
+  return res.status(400).json({ success: false, message: 'Invalid code' });
+}
 
+
+try {
   const hashedPassword = await bcrypt.hash(newPassword, 10);
-  await User.updateOne({ email: normalizedEmail }, { password: hashedPassword }); // Use normalized email here
+  await User.updateOne({ email: normalizedEmail }, { password: hashedPassword });
+  verificationCodes.delete(normalizedEmail);
+  res.json({ success: true });
+} catch (error) {
+  console.error('Error updating password:', error);
+  res.status(500).json({ success: false, message: 'Error changing password' });
+}
+
 
   verificationCodes.delete(normalizedEmail); // Ensure consistency in email case
   res.json({ success: true });

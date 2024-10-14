@@ -50,7 +50,7 @@ const ViewAppointment = () => {
                 <td>{appointments.patientLastName}</td>
                 <td>{new Date(appointments.appointmentDate).toLocaleDateString()}</td>
                 <td>{appointments.appointmentTimeFrom}</td>
-                <td>{appointments.status}</td>
+                <td>{appointments.appointmentStatus}</td>
               </tr>
             ))}
           </tbody>

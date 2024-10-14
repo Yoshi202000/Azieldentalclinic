@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import '../../styles/AccountSettings.css';
 
 const AccountSettings = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const AccountSettings = () => {
     email: '',
   });
   const [message, setMessage] = useState(''); // For success/error messages
+  const [isError, setIsError] = useState(false); // Track if message is an error or success
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -59,34 +61,31 @@ const AccountSettings = () => {
     e.preventDefault(); // Prevent page refresh
     const token = localStorage.getItem('token');
   
-    axios
-      .put(
-        'http://localhost:5000/updateAccount',
-        formData, // Sending updated form data
-        {
-          headers: {
-            Authorization: `${token}`,
+    axios.put('http://localhost:5000/api/updateAccount', formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
           },
         }
       )
       .then((response) => {
         setMessage('Profile updated successfully!');
+        setIsError(false);
       })
       .catch((error) => {
         console.error('Error updating profile:', error.response?.data || error.message);
         setMessage('Failed to update profile. Please try again.');
+        setIsError(true);
       });
   };
   
-
   if (loading) {
     return <p>Loading...</p>;
   }
 
   return (
-    <div>
+    <div className="account-settings-container">
       <h1>Account Settings</h1>
-      {message && <p>{message}</p>}
+      {message && <p className={isError ? 'error-message' : 'success-message'}>{message}</p>}
       <form onSubmit={handleSubmit}>
         <label htmlFor="firstName">First Name:</label>
         <input 
@@ -116,7 +115,6 @@ const AccountSettings = () => {
           value={formData.phoneNumber || ''}
           onChange={handleInputChange}
         />
-        
         <button type="submit">Edit Profile</button>
       </form>
     </div>

@@ -84,18 +84,14 @@ const Forgot = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, newPassword, code: enteredCode }),
       });
-      const data = await response.json(); // Convert the response to JSON
-  
-      console.log('Response from server:', data);
-      console.log({ email, newPassword, enteredCode });
-      console.log('Data sent to backend:', { email, newPassword, code: enteredCode });
-
+      
+      const data = await response.json();
       if (data.success) {
-        alert('Password changed successfully. You can now log in.');
+        alert('Password changed successfully.');
         navigate('/login');
       } else {
-        alert('Error changing password. Please try again.');
-      }
+        alert(data.message || 'Error changing password');
+      }      
     } catch (error) {
       console.error('Error:', error);
     }

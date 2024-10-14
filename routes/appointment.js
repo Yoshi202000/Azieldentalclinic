@@ -50,14 +50,16 @@ router.post('/appointments', authenticateToken, async (req, res) => {
         appointmentDate,
         appointmentTimeFrom,
         appointmentType,
-        userId: req.user.userId, // Assuming you have the user ID from the token
+        userId: req.user.userId, 
+        appointmentStatus: 'pending' 
       });
   
       await newAppointment.save();
       res.status(201).json({ message: 'Appointment booked successfully!' });
     } catch (error) {
-      res.status(500).json({ message: 'Error booking appointment js' + error.message });
+      res.status(500).json({ message: 'Error booking appointment: ' + error.message });
     }
   });
+
 
 export default router;

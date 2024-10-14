@@ -1,4 +1,3 @@
-// Profile.js
 import React, { useState } from 'react';
 import DrawerComponent from '../../component/Drawers';
 import Footer from '../../component/Footer';
@@ -31,26 +30,26 @@ const Profile = () => {
 
   return (
     <>
-      <div className='profilecontainer'>
-        <div className='oneContainer'>
+      <div className='profile-container'>
+        <div className='sidebar'>
           <div className='image'>
             <img src={profilePic1} alt="profilePic1"/>
           </div>
-          <button onClick={() => setActiveComponent('Dashboard')}>
+          <button className={activeComponent === 'Dashboard' ? 'active' : ''} onClick={() => setActiveComponent('Dashboard')}>
             Dashboard
           </button>
-          <button onClick={() => setActiveComponent('AccountSettings')}>
+          <button className={activeComponent === 'AccountSettings' ? 'active' : ''} onClick={() => setActiveComponent('AccountSettings')}>
             Account Settings
           </button>
-          <button onClick={() => setActiveComponent('ChangePassword')}>
+          <button className={activeComponent === 'ChangePassword' ? 'active' : ''} onClick={() => setActiveComponent('ChangePassword')}>
             Change Password
           </button>
-          <button onClick={() => setActiveComponent('Logout')}>
+          <button className={activeComponent === 'Logout' ? 'active' : ''} onClick={() => setActiveComponent('Logout')}>
             Logout
           </button>
         </div>
 
-        <div className='ProfilemainContainer'>
+        <div className='profile-main-content'>
           {renderComponent()}
         </div>
       </div>
