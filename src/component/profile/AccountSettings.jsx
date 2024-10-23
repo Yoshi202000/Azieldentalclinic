@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import '../../styles/AccountSettings.css';
 
 const AccountSettings = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false); // For form submission state
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -24,16 +24,21 @@ const AccountSettings = () => {
       return;
     }
 
-    axios
-      .get('http://localhost:5000/verify-token', {
-        headers: {
-          Authorization: `${token}`,
-        },
-        withCredentials: true, // if using cookies
-      })
-      .then((response) => {
-        // Set all user details
-        const { firstName, lastName, email, phoneNumber, dob } = response.data.user;
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/verify-token', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`, // Ensure Bearer token format
+          },
+          credentials: 'include', // if using cookies
+        });
+        if (!response.ok) {
+          throw new Error('Session expired or invalid.');
+        
+        }
+        const data = await response.json();
+        const { firstName, lastName, email, phoneNumber, dob } = data.user || {};
         setFormData({
           firstName,
           lastName,
@@ -42,11 +47,13 @@ const AccountSettings = () => {
           dob: dob || '', // Default to empty string if no DOB
         });
         setLoading(false);
-      })
-      .catch(() => {
+      } catch (error) {
         alert('Session expired or invalid. Please log in again.');
         navigate('/login');
-      });
+      }
+    };
+
+    fetchData();
   }, [navigate]);
 
   const handleInputChange = (e) => {
@@ -57,27 +64,47 @@ const AccountSettings = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent page refresh
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setMessage('');
+    setIsError(false);
+
     const token = localStorage.getItem('token');
-  
-    axios.put('http://localhost:5000/api/updateAccount', formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((response) => {
-        setMessage('Profile updated successfully!');
-        setIsError(false);
-      })
-      .catch((error) => {
-        console.error('Error updating profile:', error.response?.data || error.message);
-        setMessage('Failed to update profile. Please try again.');
-        setIsError(true);
+
+    try {
+      // Update this URL to match the server route
+      const response = await fetch('http://localhost:5000/api/updateAccount', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+        credentials: 'include',
       });
+
+      const data = await response.json(); // Parse the response
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Unauthorized. Please log in again.');
+        }
+        throw new Error('Failed to update profile.');
+      }
+
+      setMessage(data.message || 'Profile updated successfully!');
+      setIsError(false);
+    } catch (error) {
+      console.error('Error updating profile:', error.message);
+      setMessage(error.message);
+      setIsError(true);
+    } finally {
+      setIsSubmitting(false); // Reset submitting state
+    }
   };
   
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -115,7 +142,9 @@ const AccountSettings = () => {
           value={formData.phoneNumber || ''}
           onChange={handleInputChange}
         />
-        <button type="submit">Edit Profile</button>
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Submitting...' : 'Edit Profile'}
+        </button>
       </form>
     </div>
   );

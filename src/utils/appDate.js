@@ -1,13 +1,14 @@
 // date.js
 export const generateAvailableDates = () => {
-    const appointments = {};
-    const today = new Date();
-    for (let i = 0; i < 30; i++) {
-      const nextDate = new Date();
-      nextDate.setDate(today.getDate() + i);
-      const formattedDate = nextDate.toISOString().split('T')[0];
-      appointments[formattedDate] = []; // You can add time slots here if needed
-    }
-    return appointments;
-  };
+  const dates = {};
+  const today = new Date();
   
+  for (let i = 0; i < 30; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+    const dateString = date.toISOString().split('T')[0];
+    dates[dateString] = true;
+  }
+  
+  return dates;
+};

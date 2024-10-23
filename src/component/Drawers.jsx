@@ -25,6 +25,13 @@ const DrawerComponent = () => {
     window.location.href = '/login'; // Redirect the user to the login page after logging out
   };
 
+  const handleAppointmentClick = (e) => {
+    if (!isLoggedIn) {
+      e.preventDefault();
+      window.location.href = '/login';
+    }
+  };
+
   return (
     <>
       {/* Drawer toggle button for smaller screens */}
@@ -46,10 +53,10 @@ const DrawerComponent = () => {
             <a href="/home" className="navbar-link">Home</a>
           </li>
           <li className="navbar-item">
-            <a href="#services" className="navbar-link">Services</a>
+            <a href="/services" className="navbar-link">Services</a>
           </li>
           <li className="navbar-item">
-            <a href="#appointment" className="navbar-link">Appointment</a>
+            <a href={isLoggedIn ? "/appointment" : "#"} className="navbar-link" onClick={handleAppointmentClick}>Appointment</a>
           </li>
           <li className="navbar-item">
             <a href="#branches" className="navbar-link">Branches</a>

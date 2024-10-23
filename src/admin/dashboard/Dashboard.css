@@ -42,6 +42,11 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    max-width: 1400px; /* Added to match PIContainer */
+    margin: 0 auto; /* Center the container */
   }
   
 
@@ -93,4 +98,242 @@
     margin-bottom: 20px;
   }
   
-  
+  /* Add these new styles */
+  .admin-view-appointments-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .admin-appointments-table {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .admin-appointment-button,
+  .status-buttons button {
+    font-size: 14px;
+  }
+
+  /* Ensure the edit section doesn't overflow */
+  .admin-appointment-edit-section {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .admin-appointments-table {
+      font-size: 14px;
+    }
+
+    .admin-appointment-button,
+    .status-buttons button {
+      font-size: 12px;
+      padding: 6px 8px;
+    }
+  }
+
+/* PatientsInformation Styles */
+
+.PIContainer {
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 1400px; /* Increased from 1200px */
+  margin: 0 auto;
+  width: 95%; /* Added to ensure it takes up most of the screen width */
+}
+
+.PITitle {
+  font-size: 28px;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.PIError {
+  color: #e74c3c;
+  font-weight: bold;
+  padding: 15px;
+  background-color: #fde2e2;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.PITable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.PITable th,
+.PITable td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.PITable th {
+  background-color: #3498db;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.PITable tbody tr:hover {
+  background-color: #f5f7fa;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.PIAppointmentsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+.PIAppointmentsTitle {
+  font-size: 24px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.PIButton {
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  font-weight: 600;
+}
+
+.PIButton:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
+.PIAppointmentsTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.PIAppointmentsTable th,
+.PIAppointmentsTable td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.PIAppointmentsTable th {
+  background-color: #3498db;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.PINoAppointments {
+  color: #7f8c8d;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+}
+
+/* Responsive design */
+@media (max-width: 1440px) {
+  .PIContainer,
+  .DashMainContainer {
+    max-width: 95%;
+  }
+}
+
+@media (max-width: 768px) {
+  .PIContainer {
+    padding: 15px;
+    width: 100%;
+  }
+
+  .DashMainContainer {
+    padding: 15px;
+  }
+
+}
+
+/* Add these new styles for the filter */
+.ProfileAppointmentFilter {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.ProfileAppointmentFilter label {
+  margin-right: 8px;
+  font-weight: bold;
+  color: #333;
+  font-size: 14px;
+}
+
+.ProfileAppointmentSelect {
+  padding: 6px 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ProfileAppointmentSelect:hover,
+.ProfileAppointmentSelect:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
+  outline: none;
+}
+
+.ProfileAppointmentSelect option {
+  padding: 4px 8px;
+}
+
+/* You may want to adjust these existing styles to match the new filter design */
+.DashContainer button,
+.ProfileAppointmentButton {
+  padding: 6px 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.DashContainer button:hover,
+.ProfileAppointmentButton:hover {
+  background-color: #e0e0e0;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
+}
+
+/* Updated button styles */
+.edit-button {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.edit-button:hover {
+  background-color: #45a049;
+}

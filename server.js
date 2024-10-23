@@ -14,7 +14,8 @@ import ForgotRoutes from './routes/Forgotpass.js';
 import userInformationRoutes from './routes/userInformation.js';
 import ViewAppointmentRoutes from './routes/viewAppointment.js';
 import updateAccountRoutes from './routes/updateAccount.js';
-
+import updateAppointmentRoutes from './routes/updateAppointment.js';
+import feedbackRoutes from './routes/feedback.js'; // Add this line
 
 const app = express();
 dotenv.config();
@@ -52,8 +53,9 @@ app.use(logoutRoutes); // Add logout route
 app.use(ForgotRoutes);
 app.use(userInformationRoutes);
 app.use(ViewAppointmentRoutes);
-
 app.use('/api', updateAccountRoutes); // Mounting accountRoutes at the '/api' base path
+app.use('/api', updateAppointmentRoutes);
+app.use('/api/feedback', feedbackRoutes); // Add this line
 
 // Start server
 const PORT = process.env.PORT || 5000; // Fallback to port 5000

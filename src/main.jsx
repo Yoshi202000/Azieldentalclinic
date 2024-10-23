@@ -14,6 +14,7 @@ import Appointment from './pages/Appointment/Appointment.jsx';
 // import pages not yet done section
 import Profile from './pages/Profile/Profile.jsx';
 import Forgot from './pages/ForgotPass/ForgotPass.jsx';
+import FeedBack from './component/FeedBack.jsx';
 
 // Test components (for testing purposes)
 import Drawer from './component/Drawers.jsx';
@@ -27,9 +28,8 @@ import TestLogin from './pages/test/apptest.jsx';
 import ContactUs from './pages/ContactUs/ContactUs.jsx';
 import Dashboard from './admin/dashboard/Dashboard.jsx';
 import ParentComponent from './component/appointmentPage/testStepThree.jsx';
-
-
-
+import Services from './pages/Services/services.jsx';
+  
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
@@ -43,7 +43,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/signup" element={<Signup />} />
         <Route path="/appointment" element={<Appointment />} />
         <Route path="/forgot" element={<Forgot />} />
-
+        <Route path="/feedback" element={<FeedBack />} />
         {/* Test Routes */}
         <Route path="/first" element={<First />} />
         <Route path="/drawer" element={<Drawer />} />
@@ -57,7 +57,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/contactus" element={<ContactUs />} />
         <Route path='/Dashboard' element={<Dashboard/>} />
         <Route path="/parent" element={<ParentComponent />} />
-
+        <Route path="/services" element={<Services />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

@@ -1,20 +1,21 @@
 /* Main container */
-.profile-container {
+.profileContainer {
+    flex: 1;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     width: 100%;
-    height: 100%;
-    margin: 20px auto;
     max-width: 1200px;
+    margin: 20px auto;
     background-color: #f4f4f9; /* Soft background color */
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
-  }
-  
-  /* Sidebar */
-  .sidebar {
+    overflow: auto; /* Add this to enable scrolling if content exceeds container height */
+}
+
+/* Sidebar */
+.profileSidebar {
     flex: 1;
     background-color: #fff;
     border-right: 1px solid #ccc;
@@ -23,9 +24,9 @@
     align-items: center;
     padding: 20px;
     max-width: 250px;
-  }
-  
-  .sidebar button {
+}
+
+.profileButton {
     padding: 12px;
     margin: 10px 0;
     background-color: #42C2FF;
@@ -35,73 +36,295 @@
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  .sidebar button.active {
+}
+
+.profileButton.active {
     background-color: #85F4FF; /* Lighter blue for active state */
-  }
-  
-  .sidebar button:hover {
+}
+
+.profileButton:hover {
     background-color: #007BFF; /* Darker blue on hover */
-  }
-  
-  .sidebar .image {
+}
+
+.profileImage {
     margin-bottom: 20px;
-  }
-  
-  .sidebar .image img {
+}
+
+.profileImage img {
     width: 120px;
     height: 120px;
     object-fit: cover;
     border-radius: 50%;
     border: 2px solid #42C2FF;
-  }
-  
-  /* Main content */
-  .profile-main-content {
+}
+
+/* Main content */
+.profileMainContent {
     flex: 3;
     background-color: #fff;
     padding: 10px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     margin-left: 10px;
-  }
-  
-  .profile-main-content h1 {
+}
+
+.profileMainContent h1 {
     font-size: 1.8rem;
     color: #333;
-  }
-  
-  .profile-main-content p {
+}
+
+.profileMainContent p {
     font-size: 1rem;
     color: #555;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .profile-container {
-      flex-direction: column;
-    }
-  
-    .sidebar {
-      flex-direction: row;
-      flex-wrap: wrap;
-      max-width: 100%;
-      padding: 10px;
-      justify-content: center;
-    }
-  
-    .sidebar button {
-      margin: 5px;
-      width: auto;
-      flex-grow: 1;
-    }
-  
-    .profile-main-content {
-      margin-left: 0;
-      margin-top: 20px;
-    }
-  }
-  
+}
 
-  
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profileContainer {
+        flex-direction: column;
+        margin: 10px;
+        padding: 10px;
+    }
+
+    .profileSidebar {
+        flex-direction: row;
+        flex-wrap: wrap;
+        max-width: 100%;
+        padding: 10px;
+        justify-content: center;
+    }
+
+    .profileButton {
+        margin: 5px;
+        width: auto;
+        flex-grow: 1;
+    }
+
+    .profileMainContent {
+        margin-left: 0;
+        margin-top: 20px;
+    }
+}
+
+/* Styles for ViewAppointmentByUser component */
+.ProfileAppointmentContainer {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    overflow: auto;
+}
+
+.ProfileAppointmentContainer.expanded {
+    padding-bottom: 20px;
+}
+
+.ProfileAppointmentUserInfo {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f0f8ff;
+    border-radius: 8px;
+}
+
+.ProfileAppointmentTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.ProfileAppointmentTable th,
+.ProfileAppointmentTable td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.ProfileAppointmentTable th {
+    background-color: #42C2FF;
+    color: white;
+}
+
+.ProfileAppointmentEditSection {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f0f8ff;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    max-height: 0;
+}
+
+.ProfileAppointmentEditSection.expanded {
+    max-height: 1000px;
+}
+
+.ProfileAppointmentButton {
+    padding: 8px 16px;
+    margin-right: 10px;
+    background-color: #42C2FF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.ProfileAppointmentButton:hover {
+    background-color: #007BFF;
+}
+
+.profilePageWrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Add these new styles for the edit section content */
+.ProfileAppointmentEditContent {
+    width: 100%;
+    overflow-x: hidden; /* Change from auto to hidden */
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .ProfileAppointmentContainer {
+        padding: 10px;
+    }
+
+    .ProfileAppointmentTable {
+        font-size: 14px;
+    }
+
+    .ProfileAppointmentTable th,
+    .ProfileAppointmentTable td {
+        padding: 8px;
+    }
+
+    .ProfileAppointmentButton {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+
+    .ProfileAppointmentEditSection {
+        padding: 10px;
+    }
+
+    /* Adjust the edit content for mobile */
+    .ProfileAppointmentEditContent {
+        max-width: 100%;
+    }
+
+    /* Style for AppointmentStepOne and AppointmentStepTwo components */
+    .ProfileAppointmentEditContent > div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .ProfileAppointmentEditContent > div > div {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    /* New styles for appointment type cards */
+    .ProfileAppointmentEditContent .appointmentTypeCards {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .ProfileAppointmentEditContent .appointmentTypeCard {
+        width: 100% !important; /* Override any inline styles */
+        max-width: 280px; /* Adjust this value as needed */
+        margin: 10px 0;
+    }
+
+    /* Styles for date and time selection */
+    .ProfileAppointmentEditContent .dateTimeSelection {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .ProfileAppointmentEditContent .dateTimeSelection > div {
+        min-width: 280px; /* Adjust this value as needed */
+    }
+}
+
+/* Styles for appointment type cards */
+.appointmentTypeCards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.appointmentTypeCard {
+    width: 280px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.appointmentTypeCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.appointmentTypeCard img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.appointmentTypeCard h3 {
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+.appointmentTypeCard p {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .ProfileAppointmentContainer {
+        padding: 10px;
+    }
+
+    .ProfileAppointmentEditContent {
+        padding: 10px;
+    }
+
+    .appointmentTypeCards {
+        gap: 10px;
+    }
+
+    .appointmentTypeCard {
+        width: calc(50% - 5px);
+        max-width: none;
+        padding: 10px;
+    }
+
+    .appointmentTypeCard img {
+        height: 100px;
+    }
+
+    .appointmentTypeCard h3 {
+        font-size: 16px;
+    }
+
+    .appointmentTypeCard p {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .appointmentTypeCard {
+        width: 100%;
+    }
+}

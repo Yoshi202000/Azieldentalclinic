@@ -7,6 +7,7 @@ import Dashboard from '../../component/profile/Dashboard';
 import AccountSettings from '../../component/profile/AccountSettings';
 import ChangePassword from '../../component/profile/ChangePassword';
 import Logout from '../../component/profile/Logout';
+import ViewAppointmentByUser from '../../component/profile/ViewAppointmentByUser';
 // Add styles for the card
 import './Profile.css'; 
 
@@ -23,38 +24,43 @@ const Profile = () => {
         return <ChangePassword />;
       case 'Logout':
         return <Logout />;
+      case 'ViewAppointments':
+        return <ViewAppointmentByUser />;
       default:
         return <AccountSettings />;
     }
   };
 
   return (
-    <>
-      <div className='profile-container'>
-        <div className='sidebar'>
-          <div className='image'>
+    <div className="profilePageWrapper">
+      <div className='profileContainer'>
+        <div className='profileSidebar'>
+          <div className='profileImage'>
             <img src={profilePic1} alt="profilePic1"/>
           </div>
-          <button className={activeComponent === 'Dashboard' ? 'active' : ''} onClick={() => setActiveComponent('Dashboard')}>
+          <button className={`profileButton ${activeComponent === 'Dashboard' ? 'active' : ''}`} onClick={() => setActiveComponent('Dashboard')}>
             Dashboard
           </button>
-          <button className={activeComponent === 'AccountSettings' ? 'active' : ''} onClick={() => setActiveComponent('AccountSettings')}>
+          <button className={`profileButton ${activeComponent === 'AccountSettings' ? 'active' : ''}`} onClick={() => setActiveComponent('AccountSettings')}>
             Account Settings
           </button>
-          <button className={activeComponent === 'ChangePassword' ? 'active' : ''} onClick={() => setActiveComponent('ChangePassword')}>
+          <button className={`profileButton ${activeComponent === 'ChangePassword' ? 'active' : ''}`} onClick={() => setActiveComponent('ChangePassword')}>
             Change Password
           </button>
-          <button className={activeComponent === 'Logout' ? 'active' : ''} onClick={() => setActiveComponent('Logout')}>
+          <button className={`profileButton ${activeComponent === 'ViewAppointments' ? 'active' : ''}`} onClick={() => setActiveComponent('ViewAppointments')}>
+            View Appointments
+          </button>
+          <button className={`profileButton ${activeComponent === 'Logout' ? 'active' : ''}`} onClick={() => setActiveComponent('Logout')}>
             Logout
           </button>
         </div>
 
-        <div className='profile-main-content'>
+        <div className='profileMainContent'>
           {renderComponent()}
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 

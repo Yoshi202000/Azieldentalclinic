@@ -4,6 +4,7 @@ import AccountSettings from '../../component/admin/AccountSettings';
 import ChangePassword from '../../component/admin/ChangePassword';
 import PatientsInformation from '../../component/admin/PatientsInformation';
 import ViewAppointment from '../../component/admin/ViewAppointment';
+import CompletedAppointment from '../../component/admin/CompletedAppointment';
 
 function Dashboard() {
   const [activeComponent, setActiveComponent] = useState('AccountSettings');
@@ -16,8 +17,10 @@ function Dashboard() {
         return <ChangePassword />;
       case 'PatientsInformation':
         return <PatientsInformation />;
-        case 'ViewAppointment':
-          return <ViewAppointment />;    
+      case 'ViewAppointment':
+        return <ViewAppointment />;
+      case 'CompletedAppointment':
+        return <CompletedAppointment />;
       default:
         return <h2>Select an option</h2>;
     }
@@ -47,10 +50,16 @@ function Dashboard() {
             Patients Information
           </button>
           <button
-          className={activeComponent === 'ViewAppointment' ? 'active' : ''}
+            className={activeComponent === 'ViewAppointment' ? 'active' : ''}
             onClick={() => setActiveComponent('ViewAppointment')}
           >
             View Appointment
+          </button>
+          <button
+            className={activeComponent === 'CompletedAppointment' ? 'active' : ''}
+            onClick={() => setActiveComponent('CompletedAppointment')}
+          >
+            Completed Appointments
           </button>
         </div>
         <div className='DashMainContainer'>

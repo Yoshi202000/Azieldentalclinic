@@ -7,56 +7,63 @@ body, html {
 .navcontainer {
   width: 100%;
   display: flex;
-  position: absolute;
+  position: fixed;
+  top: 0; /* Ensure it's at the top of the viewport */
+  left: 0; /* Align to the left edge */
   background-color: #7AB2B2;
   z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
 }
 
 .navbar {
+  display: flex; /* Ensure flex display */
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px; /* Add horizontal padding */
+  padding: 10px 20px; /* Adjust padding */
   color: #fff;
-  width: 80%;
-  z-index: 1000;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%; /* Use full width */
+  max-width: 1200px; /* Set a max-width for larger screens */
+  margin: 0 auto; /* Center the navbar */
 }
 
 /* Center the logo within its container */
 .logo-container {
-  flex: 1; /* Allow the logo container to grow */
+  flex: 0 0 auto; /* Prevent logo from growing */
   display: flex;
   justify-content: flex-start; /* Align logo to the left */
   
 }
 
 .logo {
-  height: 100px; /* Adjust logo size */
+  height: 60px; /* Adjust logo size */
 }
 
 /* Navbar menu on the right */
 .navbar-menu {
-  flex: 1; /* Allow the menu to grow */
   display: flex;
-  justify-content: flex-start; /* Align menu items to the right */
+  justify-content: flex-end; /* Align menu items to the right */
+  align-items: center; /* Vertically center items */
+  gap: 20px; /* Add space between menu items */
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
 
 .navbar-item {
-  padding: 0 15px; /* Add horizontal padding */
+  padding: 0; /* Remove padding, we're using gap */
 }
 
 .navbar-link {
   color: #fff;
   text-decoration: none;
   font-size: 16px;
+  font-weight: 500; /* Make text slightly bolder */
+  transition: color 0.3s ease; /* Smooth color transition on hover */
 }
 
 .navbar-link:hover {
-  text-decoration: underline;
+  color: #DCF2F1; /* Lighter color on hover */
+  text-decoration: none; /* Remove underline on hover */
 }
 
 
@@ -74,6 +81,9 @@ body, html {
   padding: 20px;
   overflow-x: hidden; /* Ensure no horizontal scroll */
   z-index: 2000; /* Ensure the drawer is above other content */
+  width: 250px; /* Set a fixed width */
+  background-color: #0F1035;
+  padding: 60px 20px 20px; /* Increase top padding for close button */
 }
 
 .drawer.open {
@@ -89,6 +99,10 @@ body, html {
   border: none;
   background: none;
   z-index: 1001; /* Ensure the close button is on top of the drawer */
+  position: absolute; /* Position the close button */
+  top: 20px;
+  right: 20px;
+  font-size: 28px; /* Increase size */
 }
 
 .drawer-content {
@@ -96,10 +110,17 @@ body, html {
   overflow-y: auto;
 }
 
+.drawer-content ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
 .drawer-item {
   display: flex;
   align-items: center;
   padding: 10px 0;
+  margin-bottom: 15px; /* Add space between items */
 }
 
 .drawer-link {
@@ -107,10 +128,15 @@ body, html {
   text-decoration: none;
   font-size: 16px;
   font-family: Arial, Helvetica, sans-serif;
+  display: block; /* Make the entire area clickable */
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
 }
 
 .drawer-link:hover {
-  text-decoration: underline;
+  background-color: rgba(255, 255, 255, 0.1); /* Subtle highlight on hover */
+  text-decoration: none;
 }
 
 /* Drawer toggle button styles */
@@ -141,15 +167,20 @@ body, html {
 
   .drawer-toggle {
     display: block; /* Show the drawer toggle button on smaller screens */
+    top: 20px;
+    right: 20px;
+    background-color: transparent;
+    color: #0F1035;
+    font-size: 28px;
+  }
+
+  body {
+    padding-top: 60px; /* Adjust this value to match the height of your navbar */
   }
 }
 
-@media (min-width: 1024px) {
-  .navbar {
-    display: flex; /* Show the navbar for lg screens and larger */
-  }
-
-  .drawer-toggle {
-    display: none; /* Hide the drawer toggle button for lg screens and larger */
+@media (min-width: 1025px) {
+  body {
+    padding-top: 80px; /* Adjust this value to match the height of your navbar */
   }
 }

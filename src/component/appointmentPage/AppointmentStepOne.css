@@ -1,0 +1,9 @@
+.card {
+  transition: all 0.3s ease;
+}
+
+.card.selected {
+  background-color: #e6f7ff;
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}

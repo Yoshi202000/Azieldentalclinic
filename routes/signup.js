@@ -57,13 +57,14 @@ router.post('/signup', async (req, res) => {
             email,
             phoneNumber,
             password: hashedPassword,
-            emailVerified: false, // Add a field to track if the email is verified
+            emailVerified: false,
+            role: 'patient', // Set the role to 'patient' for new signups
         });
 
         await newUser.save();
 
         // Create a JWT token for email verification
-        const token = jwt.sign({ email }, 'yourSecretKey', { expiresIn: '1h' });
+        const token = jwt.sign({ email }, 'yourSecretKey', { expiresIn: '30d' });
 
         // Verification email content
         const verificationLink = `http://localhost:5000/verify-email?token=${token}`;

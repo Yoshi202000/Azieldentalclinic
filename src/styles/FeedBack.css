@@ -1,0 +1,90 @@
+body, #root {
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0; /* Optional: adds a light background to the page */
+}
+
+.FBfeedback {
+  max-width: 500px;
+  width: 90%; /* Makes it responsive for smaller screens */
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.FBfeedback h2 {
+  text-align: center;
+  color: #333;
+}
+
+.FBfeedback form {
+  display: flex;
+  flex-direction: column;
+}
+
+.FBrating-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.FBstar {
+  font-size: 24px;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.FBstar.FBactive {
+  color: #ffd700;
+}
+
+.FBfeedback input, .FBfeedback textarea {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.FBfeedback textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+.FBfeedback button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.FBfeedback button:hover {
+  background-color: #0056b3;
+}
+
+.FBsuccess-message {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  margin-bottom: 15px;
+  animation: FBfadeIn 0.5s, FBfadeOut 0.5s 2.5s;
+}
+
+@keyframes FBfadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes FBfadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
