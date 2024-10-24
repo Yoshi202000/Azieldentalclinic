@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import { generateToken } from '../services/tokenService.js';
 
 const router = express.Router();
 
@@ -30,21 +31,17 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
 
-        const token = jwt.sign(
-            { userId: user._id, firstName: user.firstName, lastName: user.lastName, phoneNumber: user.phoneNumber, email: user.email },
-            process.env.JWT_SECRET || 'your_jwt_secret',
-            { expiresIn: '30d' }
-        );
+        const token = generateToken(user);
         
         // Set the token in a cookie
         res.cookie('token', token, {
             httpOnly: true, // prevents JavaScript access to the cookie (for security)
             secure: process.env.NODE_ENV === 'production', // set true in production to ensure HTTPS
             sameSite: 'Strict', // to prevent CSRF attacks
-            maxAge: 3600000 // 1 hour
+            maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
         });
 
-        res.status(200).json({ message: 'success' ,token});
+        res.status(200).json({ message: 'Login successful', user: { role: user.role } });
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ message: 'An error occurred during login' });

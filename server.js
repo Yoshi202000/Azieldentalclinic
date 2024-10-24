@@ -16,6 +16,7 @@ import ViewAppointmentRoutes from './routes/viewAppointment.js';
 import updateAccountRoutes from './routes/updateAccount.js';
 import updateAppointmentRoutes from './routes/updateAppointment.js';
 import feedbackRoutes from './routes/feedback.js'; // Add this line
+import viewFeedbackRoutes from './routes/viewFeedback.js';
 
 const app = express();
 dotenv.config();
@@ -56,6 +57,8 @@ app.use(ViewAppointmentRoutes);
 app.use('/api', updateAccountRoutes); // Mounting accountRoutes at the '/api' base path
 app.use('/api', updateAppointmentRoutes);
 app.use('/api/feedback', feedbackRoutes); // Add this line
+app.use('/api/feedback', viewFeedbackRoutes);
+app.use('/api', verifyTokenRoutes); // Mount at /api prefix if that's your convention
 
 // Start server
 const PORT = process.env.PORT || 5000; // Fallback to port 5000

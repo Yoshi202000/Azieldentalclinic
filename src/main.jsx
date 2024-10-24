@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import ProtectedRoute from "./component/protectedRoute";
 
 // Import global styles
 import './index.css';
@@ -10,54 +11,73 @@ import App from './pages/App/App.jsx';
 import Login from './pages/login/login.jsx';
 import Signup from './pages/Signup/Signup.jsx';
 import Appointment from './pages/Appointment/Appointment.jsx';
-
-// import pages not yet done section
 import Profile from './pages/Profile/Profile.jsx';
 import Forgot from './pages/ForgotPass/ForgotPass.jsx';
+import ContactUs from './pages/ContactUs/ContactUs.jsx';
+import Dashboard from './admin/dashboard/Dashboard.jsx';
+import Services from './pages/Services/services.jsx';
+
+// import pages not yet done section
 import FeedBack from './component/FeedBack.jsx';
 
 // Test components (for testing purposes)
-import Drawer from './component/Drawers.jsx';
-import First from './component/First.jsx';
-import Test from './pages/test/test.jsx';
-import Chat from './component/chat.jsx';
-import Manager from './admin/manager/Manager.jsx';
-import HomeButton from './component/HomeButton.jsx';
-import AppointmentStepThreetest from './pages/test/testAppointment.jsx';
-import TestLogin from './pages/test/apptest.jsx';
-import ContactUs from './pages/ContactUs/ContactUs.jsx';
-import Dashboard from './admin/dashboard/Dashboard.jsx';
-import ParentComponent from './component/appointmentPage/testStepThree.jsx';
-import Services from './pages/Services/services.jsx';
   
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        {/* Main Routes */}
+        {/* Public Routes */}
         <Route path="/" element={<App />} />
-        <Route index element={<App />} />
         <Route path="/home" element={<App />} />
-        <Route path="/homepage" element={<App />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/contactus" element={<ContactUs />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/appointment" element={<Appointment />} />
         <Route path="/forgot" element={<Forgot />} />
-        <Route path="/feedback" element={<FeedBack />} />
-        {/* Test Routes */}
-        <Route path="/first" element={<First />} />
-        <Route path="/drawer" element={<Drawer />} />
-        <Route path="/test" element={<Test />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/manager" element={<Manager/>} />
-        <Route path='/button' element={<HomeButton/>}/>
-        <Route path='/Profile' element={<Profile/>}/>
-        <Route path="/testAppoint" element={<AppointmentStepThreetest />} />
-        <Route path="/testapp" element={<TestLogin />} />
-        <Route path="/contactus" element={<ContactUs />} />
-        <Route path='/Dashboard' element={<Dashboard/>} />
-        <Route path="/parent" element={<ParentComponent />} />
-        <Route path="/services" element={<Services />} />
+
+
+        {/* Protected Routes for Patients onlys */}
+        {/* not yet done for design*/}
+        <Route 
+          path="/feedBack" 
+          element={
+            <ProtectedRoute allowedRoles={["patient"]}>
+              <FeedBack />
+            </ProtectedRoute>
+          } 
+        />
+
+
+        {/* Protected Routes for Patients and Admins */}
+        <Route 
+          path="/appointment" 
+          element={
+            <ProtectedRoute allowedRoles={["patient", "admin"]}>
+              <Appointment />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/profile" 
+          element={
+            <ProtectedRoute allowedRoles={["patient", "admin"]}>
+              <Profile />
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* Protected Routes for Admins Only */}
+        <Route 
+          path="/dashboard" 
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <Dashboard />
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* Catch-all route - Redirect to home for any undefined routes */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

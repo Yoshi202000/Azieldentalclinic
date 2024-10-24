@@ -5,6 +5,7 @@ import ChangePassword from '../../component/admin/ChangePassword';
 import PatientsInformation from '../../component/admin/PatientsInformation';
 import ViewAppointment from '../../component/admin/ViewAppointment';
 import CompletedAppointment from '../../component/admin/CompletedAppointment';
+import ViewFeedback from '../../component/admin/ViewFeedback';
 
 function Dashboard() {
   const [activeComponent, setActiveComponent] = useState('AccountSettings');
@@ -21,6 +22,8 @@ function Dashboard() {
         return <ViewAppointment />;
       case 'CompletedAppointment':
         return <CompletedAppointment />;
+      case 'ViewFeedback':
+        return <ViewFeedback />;
       default:
         return <h2>Select an option</h2>;
     }
@@ -60,6 +63,12 @@ function Dashboard() {
             onClick={() => setActiveComponent('CompletedAppointment')}
           >
             Completed Appointments
+          </button>
+          <button
+            className={activeComponent === 'ViewFeedback' ? 'active' : ''}
+            onClick={() => setActiveComponent('ViewFeedback')}
+          >
+            View Feedback
           </button>
         </div>
         <div className='DashMainContainer'>
