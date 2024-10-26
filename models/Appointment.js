@@ -11,6 +11,8 @@ const appointmentSchema = new mongoose.Schema({
     appointmentTimeFrom: { type: String, required: true },
     appointmentType: { type: String, required: true },
     appointmentStatus: { type: String, default: 'pending' },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    userEmail: { type: String, required: true },
 }, { timestamps: true });
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);

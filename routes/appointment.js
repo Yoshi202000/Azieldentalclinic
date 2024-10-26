@@ -1,6 +1,8 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import Appointment from '../models/Appointment.js'; // Assuming your Appointment model is in the models folder
+import AdminNotification from '../models/AdminNotification.js';
+import PatientNotification from '../models/PatientNotification.js';
 
 const router = express.Router();
 
@@ -50,11 +52,30 @@ router.post('/appointments', authenticateToken, async (req, res) => {
         appointmentDate,
         appointmentTimeFrom,
         appointmentType,
-        userId: req.user.userId, 
-        appointmentStatus: 'pending' 
+        userId: req.user.userId,
+        userEmail: req.user.email, // Add this line to store the user's email
+        appointmentStatus: 'pending'
       });
   
-      await newAppointment.save();
+      const savedAppointment = await newAppointment.save();
+
+      // Create admin notification
+      const adminNotification = new AdminNotification({
+        appointmentId: savedAppointment._id,
+        userEmail: req.user.email, // Add this line to store the user's email
+        message: `New appointment booked by ${patientFirstName} ${patientLastName} (${req.user.email}) for ${appointmentDate} at ${appointmentTimeFrom}.`,
+      });
+      await adminNotification.save();
+
+      // Create patient notification
+      const patientNotification = new PatientNotification({
+        userId: req.user.userId,
+        userEmail: req.user.email, // Add this line to store the user's email
+        appointmentId: savedAppointment._id,
+        message: `Your appointment for ${appointmentType} on ${appointmentDate} at ${appointmentTimeFrom} has been booked successfully.`,
+      });
+      await patientNotification.save();
+
       res.status(201).json({ message: 'Appointment booked successfully!' });
     } catch (error) {
       res.status(500).json({ message: 'Error booking appointment: ' + error.message });

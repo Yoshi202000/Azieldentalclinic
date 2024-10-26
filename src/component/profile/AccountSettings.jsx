@@ -26,7 +26,7 @@ const AccountSettings = () => {
 
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/verify-token', {
+        const response = await fetch('http://localhost:5000/api/verify-token', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`, // Ensure Bearer token format

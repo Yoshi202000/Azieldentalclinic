@@ -21,11 +21,16 @@ import Services from './pages/Services/services.jsx';
 import FeedBack from './component/FeedBack.jsx';
 
 // Test components (for testing purposes)
+import NotificationIcon from './component/notification.jsx';
   
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
+
+        {/* test component */}
+        <Route path="/notification" element={<NotificationIcon />} />
+
         {/* Public Routes */}
         <Route path="/" element={<App />} />
         <Route path="/home" element={<App />} />

@@ -18,7 +18,7 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
 
     // Fetch user data only once on component mount
     axios
-      .get('http://localhost:5000/verify-token', {
+      .get('http://localhost:5000/api/verify-token', {
         headers: {
           Authorization: `${token}`,
         },

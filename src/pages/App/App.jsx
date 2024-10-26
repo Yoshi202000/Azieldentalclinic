@@ -10,6 +10,7 @@ import extract from '../../assets/toothExtraction.png'
 import './App.css';
 import Doctors from '../../component/Doctors';
 import Chat from '../../component/chat';
+import HomeFeedback from '../../component/homeFeedback';
 
 function App() {
   return (
@@ -46,6 +47,9 @@ function App() {
 
         {/* Doctors component */}
         <Doctors />
+
+        {/* HomeFeedback component */}
+        <HomeFeedback />
       </div>
       
       {/* Footer */}

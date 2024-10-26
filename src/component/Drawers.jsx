@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import '../styles/Drawer.css'; // Import the CSS file for styling
+import Notification from './notification'; // Import the Notification component
 
 const DrawerComponent = () => {
   const [open, setOpen] = useState(false);
@@ -19,10 +21,24 @@ const DrawerComponent = () => {
     setOpen(newOpen);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token'); // Remove the token from localStorage
-    setIsLoggedIn(false); // Update the state to reflect that the user is logged out
-    window.location.href = '/login'; // Redirect the user to the login page after logging out
+  const handleLogout = async () => {
+    try {
+      // Call the backend logout endpoint to clear the server-side cookie
+      await axios.post(`http://localhost:5000/logout`, {}, { withCredentials: true });
+  
+      // Clear client-side storage
+      localStorage.removeItem('token'); // Remove the token from localStorage
+      localStorage.removeItem('role');  // Remove any additional user data, like role
+      sessionStorage.clear();           // Clear all session storage
+  
+      // Update the state to reflect that the user is logged out (if you have one)
+      setIsLoggedIn(false); 
+  
+      // Redirect to login page
+      window.location.href = '/login';
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
   const handleAppointmentClick = (e) => {
@@ -44,43 +60,47 @@ const DrawerComponent = () => {
 
       {/* Navigation bar for larger screens */}
       <nav className="navcontainer">
-      <nav className="navbar">
-        <div className="logo-container">
-          <img src="src/assets/azieldental.png" alt="Logo" className="logo" />
-        </div>
-        <ul className="navbar-menu">
-          <li className="navbar-item">
-            <a href="/home" className="navbar-link">Home</a>
-          </li>
-          <li className="navbar-item">
-            <a href="/services" className="navbar-link">Services</a>
-          </li>
-          <li className="navbar-item">
-            <a href={isLoggedIn ? "/appointment" : "#"} className="navbar-link" onClick={handleAppointmentClick}>Appointment</a>
-          </li>
-          <li className="navbar-item">
-            <a href="#branches" className="navbar-link">Branches</a>
-          </li>
-          
-          
-          {/* Conditionally render the Login/Logout button */}
-          {!isLoggedIn ? (
-            <>
-              <li className="navbar-item">
-                <a href="/login" className="navbar-link">Login</a>
-              </li>
-              <li className="navbar-item">
-                <a href="/admin" className="navbar-link">Admin</a>
-              </li>
-              
-            </>
-          ) : (
+        <nav className="navbar">
+          <div className="logo-container">
+            <img src="src/assets/azieldental.png" alt="Logo" className="logo" />
+          </div>
+          <ul className="navbar-menu">
             <li className="navbar-item">
-              <button onClick={handleLogout} className="navbar-link">Logout</button>
+              <a href="/home" className="navbar-link">Home</a>
             </li>
-          )}
-        </ul>
-      </nav>
+            <li className="navbar-item">
+              <a href="/services" className="navbar-link">Services</a>
+            </li>
+            <li className="navbar-item">
+              <a href={isLoggedIn ? "/appointment" : "#"} className="navbar-link" onClick={handleAppointmentClick}>Appointment</a>
+            </li>
+            <li className="navbar-item">
+              <a href="#branches" className="navbar-link">Branches</a>
+            </li>
+            
+            {isLoggedIn && (
+              <li className="navbar-item">
+                <Notification />
+              </li>
+            )}
+
+            {/* Conditionally render the Login/Logout button */}
+            {!isLoggedIn ? (
+              <>
+                <li className="navbar-item">
+                  <a href="/login" className="navbar-link">Login</a>
+                </li>
+                <li className="navbar-item">
+                  <a href="/admin" className="navbar-link">Admin</a>
+                </li>
+              </>
+            ) : (
+              <li className="navbar-item">
+                <button onClick={handleLogout} className="navbar-link">Logout</button>
+              </li>
+            )}
+          </ul>
+        </nav>
       </nav>
 
       {/* Drawer for smaller screens */}
@@ -102,6 +122,12 @@ const DrawerComponent = () => {
             <li className="drawer-item">
               <a href="#branches" className="drawer-link">Branches</a>
             </li>
+
+            {isLoggedIn && (
+              <li className="drawer-item">
+                <Notification />
+              </li>
+            )}
 
             {/* Conditionally render the Login/Logout link in the drawer */}
             {!isLoggedIn ? (
