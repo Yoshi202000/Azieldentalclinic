@@ -83,4 +83,14 @@ router.post('/appointments', authenticateToken, async (req, res) => {
   });
 
 
+// Add this new route to fetch all booked appointments
+router.get('/booked-appointments', async (req, res) => {
+  try {
+    const bookedAppointments = await Appointment.find({}, 'appointmentDate appointmentTimeFrom');
+    res.status(200).json({ bookedAppointments });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching booked appointments' });
+  }
+});
+
 export default router;

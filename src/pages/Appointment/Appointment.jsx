@@ -24,6 +24,7 @@ const Appointment = () => {
     phoneNumber: '',
     email: '',
   });
+  const [bookedAppointments, setBookedAppointments] = useState([]);
 
   const generateTimeSlots = (start, end) => {
     const timeSlots = [];
@@ -46,7 +47,21 @@ const Appointment = () => {
   useEffect(() => {
     const dates = generateAvailableDates();
     setAvailableDates(dates);
+    fetchBookedAppointments();
   }, []);
+
+  const fetchBookedAppointments = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/booked-appointments');
+      if (response.status === 200) {
+        setBookedAppointments(response.data.bookedAppointments);
+      } else {
+        console.error('Failed to fetch booked appointments');
+      }
+    } catch (error) {
+      console.error('Error fetching booked appointments:', error);
+    }
+  };
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
@@ -131,6 +146,7 @@ const Appointment = () => {
             generateTimeSlots={generateTimeSlots}
             selectedTimeFrom={selectedTimeFrom}
             handleTimeSelect={handleTimeSelect}
+            bookedAppointments={bookedAppointments}
           />
         )}
         {step === 3 && (

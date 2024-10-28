@@ -18,6 +18,7 @@ import updateAppointmentRoutes from './routes/updateAppointment.js';
 import feedbackRoutes from './routes/feedback.js'; // Add this line
 import viewFeedbackRoutes from './routes/viewFeedback.js';
 import notificationRoutes from './routes/notificationRoutes.js'; // Add this line
+import messageRoutes from './routes/message.js';  // Add this line
 
 const app = express();
 dotenv.config();
@@ -60,6 +61,7 @@ app.use('/api', updateAppointmentRoutes);
 app.use('/api/feedback', feedbackRoutes); // Add this line
 app.use('/api/feedback', viewFeedbackRoutes);
 app.use('/api', notificationRoutes); // Add this line
+app.use('/api', messageRoutes);  // Add this line
 
 // Start server
 const PORT = process.env.PORT || 5000; // Fallback to port 5000

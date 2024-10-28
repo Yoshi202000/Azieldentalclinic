@@ -21,7 +21,7 @@ import Services from './pages/Services/services.jsx';
 import FeedBack from './component/FeedBack.jsx';
 
 // Test components (for testing purposes)
-import NotificationIcon from './component/notification.jsx';
+import MessagePage from './component/Message.jsx';
   
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -29,8 +29,7 @@ createRoot(document.getElementById('root')).render(
       <Routes>
 
         {/* test component */}
-        <Route path="/notification" element={<NotificationIcon />} />
-
+        <Route path="/message" element={<MessagePage />} />
         {/* Public Routes */}
         <Route path="/" element={<App />} />
         <Route path="/home" element={<App />} />

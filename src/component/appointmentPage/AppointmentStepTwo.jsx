@@ -1,7 +1,21 @@
 // AppointmentStepTwo.jsx
 import React from 'react';
 
-const AppointmentStepTwo = ({ availableDates, selectedDate, handleDateSelect, generateTimeSlots, selectedTimeFrom, handleTimeSelect }) => {
+const AppointmentStepTwo = ({ 
+  availableDates, 
+  selectedDate, 
+  handleDateSelect, 
+  generateTimeSlots, 
+  selectedTimeFrom, 
+  handleTimeSelect,
+  bookedAppointments
+}) => {
+  const isTimeSlotBooked = (date, time) => {
+    return bookedAppointments.some(appointment => 
+      appointment.appointmentDate === date && appointment.appointmentTimeFrom === time
+    );
+  };
+
   return (
     <div className="appointment-date">
       <h2>Select an Appointment</h2>
@@ -23,24 +37,21 @@ const AppointmentStepTwo = ({ availableDates, selectedDate, handleDateSelect, ge
           <div className="time-slots-container">
             <h3>Available Times on {selectedDate}</h3>
             <ul className="time-slots">
-              {generateTimeSlots(9, 18).map((time, index) => (
-                <li
-                  key={index}
-                  className={selectedTimeFrom === time ? 'available selected' : 'available'}
-                  onClick={() => handleTimeSelect('from', time)}
-                  style={{
-                    backgroundColor: selectedTimeFrom === time ? '#4D869C' : '#E3E3E3',
-                    color: selectedTimeFrom === time ? 'white' : 'black',
-                    padding: '10px',
-                    margin: '5px 0',
-                    borderRadius: '5px',
-                    textAlign: 'center',
-                    cursor: 'pointer'
-                  }}
-                >
-                  {time}
-                </li>
-              ))}
+              {generateTimeSlots(9, 18).map((time, index) => {
+                const isBooked = isTimeSlotBooked(selectedDate, time);
+                if (!isBooked) {
+                  return (
+                    <li
+                      key={index}
+                      className={selectedTimeFrom === time ? 'selected' : ''}
+                      onClick={() => handleTimeSelect('from', time)}
+                    >
+                      {time}
+                    </li>
+                  );
+                }
+                return null; // This will hide the booked time slots
+              })}
             </ul>
           </div>
         )}
