@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import './Appointment.css'; 
 import DrawerComponent from '../../component/Drawers';
-import Footer from '../../test/Footer';
+import Footer from '../../component/Footer';
 import AppointmentStepOne from '../../component/appointmentPage/AppointmentStepOne';
 import AppointmentStepTwo from '../../component/appointmentPage/AppointmentStepTwo';
 import AppointmentStepThree from '../../component/appointmentPage/AppointmentStepThree'; // Direct import

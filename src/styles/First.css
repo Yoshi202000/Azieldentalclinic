@@ -10,10 +10,10 @@ body, html {
   position: relative;
   width: 100%;
   padding: 10px;
-  height: 70vh;
+  height: 100%;
   display: flex;
   align-items: center;
-  margin-top: 0px;
+  margin-top: 80px;
   justify-content: space-between;
   overflow: hidden;
   z-index: 5;
@@ -150,6 +150,7 @@ body, html {
 
   .first-container {
     padding: 0 10px; /* Reduce padding on smaller screens */
+    margin-top: 0px;
   }
 
   .background-overlay {

@@ -1,8 +1,4 @@
-/* Updated styles for card-container */
-.body{
-  width: 100%;
-}
-/* App.css */
+/* General styling */
 html, body, #root {
   height: 100%; /* Ensure the page height is 100% */
   overflow-y: auto; /* Allow vertical scrolling */
@@ -10,68 +6,101 @@ html, body, #root {
 
 .main-content {
   display: flex;
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-    flex-direction: column; /* Stack children vertically */
-    align-items: center;    /* Center horizontally */
-    gap: 20px;
-}
-
-.card-container {
-    flex-wrap: wrap;
-    background-color: white;
-    margin: -10px;
-    justify-content: space-around;
-    padding: 20px;
-    width: 900px;
-    display: flex;
-    flex-direction: row; /* Stack cards vertically (or row if needed) */
-    align-items: center;    /* Center cards horizontally */
-    gap: 0;   
-    z-index: 2;
-}
-
-.card-container .card {
+  flex-direction: column; /* Stack children vertically */
+  align-items: center;    /* Center horizontally */
   width: 100%;
-  max-width: 300px;
-  margin: 10px;
+  margin: 0 auto;
+  gap: 30px; /* Space between different sections */
 }
 
-  
-  @media (max-width: 1034px) {
-    .main-content{
-      padding-top: -1000px;
-    }
-    .card-container {
-      flex-direction: column; 
-      align-items: center; 
-      width: 900px;
-    }
-  
-    .card {
-      width: 100%; 
-      max-width: 300px;
-    }
+/* Updated styles for card-container */
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px; /* Space between cards */
+  background-color: white;
+  padding: 20px;
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  z-index: 2;
+}
+
+/* Styling for the card element */
+.card-container .card {
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-align: center;
+}
+
+.card-container .card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Image inside the card */
+.card-container .card img {
+  width: 100%;
+  max-width: 150px;
+  margin: 0 auto 15px;
+  object-fit: cover;
+}
+
+/* Title and description for the card */
+.card-container .card h3 {
+  font-size: 20px;
+  margin: 15px 0 10px;
+  font-weight: bold;
+  color: #333;
+}
+
+.card-container .card p {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.card-container .read-more-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.card-container .read-more-button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive Adjustments */
+/* 3 Columns for Larger Screens */
+@media (min-width: 1024px) {
+  .card-container {
+    grid-template-columns: repeat(3, 1fr);
   }
-  @media (max-width: 768px) {
-    .main-content{
-      padding-top: 0px;
-    }
-    .card-container {
-      flex-direction: column; /* Stack cards vertically on smaller screens */
-      align-items: center; /* Center the cards */
-    }
-  
-    .card {
-      width: 100%; /* Full width for smaller screens */
-      max-width: 300px; /* Limit the max width */
-    }
+}
+
+/* 2 Columns for Medium Screens */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .card-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 1 Column for Smaller Screens */
+@media (max-width: 767px) {
+  .card-container {
+    grid-template-columns: 1fr; /* Stack cards vertically on smaller screens */
+    width: 90%;
   }
 
-  @media (max-width: 1440) {
-    .card-container{
-      width: 1024px;
-    }
+  .card-container .card {
+    max-width: 100%;
   }
-  
+}

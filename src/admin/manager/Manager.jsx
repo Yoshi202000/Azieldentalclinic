@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import DrawerComponent from '../../component/Drawers';
-import Footer from '../../test/Footer';
+import Footer from '../../component/Footer';
 import First from '../../component/First';
 import Card from '../../component/Card';
 import profilePic1 from '../../assets/azielDental.png';

@@ -22,6 +22,7 @@ import FeedBack from './component/FeedBack.jsx';
 
 // Test components (for testing purposes)
 import MessagePage from './component/Message.jsx';
+import Chat from './component/chat.jsx'
   
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -30,6 +31,7 @@ createRoot(document.getElementById('root')).render(
 
         {/* test component */}
         <Route path="/message" element={<MessagePage />} />
+        <Route path="/chat" element={<Chat />} />
         {/* Public Routes */}
         <Route path="/" element={<App />} />
         <Route path="/home" element={<App />} />
@@ -38,6 +40,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot" element={<Forgot />} />
+        
 
 
         {/* Protected Routes for Patients onlys */}

@@ -1,123 +1,166 @@
-/* Ensure the footer is at the bottom of the page */
-html, body {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-}
+/* Footer.css */
 
-body {
-  flex: 1;
-}
-
-footer {
-  margin-top: auto;
-}
-
-/* Footer Wrapper */
-.footer-wrapper {
-  background-color: #2c3e50; /* Dark background color */
-  color: #ffffff; /* White text color */
-  padding: 40px 20px; /* Padding for spacing */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 0%;
-}
-
-/* Contact Section Container */
-.footer-contact-container {
-  display: flex;
-  justify-content: space-between;
+.footer-area {
+  background: #f8f9fa; /* Light gray background color */
+  color: #333;
+  font-size: 14px;
   width: 100%;
-  max-width: 1200px;
-  margin-bottom: 20px;
-  background-color: transparent;
-  border-color: #ecf0f1;
 }
 
-.footer-contact {
-  flex: 1;
+.FooterContainer {
+  width: 80%;
   display: flex;
   flex-direction: column;
-  margin: 0 10px;
 }
 
-.footer-paragraph {
-  margin: 0;
-  line-height: 1.5;
-}
-
-/* About Us and Services Sections */
-.footer-info {
+.row {
   display: flex;
+  flex-wrap: wrap;
+  margin-right: auto;
+  margin-left: auto;
+  width: 80%;
   justify-content: space-between;
-  width: 100%;
-  max-width: 1200px;
+  padding: 15px;
 }
 
-.footer-about,
-.footer-services {
-  flex: 1;
-  margin: 0 10px;
-}
-
-.footer-heading {
-  font-size: 1.5rem; /* Larger heading size */
+.footer-area .col-md-3 {
+  flex: 0 0 23%;
+  max-width: 23%;
   margin-bottom: 20px;
-  color: white; /* Lighter shade for the heading */
 }
 
-/* Services Section */
-.footer-list {
-  margin: 0;
-  padding: 0;
+.footer-area h6 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0056b3;
+  margin-bottom: 20px;
+}
+
+.footer-area ul {
   list-style: none;
+  padding: 0;
 }
 
-.footer-list-item {
-  margin-bottom: 8px;
-  font-size: 0.9rem;
-  color: #ffffff; /* Lighter color for list items */
+.footer-area ul li {
+  margin-bottom: 10px;
 }
 
-/* Footer Bottom */
-.footer-bottom {
-  width: 100%;
+.footer-area ul li a {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-area ul li a:hover {
+  color: #0056b3;
+}
+
+.footer-area .social-media {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.footer-area .social-media .icon {
+  font-size: 20px;
+  color: #0056b3;
+  margin-right: 10px;
+}
+
+.footer-area .social-media .icon:hover {
+  color: #007bff;
+}
+
+.footer-area .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  padding: 8px 8px;
+  font-size: 14px;
+  border-radius: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.footer-area .btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.footer-area .copyRight {
+  border-top: 1px solid #e7e7e7;
+  margin-top: 30px;
+
+  padding-top: 15px;
+  padding: 10px;
   text-align: center;
-  padding-top: 20px;
-  border-top: 1px solid #34495e; /* Light border on top */
-  margin-top: 20px;
+  color: #6c757d;
 }
 
-.footer-copyright {
-  margin: 0;
-  font-size: 0.8rem;
-  color: #ffffff; /* Subtle gray color for copyright text */
-  margin-bottom: 0%;
+.phonecontainer {
+  align-items: center;
+  margin-top: 5px;
+  padding-top: 5px;
+
 }
 
-/* Responsive Design */
-@media screen and (max-width: 768px) {
-  .footer-contact-container {
-    flex-direction: column;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .footer-area .col-md-3 {
+    flex: 0 0 48%;
+    max-width: 48%;
+    text-align: center;
+    font-size: 15px;
+  }
+
+  .FooterContainer {
     align-items: center;
-  }
-
-  .footer-contact {
-    margin-bottom: 20px;
-    text-align: center;
-  }
-
-  .footer-info {
+    padding: 3%;
+    padding-left: 3%;
     flex-direction: column;
-    align-items: center;
+  }
+  
+  .footer-area .social-media {
     text-align: center;
+    margin-top: 20px;
+
   }
 
-  .footer-about,
-  .footer-services {
-    margin-bottom: 20px;
+  .footer-area .btn-primary {
+    display: block;
+    width: 100%;
     text-align: center;
+  }
+  
+  
+}
+
+@media (max-width: 576px) {
+  .footer-area .col-md-3 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    font-size: 15px;
+  }
+
+  container {
+    align-items: center;
+    padding: 3%;
+    padding-left: 3%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .footer-area .social-media {
+    text-align: center;
+    align-items: center;
+    padding: 5px;
+  }
+
+  .footer-area .btn-primary {
+    width: 100%;
+    margin-top: 10px;
+  }
+  .row {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 }

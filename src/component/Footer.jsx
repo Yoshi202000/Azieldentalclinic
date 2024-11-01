@@ -1,50 +1,65 @@
 import React from 'react';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFacebook,faGoogle,faInstagram } from "@fortawesome/free-brands-svg-icons";
+import FooterCol from './FooterCol';
 import '../styles/Footer.css';
 
-function Footer() {
+const noNamed = [
+  {name: "Emergency Dental Care" , link: "/emergency"},
+  {name: "Check Up" , link: "/checkup"},
+  {name: "Treatment of Personal Diseases" , link: "/personal-treatment"},
+  {name: "Tooth Extraction" , link: "/tooth-extract"},
+  {name: "Check Up" , link: "/checkup"},
+]
+const ourAddress = [
+  {name: "Cavite - dasmarinas salitran" , link: "//google.com/map"},
+  {name: "congrassional ave" , link: "//google.com/map"},
+ 
+]
+const oralHealth = [
+  {name: "Emergency Dental Care" , link: "/emergency"},
+  {name: "Check Up" , link: "/checkup"},
+  {name: "Treatment of Personal Diseases" , link: "/personal-treatment"},
+  {name: "Tooth Extraction" , link: "/tooth-extract"},
+  {name: "Check Up" , link: "/checkup"},
+  {name: "Check Up" , link: "/checkup"},
+  {name: "Check Up" , link: "/checkup"}
+]
+const services = [
+  {name: "Emergency Dental Care" , link: "/emergency"},
+  {name: "Check Up" , link: "/checkup"},
+  {name: "Treatment of Personal Diseases" , link: "/personal-treatment"},
+  {name: "Tooth Extraction" , link: "/tooth-extract"},
+  {name: "Check Up" , link: "/checkup"},
+  {name: "Check Up" , link: "/checkup"},
+  {name: "Check Up" , link: "/checkup"}
+]
+const Footer = () => {
   return (
-    <footer className="footer-wrapper">
-      {/* Contact Section */}
-      <div className="footer-contact-container">
-        <div className="footer-contact">
-          <h1>contact us</h1>
-          <p className="footer-paragraph">Main Email: contact@dentcare.com</p>
-          <p className="footer-paragraph">Office Telephone: 0135-24863976</p>
-        </div>
-        <div className="footer-contact">
-          <p className="footer-paragraph">Inquiries: info@dentcare.com</p>
-          <p className="footer-paragraph">Mobile: 7900139615</p>
-        </div>
-      </div>
-
-      {/* About Us and Services Sections */}
-      <div className="footer-info">
-        {/* About Us Section */}
-        <div className="footer-about">
-          <h2 className="footer-heading">About Us</h2>
-          <p className="footer-paragraph">
-            Aziel Dental Clinic is committed to providing the best dental care.
-            We strive for excellence and aim to serve our community with a smile.
-          </p>
-        </div>
-
-        {/* Services Section */}
-        <div className="footer-services">
-          <h2 className="footer-heading">Services</h2>
-          <ul className="footer-list">
-            <li className="footer-list-item">Tooth Extraction</li>
-            <li className="footer-list-item">Tooth Cleaning</li>
-            <li className="footer-list-item">Denture Creation</li>
-          </ul>
-        </div>
-      </div>
-
-      {/* Footer Bottom */}
-      <div className="footer-bottom">
-        <p className="footer-copyright">© 2024 Aziel Dental Clinic</p>
-      </div>
-    </footer>
+    <footer className="footer-area clear-both">
+            <div className="Footerontainer">
+                <div className="row">
+                    <FooterCol key={1} menuTitle={"Services"} menuItems={noNamed}/>
+                    <FooterCol key={2} menuTitle="Services" menuItems={services}/>
+                    <FooterCol key={3} menuTitle="Oral Health" menuItems={oralHealth}/>
+                    <FooterCol key={4} menuTitle="Our Address" menuItems={ourAddress}> 
+                        <ul className="social-media list-inline" >
+                        <li className="list-inline-item"><a href="//facebook.com"><FontAwesomeIcon className="icon active-icon" icon={faFacebook} /></a></li>
+                            <li className="list-inline-item"><a href="//google.com"><FontAwesomeIcon className="icon" icon={faGoogle} /></a></li>
+                            <li className="list-inline-item "><a href="//instagram.com"><FontAwesomeIcon className="icon" icon={faInstagram} /></a></li>
+                        </ul>
+                        <div className='phonecontainer'>
+                            <h6>Call now</h6>
+                            <button className="btn btn-primary">+939457803446</button>
+                        </div>
+                    </FooterCol>
+                </div>
+                <div className="copyRight text-center">
+                    <p>Copyright {(new Date()).getFullYear()} All Rights Reserved</p>
+                </div>
+            </div>
+        </footer>
   );
-}
+};
 
 export default Footer;

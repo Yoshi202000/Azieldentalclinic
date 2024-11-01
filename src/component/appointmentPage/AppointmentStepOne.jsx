@@ -7,7 +7,7 @@ const AppointmentStepOne = ({ selectedCard, handleCardSelect }) => {
   return (
     <div className="appointment-type">
       <h2>Schedule Your Appointment</h2>
-      <div className="card-container">
+      <div className="app-card-container">
         <label>
           <Card
             name="Tooth Extractions"

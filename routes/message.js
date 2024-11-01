@@ -5,15 +5,19 @@ import Message from '../models/Message.js';
 const router = express.Router();
 
 const authenticateToken = (req, res, next) => {
-  const tokenHeaderKey = 'authorization';
-  const token = req.headers[tokenHeaderKey];
+  const token = req.headers['authorization'] || req.headers['Authorization'];
 
   if (!token) {
+    console.log("Token not provided");
     return res.status(401).json({ message: 'No token provided' });
   }
 
-  jwt.verify(token, 'your_jwt_secret', (err, user) => {
-    if (err) return res.status(403).json({ message: 'Invalid token' });
+  const tokenValue = token.startsWith("Bearer ") ? token.slice(7, token.length) : token;
+  jwt.verify(tokenValue, 'your_jwt_secret', (err, user) => {
+    if (err) {
+      console.log("Token verification failed:", err.message);
+      return res.status(403).json({ message: 'Invalid token' });
+    }
     req.user = user;
     next();
   });
@@ -25,7 +29,6 @@ router.post('/messages', authenticateToken, async (req, res) => {
     const { receiverId, content } = req.body;
     const senderId = req.user.email;
 
-    // Create conversation ID by combining sender and receiver emails (sorted alphabetically)
     const conversationId = [senderId, receiverId].sort().join('_');
 
     const newMessage = new Message({
@@ -48,13 +51,9 @@ router.get('/messages/:receiverId', authenticateToken, async (req, res) => {
   try {
     const senderId = req.user.email;
     const { receiverId } = req.params;
-    
-    // Create conversation ID (sorted alphabetically)
     const conversationId = [senderId, receiverId].sort().join('_');
 
-    const messages = await Message.find({ conversationId })
-      .sort({ sentAt: 1 });
-    
+    const messages = await Message.find({ conversationId }).sort({ sentAt: 1 });
     res.status(200).json(messages);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching messages: ' + error.message });
@@ -66,17 +65,16 @@ router.put('/messages/read/:senderId', authenticateToken, async (req, res) => {
   try {
     const receiverId = req.user.email;
     const { senderId } = req.params;
-    
     const conversationId = [senderId, receiverId].sort().join('_');
 
     await Message.updateMany(
       {
         conversationId,
         receiverId,
-        readAt: null
+        readAt: null,
       },
       {
-        readAt: new Date()
+        readAt: new Date(),
       }
     );
 
@@ -85,5 +83,26 @@ router.put('/messages/read/:senderId', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Error marking messages as read: ' + error.message });
   }
 });
+
+// Get unread message count for the logged-in user
+router.get('/messages/unread', authenticateToken, async (req, res) => {
+  try {
+    const receiverId = req.user.email;
+
+    // Count documents with receiverId as the logged-in user and readAt as null
+    const unreadCount = await Message.countDocuments({
+      receiverId,
+      readAt: null,
+    });
+
+    // Ensure the response is always { unreadCount: 0 } or another positive integer
+    res.status(200).json({ unreadCount: unreadCount || 0 });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching unread messages count: ' + error.message });
+  }
+});
+
+
+
 
 export default router;

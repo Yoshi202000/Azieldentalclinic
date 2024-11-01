@@ -1,6 +1,6 @@
 import React from 'react';
 import DrawerComponent from '../../component/Drawers';
-import Footer from '../../test/Footer';
+import Footer from '../../component/Footer';
 import './ContactUs.css';
 import Chat from '../../component/chat';
 

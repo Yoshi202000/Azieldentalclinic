@@ -57,12 +57,10 @@ const MessagePage = () => {
         
         // Filter users based on logged-in user's role
         if (loggedInUser?.role === 'patient') {
-          // If logged-in user is a patient, only show admins
           const adminUsers = data.filter(user => user.role === 'admin');
           setAdmins(adminUsers);
           setPatients([]); // Empty the patients array
         } else if (loggedInUser?.role === 'admin') {
-          // If logged-in user is an admin, only show patients
           const patientUsers = data.filter(user => user.role === 'patient');
           setPatients(patientUsers);
           setAdmins([]); // Empty the admins array
@@ -72,11 +70,10 @@ const MessagePage = () => {
       }
     };
 
-    // Only fetch users if we have the logged-in user's information
     if (loggedInUser) {
       fetchUsers();
     }
-  }, [loggedInUser]); // Add loggedInUser as dependency
+  }, [loggedInUser]);
 
   // Fetch messages when a user is selected or periodically
   useEffect(() => {
@@ -93,23 +90,21 @@ const MessagePage = () => {
 
         if (!response.ok) throw new Error('Failed to fetch messages');
         const data = await response.json();
-        
-        // Only update if there are new messages
-        if (JSON.stringify(data) !== JSON.stringify(messages)) {
-          setMessages(data);
-          
-          // Scroll to bottom when new messages arrive
-          const chatMessages = document.querySelector('.chat-messages');
-          if (chatMessages) {
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-          }
+        setMessages(data);
+
+        // Mark messages as read
+        await markMessagesAsRead(data);
+
+        // Scroll to bottom when new messages arrive
+        const chatMessages = document.querySelector('.chat-messages');
+        if (chatMessages) {
+          chatMessages.scrollTop = chatMessages.scrollHeight;
         }
       } catch (error) {
         console.error('Error fetching messages:', error);
       }
     };
 
-    // Fetch messages immediately
     fetchMessages();
 
     // Set up periodic fetching (every 2 seconds)
@@ -117,7 +112,33 @@ const MessagePage = () => {
 
     // Cleanup interval on unmount or when selected user changes
     return () => clearInterval(intervalId);
-  }, [selectedUser, messages]); // Add messages as dependency to compare changes
+  }, [selectedUser]);
+
+  const markMessagesAsRead = async (messagesToMark) => {
+    const unreadMessages = messagesToMark.filter(msg => !msg.readAt && msg.receiverId === loggedInUser.email);
+
+    if (unreadMessages.length === 0) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/messages/read/${selectedUser.email}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      if (!response.ok) throw new Error('Failed to mark messages as read');
+
+      // Update local state to mark messages as read instantly
+      setMessages(prevMessages =>
+        prevMessages.map(msg => (msg.readAt ? msg : { ...msg, readAt: new Date().toISOString() }))
+      );
+      console.log('Messages marked as read');
+    } catch (error) {
+      console.error('Error marking messages as read:', error);
+    }
+  };
 
   const handleUserSelect = (user) => {
     setSelectedUser(user);
@@ -258,6 +279,11 @@ const MessagePage = () => {
                       minute: '2-digit' 
                     })}
                   </span>
+                  {message.readAt && (
+                    <span className="message-read-status">
+                      {`Read at: ${new Date(message.readAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
