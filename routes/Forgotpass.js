@@ -76,22 +76,22 @@ router.post('/api/verify-code', async (req, res) => {
 
 // Change password
 router.post('/api/change-password', async (req, res) => {
-  const { email, newPassword, code } = req.body;
+  const { email, newPassword } = req.body;
 
   const normalizedEmail = email.toLowerCase(); // Normalize email before looking it up
   console.log('Received email:', normalizedEmail); // Log the normalized email
-  console.log('Entered code:', code);
-  console.log({ email, newPassword, code: enteredCode });
+  //console.log('Entered code:', code);
+  console.log({ email, newPassword });
 
  
  
-  const storedCode = verificationCodes.get(normalizedEmail); 
-  console.log('Stored code:', storedCode); // Log the stored code (this was undefined before)
-if (!storedCode || storedCode !== code) {
+  //const storedCode = verificationCodes.get(normalizedEmail); 
+  //console.log('Stored code:', storedCode); // Log the stored code (this was undefined before)
+/*if (!storedCode || storedCode !== code) {
   console.log('Codes do not match:', storedCode, code);
-  console.log({ email, newPassword, code: enteredCode });
+  console.log({ email, newPassword });
   return res.status(400).json({ success: false, message: 'Invalid code' });
-}
+}*/
 
 
 try {
@@ -99,6 +99,7 @@ try {
   await User.updateOne({ email: normalizedEmail }, { password: hashedPassword });
   verificationCodes.delete(normalizedEmail);
   res.json({ success: true });
+  return;
 } catch (error) {
   console.error('Error updating password:', error);
   res.status(500).json({ success: false, message: 'Error changing password' });

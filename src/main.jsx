@@ -13,7 +13,6 @@ import Signup from './pages/Signup/Signup.jsx';
 import Appointment from './pages/Appointment/Appointment.jsx';
 import Profile from './pages/Profile/Profile.jsx';
 import Forgot from './pages/ForgotPass/ForgotPass.jsx';
-import ContactUs from './pages/ContactUs/ContactUs.jsx';
 import Dashboard from './admin/dashboard/Dashboard.jsx';
 import Services from './pages/Services/services.jsx';
 
@@ -23,6 +22,7 @@ import FeedBack from './component/FeedBack.jsx';
 // Test components (for testing purposes)
 import MessagePage from './component/Message.jsx';
 import Chat from './component/chat.jsx'
+import ApproveToAdmin from './component/admin/ApproveToAdmin.jsx';
   
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -32,11 +32,11 @@ createRoot(document.getElementById('root')).render(
         {/* test component */}
         <Route path="/message" element={<MessagePage />} />
         <Route path="/chat" element={<Chat />} />
+        <Route path='toadmin' element={<ApproveToAdmin/>}/>
         {/* Public Routes */}
         <Route path="/" element={<App />} />
         <Route path="/home" element={<App />} />
         <Route path="/services" element={<Services />} />
-        <Route path="/contactus" element={<ContactUs />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot" element={<Forgot />} />

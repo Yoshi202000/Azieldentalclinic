@@ -1,55 +1,89 @@
+/* Main Container for Signup Page */
 .signupMainContainer {
     width: 100%;
-    height: 100%;
+    min-height: 100vh; /* Allow scrolling for vertical space */
     display: flex;
     flex-direction: column;
-    background-color: #85F4FF;
-}
-
-.HomeButtonContainer {
-    height: 9%;
-}
-
-.signupDesignContainer {
-    width: 50%;
-    height: 100%;
+    justify-content: center;
+    align-items: center;
+    background-color: #CDE8E5; /* Consistent background color as before */
     background-image: url('../../assets/clinic.png');
-    padding: 30px;
-    text-align: center; 
+    margin: 0; /* Remove any margin */
+    padding: 0; /* Remove any padding */
 }
 
+/* Home Button Container */
+.HomeButtonContainer {
+    width: 100%;
+    height: 10%;
+}
+
+/* Signup Form Container */
 .signUpForm {
-    background-color: transparent;
     display: flex;
     flex-direction: row;
-    width: 75%;
-    margin-left: auto;
-    margin-right: auto;
+    height: auto;
+    justify-content: center;
+    align-items: stretch;
+    width: 90%;
+    margin: 0 auto; /* Center the container and remove extra spacing */
+    gap: 0; /* Remove gap between the signupDesignContainer and signup-container */
 }
 
-.signup-container {
-    width: 50%;
-    height: 100%;
+/* Design Section with Image */
+.signupDesignContainer {
+    flex: 1; /* Ensure both sections are equal size */
+    height: auto;
+    background-color: rgba(110, 181, 202, 0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
     padding: 20px;
-    background-color: rgb(199, 239, 232, 0.5)
+    box-sizing: border-box;
+    font-size: 24px;
+}
+
+.signupDesignContainer h1, .signupDesignContainer p {
+    color: white;
+    margin-bottom: 15px;
+}
+
+/* Signup Container */
+.signup-container {
+    flex: 1; /* Ensure both sections are equal size */
+    height: auto;
+    padding: 20px;
+    margin: 0; /* Remove margin for better alignment */
+    background-color: rgba(236, 236, 236, 0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
 }
 
 .signup-title {
-    text-align: center;
     color: #42C2FF; /* Blue color for the title */
     margin-bottom: 20px;
     font-size: 24px;
 }
 
 .signup-form {
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
+/* Form Group */
 .form-group {
+    width: 100%;
     display: flex;
     flex-direction: column;
+    text-align: left;
 }
 
 .form-group label {
@@ -65,21 +99,24 @@
     font-size: 16px;
 }
 
+/* Signup Button */
 .signup-button {
-    padding: 10px 20px;
-    background-color: #42C2FF; /* Blue color for the button */
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #4D869C; /* Consistent button color */
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 20px;
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
 .signup-button:hover {
-    background-color: #85F4FF; /* Light blue on hover */
+    background-color: #7AB2B2; /* Light blue on hover */
 }
 
+/* Error & Success Messages */
 .error-message {
     color: red;
     margin-bottom: 10px;
@@ -88,4 +125,78 @@
 .success-message {
     color: green;
     margin-bottom: 10px;
+}
+
+/* Responsive Styles */
+
+/* For screens less than or equal to 768px */
+@media (max-width: 768px) {
+    .signUpForm {
+        flex-direction: column; /* Set the signup form in column layout on small screens */
+        gap: 0;
+        width: 90%;
+        align-items: center;
+        margin-bottom: 20px; /* Add space to allow scrolling */
+    }
+
+    .signupDesignContainer,
+    .signup-container {
+        width: 100%;
+        height: auto; /* Adjust height for better fit */
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .signupDesignContainer {
+        margin-bottom: 10px; /* Add small spacing between containers */
+    }
+
+    .signup-container {
+        margin-bottom: 20px; /* Add spacing to allow vertical scrolling */
+    }
+
+    .signup-form {
+        width: 100%;
+        gap: 15px; /* Adjust gap for better spacing */
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .form-group label {
+        width: 100%;
+        font-size: 12px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .signup-button {
+        align-self: stretch;
+        width: 100%;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .signup-title {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    .signupDesignContainer h1 {
+        font-size: 22px;
+        margin-bottom: 10px;
+    }
+
+    .signupDesignContainer p {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
 }

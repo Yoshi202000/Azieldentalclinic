@@ -14,7 +14,8 @@ const generateToken = (user) => {
       firstName: user.firstName,
       lastName: user.lastName,
       phoneNumber: user.phoneNumber,
-      role: user.role
+      role: user.role,
+      clinic: user.clinic
     },
     process.env.JWT_SECRET || 'your_jwt_secret',
     { expiresIn: '30d' }
@@ -62,6 +63,7 @@ router.post('/login', async (req, res) => {
             message: 'Login successful', 
             user: { 
                 role: user.role,
+                clinic: user.clinic,
                 firstName: user.firstName,
                 lastName: user.lastName
             },

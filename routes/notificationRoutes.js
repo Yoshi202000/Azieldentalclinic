@@ -79,4 +79,26 @@ router.post('/mark-notification-read', async (req, res) => {
   }
 });
 
+// Route to delete a notification
+router.delete('/delete-notification/:notificationId', async (req, res) => {
+  const { notificationId } = req.params;
+
+  try {
+    // Attempt to delete from both collections
+    let notification = await AdminNotification.findByIdAndDelete(notificationId);
+    if (!notification) {
+      notification = await PatientNotification.findByIdAndDelete(notificationId);
+    }
+
+    if (!notification) {
+      return res.status(404).json({ message: 'Notification not found' });
+    }
+
+    res.json({ message: 'Notification deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting notification:', error);
+    res.status(500).json({ message: 'Error deleting notification', error: error.message });
+  }
+});
+
 export default router;

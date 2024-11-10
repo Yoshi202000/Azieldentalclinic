@@ -5,8 +5,6 @@ import profilePic1 from '../../assets/doctor1.png';
 // component from profile 
 import Dashboard from '../../component/profile/Dashboard';
 import AccountSettings from '../../component/profile/AccountSettings';
-import ChangePassword from '../../component/profile/ChangePassword';
-import Logout from '../../component/profile/Logout';
 import ViewAppointmentByUser from '../../component/profile/ViewAppointmentByUser';
 // Add styles for the card
 import './Profile.css'; 
@@ -20,10 +18,6 @@ const Profile = () => {
         return <Dashboard />;
       case 'AccountSettings':
         return <AccountSettings />;
-      case 'ChangePassword':
-        return <ChangePassword />;
-      case 'Logout':
-        return <Logout />;
       case 'ViewAppointments':
         return <ViewAppointmentByUser />;
       default:
@@ -32,26 +26,19 @@ const Profile = () => {
   };
 
   return (
+    <>
+    <DrawerComponent/>
     <div className="profilePageWrapper">
       <div className='profileContainer'>
         <div className='profileSidebar'>
-          <div className='profileImage'>
-            <img src={profilePic1} alt="profilePic1"/>
-          </div>
           <button className={`profileButton ${activeComponent === 'Dashboard' ? 'active' : ''}`} onClick={() => setActiveComponent('Dashboard')}>
             Dashboard
           </button>
           <button className={`profileButton ${activeComponent === 'AccountSettings' ? 'active' : ''}`} onClick={() => setActiveComponent('AccountSettings')}>
             Account Settings
           </button>
-          <button className={`profileButton ${activeComponent === 'ChangePassword' ? 'active' : ''}`} onClick={() => setActiveComponent('ChangePassword')}>
-            Change Password
-          </button>
           <button className={`profileButton ${activeComponent === 'ViewAppointments' ? 'active' : ''}`} onClick={() => setActiveComponent('ViewAppointments')}>
             View Appointments
-          </button>
-          <button className={`profileButton ${activeComponent === 'Logout' ? 'active' : ''}`} onClick={() => setActiveComponent('Logout')}>
-            Logout
           </button>
         </div>
 
@@ -61,6 +48,7 @@ const Profile = () => {
       </div>
       <Footer />
     </div>
+    </>
   );
 };
 

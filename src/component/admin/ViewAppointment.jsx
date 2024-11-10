@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import AppointmentStepOne from '../appointmentPage/AppointmentStepOne';
 import AppointmentStepTwo from '../appointmentPage/AppointmentStepTwo';
 import { generateAvailableDates } from '../../utils/appDate';
@@ -10,6 +11,7 @@ function ViewAppointment() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [user, setUser] = useState(null); // Added user state
   const [editingAppointment, setEditingAppointment] = useState(null);
   const [showTypeChange, setShowTypeChange] = useState(false);
   const [showDateTimeChange, setShowDateTimeChange] = useState(false);
@@ -17,42 +19,66 @@ function ViewAppointment() {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTimeFrom, setSelectedTimeFrom] = useState('');
   const [availableDates, setAvailableDates] = useState({});
+  const [bookedAppointments, setBookedAppointments] = useState([]); // New state for booked appointments
   const [isContainerExpanded, setIsContainerExpanded] = useState(false);
+  const [nameFilter, setNameFilter] = useState(''); // New state for name filter
+  const [typeFilter, setTypeFilter] = useState(''); // New state for type filter
+  const [dateSortOrder, setDateSortOrder] = useState(''); // New state for date sort order
   const editSectionRef = useRef(null);
-
-  const generateTimeSlots = (start, end) => {
-    const timeSlots = [];
-    let current = new Date();
-    current.setHours(start, 0, 0);
-    
-    const endTime = new Date();
-    endTime.setHours(end, 0, 0);
-  
-    while (current < endTime) {
-      const nextTime = new Date(current.getTime() + 15 * 60000);
-      const formattedTime = `${current.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} → ${nextTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-      timeSlots.push(formattedTime);
-      current = nextTime;
-    }
-    
-    return timeSlots;
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchAppointments();
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please log in to continue.');
+      navigate('/login');
+      return;
+    }
+    
+    fetchUserInfo(token);
     const dates = generateAvailableDates();
     setAvailableDates(dates);
-  }, []);
+  }, [navigate]);
 
-  const fetchAppointments = async () => {
+  const fetchUserInfo = async (token) => {
     try {
-      const response = await axios.get('http://localhost:5000/ViewAppointment');
-      console.log('All appointments:', response.data); // Log all appointments
+      const response = await axios.get('http://localhost:5000/api/verify-token', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      const { firstName, lastName, email, phoneNumber, dob, clinic } = response.data.user;
+      setUser({ firstName, lastName, email, phoneNumber, dob, clinic });
+
+      fetchAppointments(token, clinic); // Fetch appointments after getting user info
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+      setError('Failed to fetch user information');
+      if (error.response && error.response.status === 401) {
+        alert('Session expired or invalid. Please log in again.');
+        navigate('/login');
+      }
+    }
+  };
+  
+  const fetchAppointments = async (token, clinic) => {
+    try {
+      const response = await axios.get('http://localhost:5000/ViewAppointment', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log('All appointments:', response.data);
       const filteredAppointments = response.data.filter(
-        appointment => appointment.appointmentStatus === 'pending' || appointment.appointmentStatus === 'Rebooked'
+        appointment =>
+          (appointment.appointmentStatus === 'pending' || appointment.appointmentStatus === 'Rebooked') &&
+          appointment.bookedClinic === clinic // Filter appointments by user's clinic
       );
-      console.log('Filtered appointments:', filteredAppointments); // Log filtered appointments
+      console.log('Filtered appointments:', filteredAppointments);
       setAppointments(filteredAppointments);
+      setBookedAppointments(filteredAppointments); // Set booked appointments for managing available slots
       setLoading(false);
     } catch (err) {
       console.error('Error fetching appointments:', err);
@@ -63,14 +89,16 @@ function ViewAppointment() {
 
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
     try {
+      const token = localStorage.getItem('token');
       const response = await axios.post('http://localhost:5000/ViewAppointment/updateStatus', 
-        { appointmentId, newStatus }
+        { appointmentId, newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       
       setAppointments(prevAppointments => 
         prevAppointments.map(app => 
           app._id === response.data._id ? response.data : app
-        ).filter(app => app.appointmentStatus === 'Pending' || app.appointmentStatus === 'Rebooked')
+        )
       );
     } catch (err) {
       console.error('Error updating appointment status:', err);
@@ -109,6 +137,7 @@ function ViewAppointment() {
 
   const handleUpdateAppointment = async () => {
     try {
+      const token = localStorage.getItem('token');
       const updatedAppointment = {
         appointmentType: selectedCard,
         appointmentDate: selectedDate,
@@ -121,7 +150,8 @@ function ViewAppointment() {
 
       const response = await axios.put(
         `http://localhost:5000/api/updateAppointment/${editingAppointment._id}`,
-        updatedAppointment
+        updatedAppointment,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       setAppointments(prevAppointments =>
@@ -139,6 +169,10 @@ function ViewAppointment() {
     }
   };
 
+  const handleCancelAppointment = (appointmentId) => {
+    updateAppointmentStatus(appointmentId, 'Cancelled');
+  };
+
   const toggleExpansion = (expand) => {
     setIsContainerExpanded(expand);
     if (!expand) {
@@ -153,13 +187,54 @@ function ViewAppointment() {
     }
   };
 
+  const filteredAppointments = appointments.filter(appointment => {
+    const nameMatch = `${appointment.patientFirstName} ${appointment.patientLastName}`.toLowerCase().includes(nameFilter.toLowerCase());
+    const typeMatch = !typeFilter || appointment.appointmentType.toLowerCase().includes(typeFilter.toLowerCase());
+    return nameMatch && typeMatch;
+  }).sort((a, b) => {
+    if (dateSortOrder === 'asc') {
+      return new Date(a.appointmentDate) - new Date(b.appointmentDate);
+    } else if (dateSortOrder === 'desc') {
+      return new Date(b.appointmentDate) - new Date(a.appointmentDate);
+    }
+    return 0;
+  });
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
   return (
     <div className={`AdminAppointmentContainer ${isContainerExpanded ? 'expanded' : ''}`}>
+      {user && (
+        <div className="UserInfo">
+          <h2>Welcome, {user.firstName} {user.lastName}!</h2>
+          <p>Clinic: {user.clinic}</p>
+        </div>
+      )}
       <h1>Pending and Rebooked Appointments</h1>
-      {appointments.length === 0 ? (
+      <div className="AdminAppointmentFilters">
+        <input
+          type="text"
+          placeholder="Filter by patient name"
+          value={nameFilter}
+          onChange={(e) => setNameFilter(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Filter by appointment type"
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value)}
+        />
+        <select
+          value={dateSortOrder}
+          onChange={(e) => setDateSortOrder(e.target.value)}
+        >
+          <option value="">Sort by Date</option>
+          <option value="asc">Date Ascending</option>
+          <option value="desc">Date Descending</option>
+        </select>
+      </div>
+      {filteredAppointments.length === 0 ? (
         <p>No pending or rebooked appointments found.</p>
       ) : (
         <table className="AdminAppointmentTable">
@@ -169,18 +244,20 @@ function ViewAppointment() {
               <th>Date</th>
               <th>Time</th>
               <th>Type</th>
+              <th>Clinic</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {appointments.map((appointment) => (
+            {filteredAppointments.map((appointment) => (
               <React.Fragment key={appointment._id}>
                 <tr>
                   <td>{`${appointment.patientFirstName} ${appointment.patientLastName}`}</td>
                   <td>{appointment.appointmentDate}</td>
                   <td>{appointment.appointmentTimeFrom}</td>
                   <td>{appointment.appointmentType}</td>
+                  <td>{appointment.bookedClinic}</td>
                   <td>{appointment.appointmentStatus}</td>
                   <td>
                     <button className="AdminAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
@@ -227,6 +304,7 @@ function ViewAppointment() {
                               generateTimeSlots={generateTimeSlots}
                               selectedTimeFrom={selectedTimeFrom}
                               handleTimeSelect={handleTimeSelect}
+                              bookedAppointments={bookedAppointments} // Pass booked appointments here
                             />
                           )}
                         </div>
@@ -235,11 +313,14 @@ function ViewAppointment() {
                           <button className="AdminAppointmentButton UpdateButton" onClick={handleUpdateAppointment}>
                             Update Appointment
                           </button>
-                          <button className="AdminAppointmentButton CancelButton" onClick={() => {
+                          <button className="AdminAppointmentButton CancelButton" onClick={() => handleCancelAppointment(editingAppointment._id)}>
+                            Cancel Appointment
+                          </button>
+                          <button className="AdminAppointmentButton CloseButton" onClick={() => {
                             setEditingAppointment(null);
                             toggleExpansion(false);
                           }}>
-                            Cancel
+                            Close
                           </button>
                         </div>
 

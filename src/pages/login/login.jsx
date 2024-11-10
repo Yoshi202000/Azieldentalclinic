@@ -11,6 +11,8 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [verificationMessage, setVerificationMessage] = useState('');
+  const [showVerificationButton, setShowVerificationButton] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,6 +27,9 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setErrorMessage('');
+    setVerificationMessage('');
+    setShowVerificationButton(false);
     
     try {
       const response = await axios.post(
@@ -42,10 +47,40 @@ const Login = () => {
       }
     } catch (error) {
       if (error.response && error.response.data) {
-        setErrorMessage(error.response.data.message);
+        if (error.response.data.message === 'Please verify your email before logging in.') {
+          setVerificationMessage('Please verify your email before logging in.');
+          setShowVerificationButton(true);
+        } else {
+          setErrorMessage(error.response.data.message);
+        }
       } else {
         setErrorMessage('An error occurred during login');
       }
+    }
+  };
+
+  // Function to send verification code
+  const handleSendVerification = async () => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/send-verification`,
+        { email },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setVerificationMessage('Verification code sent! Check your email.');
+        setShowVerificationButton(false);
+      } else {
+        setErrorMessage('Failed to send verification code.');
+      }
+    } catch (error) {
+      console.error('Error sending verification code:', error);
+      setErrorMessage('An error occurred while sending the verification code.');
     }
   };
 
@@ -80,14 +115,22 @@ const Login = () => {
               required
             />
             {errorMessage && <p className="error">{errorMessage}</p>}
+            {verificationMessage && <p className="verification-message">{verificationMessage}</p>}
             <button type="submit">Sign In</button><br />
-            <a href="/forgot">Forgot your password?</a>
+            {showVerificationButton && (
+              <button type="button" onClick={handleSendVerification} className="resend-button">
+                Resend Verification Code
+              </button>
+            )}
+            <div className="forgot-password-container">
+              <a href="/forgot">Forgot your password?</a>
+            </div>
           </form>
         </div>
       </div>
     </div>
     </>
-    );
+  );
 };
 
 export default Login;

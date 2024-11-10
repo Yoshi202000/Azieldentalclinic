@@ -35,6 +35,14 @@ html, body {
   align-items: center;
 }
 
+@media (max-width: 768px) {
+  .appointment-container {
+    padding: 20px;
+    width: 90%;
+    margin-top: 60px;
+  }
+}
+
 /* Cards Container */
 .app-card-container {
   display: grid;
@@ -155,6 +163,27 @@ html, body {
   font-weight: bold;
 }
 
+@media (max-width: 768px) {
+  .progress-bar {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .step {
+    padding: 8px;
+    margin-bottom: 5px;
+    width: 100%;
+    border-bottom: none;
+    border-left: 4px solid #ddd; /* Changing from bottom border to left for better visibility on vertical screens */
+    text-align: left;
+  }
+
+  .step.active {
+    border-color: #4D869C;
+  }
+}
+
 /* Additional Styles for Appointment Steps */
 .appointment-type, .appointment-date, .appointment-details {
   text-align: center;
@@ -246,7 +275,6 @@ button.complete-button {
   flex-wrap: wrap;
 }
 
-
 .calendar-container,
 .time-slots-container {
   background-color: #ffffff;
@@ -258,7 +286,6 @@ button.complete-button {
   flex: 1;
   min-width: 250px;
 }
-
 
 .calendar-container {
   width: 300px;

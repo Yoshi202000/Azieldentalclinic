@@ -1,24 +1,91 @@
 /* Card.css */
 .card {
-    width: 250px;
-    padding: 20px;
-    border: 2px solid #ccc;
-    background-color: rgb(240, 250, 248);
-    border-radius: 10px;
-    text-align: center;
-    transition: background-color 0.3s, border-color 0.3s;
-    cursor: pointer;
+  width: 100%;
+  max-width: 250px; /* Maximum width of the card */
+  padding: 20px;
+  margin: 10px auto; /* Add margin for consistent spacing */
+  border: 2px solid #ccc;
+  background-color: rgb(240, 250, 248);
+  border-radius: 10px;
+  text-align: center;
+  transition: background-color 0.3s, border-color 0.3s;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Add shadow for better separation from background */
+}
+
+.card img {
+  width: 100%;
+  max-width: 150px; /* Adjust max-width to ensure it fits nicely */
+  height: auto;
+  border-radius: 10px;
+}
+
+.card.selected {
+  background-color: #7AB2B2;
+  color: white;
+  border-color: #7AB2B2;
+}
+
+/* Responsive Styles */
+
+/* Medium Screens (Tablets) */
+@media (max-width: 1024px) {
+  .card {
+    max-width: 220px; /* Reduce width on medium screens */
+    padding: 15px;
   }
-  
+
   .card img {
+    max-width: 130px; /* Reduce image size for better fit */
+  }
+
+  .card h3 {
+    font-size: 20px; /* Adjust font size for better readability */
+  }
+
+  .card p {
+    font-size: 16px; /* Adjust font size */
+  }
+}
+
+/* Small Screens (Mobile Devices) */
+@media (max-width: 768px) {
+  .card {
     width: 90%;
-    height: auto;
-    border-radius: 10px;
+    max-width: 100%; /* Full width of the container */
+    padding: 10px;
   }
-  
-  .card.selected {
-    background-color: #7AB2B2;
-    color: white;
-    border-color: #7AB2B2;
+
+  .card img {
+    max-width: 120px; /* Adjust image size for smaller screens */
   }
-  
+
+  .card h3 {
+    font-size: 18px; /* Smaller font size for small screens */
+  }
+
+  .card p {
+    font-size: 14px; /* Smaller font size */
+  }
+}
+
+/* Extra Small Screens */
+@media (max-width: 480px) {
+  .card {
+    padding: 8px;
+    max-width: 95%;
+    margin: 10px auto; /* Keep consistent spacing */
+  }
+
+  .card img {
+    max-width: 100px; /* Further reduce image size */
+  }
+
+  .card h3 {
+    font-size: 16px; /* Adjust font size for very small screens */
+  }
+
+  .card p {
+    font-size: 13px; /* Adjust text for readability */
+  }
+}

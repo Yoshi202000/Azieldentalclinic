@@ -124,6 +124,7 @@
   transition: background-color 0.3s;
 }
 
+
 .AdminAppointmentButton {
   background-color: #4CAF50;
 }
@@ -166,5 +167,61 @@
   .AdminAppointmentButton,
   .AdminAppointmentStatusButton {
     margin: 5px 0;
+  }
+}
+
+/* Filter Section Styles */
+.FilterSortSection {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #e9f5ff; /* Light background for the filter section */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.FilterSortSection input,
+.FilterSortSection select {
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  width: 100%; /* Full width for inputs */
+  box-sizing: border-box; /* Include padding in width */
+}
+
+.FilterSortSection input:focus,
+.FilterSortSection select:focus {
+  border-color: #42C2FF; /* Highlight border on focus */
+  outline: none; /* Remove default outline */
+}
+
+.FilterSortSection button {
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #4CAF50; /* Green background for filter button */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.FilterSortSection button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .FilterSortSection {
+    flex-direction: column; /* Stack inputs on smaller screens */
+  }
+
+  .FilterSortSection input,
+  .FilterSortSection select,
+  .FilterSortSection button {
+    width: 100%; /* Full width for smaller screens */
   }
 }

@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     emailVerified: { type: Boolean, default: false },
     role: { type: String, default: 'patient' }, // Add role field with default value
+    clinic: {type: String, default: 'both'},
 }, { timestamps: true });
 
 // Create a model for the 'UserInformation' collection

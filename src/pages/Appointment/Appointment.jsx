@@ -22,6 +22,7 @@ const Appointment = () => {
     lastName: '',
     dob: '',
     phoneNumber: '',
+    bookedClinic: '',
     email: '',
   });
   const [bookedAppointments, setBookedAppointments] = useState([]);
@@ -100,10 +101,12 @@ const Appointment = () => {
       patientEmail: formData.email,
       patientPhone: formData.phoneNumber,
       patientDOB: formData.dob,
+      bookedClinic: formData.bookedClinic, 
       appointmentDate: selectedDate,
       appointmentTimeFrom: selectedTimeFrom,
       appointmentType: selectedCard,
     };
+    
 
     try {
       const response = await fetch('http://localhost:5000/appointments', {
@@ -118,6 +121,7 @@ const Appointment = () => {
       const result = await response.json();
       if (response.ok) {
         alert('Appointment booked successfully!');
+        navigate('/home');
       } else {
         alert(`Error: ${result.message}`);
       }

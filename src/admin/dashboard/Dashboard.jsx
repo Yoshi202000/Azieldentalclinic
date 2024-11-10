@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import './dashboard.css';
 import AccountSettings from '../../component/admin/AccountSettings';
-import ChangePassword from '../../component/admin/ChangePassword';
 import PatientsInformation from '../../component/admin/PatientsInformation';
 import ViewAppointment from '../../component/admin/ViewAppointment';
 import CompletedAppointment from '../../component/admin/CompletedAppointment';
 import ViewFeedback from '../../component/admin/ViewFeedback';
+import ApproveToAdmin from '../../component/admin/ApproveToAdmin'
+import DrawerComponent from '../../component/Drawers';
+import Footer from '../../component/Footer';
 
 function Dashboard() {
   const [activeComponent, setActiveComponent] = useState('AccountSettings');
@@ -14,8 +16,6 @@ function Dashboard() {
     switch (activeComponent) {
       case 'AccountSettings':
         return <AccountSettings />;
-      case 'ChangePassword':
-        return <ChangePassword />;
       case 'PatientsInformation':
         return <PatientsInformation />;
       case 'ViewAppointment':
@@ -24,6 +24,8 @@ function Dashboard() {
         return <CompletedAppointment />;
       case 'ViewFeedback':
         return <ViewFeedback />;
+      case 'ToAdmin':
+        return <ApproveToAdmin/>
       default:
         return <h2>Select an option</h2>;
     }
@@ -34,17 +36,12 @@ function Dashboard() {
       <div className='DashContainer'>
         <div className='DashContent'>
           <h1>Dashboard content</h1>
+          <div className="button-container">
           <button
             className={activeComponent === 'AccountSettings' ? 'active' : ''}
             onClick={() => setActiveComponent('AccountSettings')}
           >
             Account Settings
-          </button>
-          <button
-            className={activeComponent === 'ChangePassword' ? 'active' : ''}
-            onClick={() => setActiveComponent('ChangePassword')}
-          >
-            Change Password
           </button>
           <button
             className={activeComponent === 'PatientsInformation' ? 'active' : ''}
@@ -70,11 +67,20 @@ function Dashboard() {
           >
             View Feedback
           </button>
+          <button
+            className={activeComponent === 'ToAdmin' ? 'active' : ''}
+            onClick={() => setActiveComponent('ToAdmin')}
+          >
+            Approve User to Admin
+          </button>
+          </div>
         </div>
         <div className='DashMainContainer'>
           {renderComponent()}
         </div>
       </div>
+      <DrawerComponent/>
+      <Footer/>
     </>
   );
 }

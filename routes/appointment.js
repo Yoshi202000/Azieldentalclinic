@@ -40,7 +40,7 @@ router.get('/appointments', authenticateToken, async (req, res) => {
 
 // Appointment booking route
 router.post('/appointments', authenticateToken, async (req, res) => {
-    const { patientFirstName, patientLastName, patientEmail, patientPhone, patientDOB, appointmentDate, appointmentTimeFrom, appointmentType } = req.body;
+    const { patientFirstName, patientLastName, patientEmail, patientPhone, patientDOB, appointmentDate, appointmentTimeFrom, appointmentType, bookedClinic } = req.body;
   
     try {
       const newAppointment = new Appointment({
@@ -51,6 +51,7 @@ router.post('/appointments', authenticateToken, async (req, res) => {
         patientDOB,
         appointmentDate,
         appointmentTimeFrom,
+        bookedClinic,
         appointmentType,
         userId: req.user.userId,
         userEmail: req.user.email, // Add this line to store the user's email
@@ -63,7 +64,7 @@ router.post('/appointments', authenticateToken, async (req, res) => {
       const adminNotification = new AdminNotification({
         appointmentId: savedAppointment._id,
         userEmail: req.user.email, // Add this line to store the user's email
-        message: `New appointment booked by ${patientFirstName} ${patientLastName} (${req.user.email}) for ${appointmentDate} at ${appointmentTimeFrom}.`,
+        message: `New appointment booked by ${patientFirstName} ${patientLastName} (${req.user.email}) for ${appointmentDate} at ${appointmentTimeFrom} for the clinic of ${bookedClinic}.`,
       });
       await adminNotification.save();
 
@@ -72,7 +73,7 @@ router.post('/appointments', authenticateToken, async (req, res) => {
         userId: req.user.userId,
         userEmail: req.user.email, // Add this line to store the user's email
         appointmentId: savedAppointment._id,
-        message: `Your appointment for ${appointmentType} on ${appointmentDate} at ${appointmentTimeFrom} has been booked successfully.`,
+        message: `Your appointment for ${appointmentType} on ${appointmentDate} at ${appointmentTimeFrom} for the clinic of ${bookedClinic}has been booked successfully.`,
       });
       await patientNotification.save();
 

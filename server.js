@@ -19,6 +19,7 @@ import feedbackRoutes from './routes/feedback.js'; // Add this line
 import viewFeedbackRoutes from './routes/viewFeedback.js';
 import notificationRoutes from './routes/notificationRoutes.js'; // Add this line
 import messageRoutes from './routes/message.js';  // Add this line
+import updateUserRoutes from './routes/updateUserRole.js'
 
 const app = express();
 dotenv.config();
@@ -48,7 +49,7 @@ mongoose.connect(process.env.MONGODB_URI)
     .catch(err => console.error('Error connecting to MongoDB', err));
 
 // Routes
-app.use(signupRoutes);
+app.use('/api', signupRoutes);
 app.use(loginRoutes);
 app.use('/', verifyTokenRoutes);
 app.use(appointmentRoutes);
@@ -62,6 +63,7 @@ app.use('/api/feedback', feedbackRoutes); // Add this line
 app.use('/api/feedback', viewFeedbackRoutes);
 app.use('/api', notificationRoutes); // Add this line
 app.use('/api', messageRoutes);  // Add this line
+app.use('/api', updateUserRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000; // Fallback to port 5000

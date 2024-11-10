@@ -8,17 +8,18 @@ function Chat() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
-  const [users, setUsers] = useState([]); // State to hold users
+  const [users, setUsers] = useState([]);
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
-  const pollingIntervalRef = useRef(null); // Ref to keep track of polling interval
+  const pollingIntervalRef = useRef(null);
 
   // Fetch logged-in user information
   useEffect(() => {
+    console.log('fetch information effect');
     const token = localStorage.getItem('token');
     if (!token) return;
-
+    
     const fetchLoggedInUser = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/verify-token', {
@@ -37,8 +38,7 @@ function Chat() {
         setLoggedInUser(data.user);
         setLoading(false);
       } catch (error) {
-        alert('Session expired or invalid. Please log in again.');
-        navigate('/login');
+        console.error('Error fetching logged-in user:', error);
       }
     };
 
@@ -47,6 +47,7 @@ function Chat() {
 
   // Fetch users based on logged-in user's role
   useEffect(() => {
+    console.log('fetch user based on logged in users role effect');
     const fetchUsers = async () => {
       if (!loggedInUser) return;
 
@@ -55,7 +56,6 @@ function Chat() {
         if (!response.ok) throw new Error('Failed to fetch users');
         const data = await response.json();
 
-        // Filter users based on logged-in user's role
         if (loggedInUser.role === 'patient') {
           const adminUsers = data.filter(user => user.role === 'admin');
           setUsers(adminUsers);
@@ -71,59 +71,85 @@ function Chat() {
     fetchUsers();
   }, [loggedInUser]);
 
-  // Fetch unread messages count for all users when the component mounts
+  // Fetch unread messages count for all users
   useEffect(() => {
+    console.log('fetch unread effect');
     const fetchUnreadMessagesCount = async () => {
+      if (!loggedInUser) return;
+      console.log('effect start');      
+      /*
       try {
         const token = localStorage.getItem('token');
-        if (!token) throw new Error("Token not found");
-    
-        const response = await fetch(`http://localhost:5000/api/messages/unread`, {
+        const response = await fetch(`http://localhost:5000/api/messages/${loggedInUser.email}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-    
+  
+        if (!response.ok) throw new Error('Failed to fetch messages');
+        const data = await response.json();
+  
+        const unreadMessages = data.filter(msg => msg.readAt == null && msg.receiverId === loggedInUser.email);
+        setUnreadCount(unreadMessages.length);
+        console.log('effect');
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }*/
+
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error("Token not found");
+        console.log(loggedInUser);
+        const response = await fetch(`http://localhost:5000/api/messages/unread`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+
         if (response.status === 403) {
           alert("Session expired. Please log in again.");
           navigate('/login');
           return;
         }
-    
         if (!response.ok) throw new Error('Failed to fetch unread messages count');
         const data = await response.json();
-        console.log("Unread Messages Data:", data); // Log to check response structure
-        setUnreadCount(data.unreadCount); // Set unread count based on data.unreadCount
+        console.log(data);
+        console.log(data.length);
+
+        /*const unreadMessages = data.filter(message => message.readAt == null && message.receiverId === loggedInUser.email);
+
+        console.log('data', unreadMessages);
+        console.log('count',unreadMessages.length);*/
+        //console.log("Fetched Unread Messages Count:", data.unreadCount);
+        setUnreadCount(data.length);
+        console.log('effect end');
       } catch (error) {
         console.error('Error fetching unread messages count:', error);
       }
     };
-    
-    
-    
 
     fetchUnreadMessagesCount();
 
-    // Poll unread count every 5 seconds to keep it updated
     const interval = setInterval(fetchUnreadMessagesCount, 5000);
-    return () => clearInterval(interval); // Clear interval on unmount
-  }, [loggedInUser]);
+    return () => clearInterval(interval);
+  }, [loggedInUser, isChatVisible]);
 
   // Start polling messages when a user is selected
   useEffect(() => {
+    console.log('polling effect');
     if (selectedUser) {
       startPolling();
     } else {
       stopPolling();
     }
 
-    return () => stopPolling(); // Cleanup polling when component unmounts or selectedUser changes
+    return () => stopPolling();
   }, [selectedUser]);
 
   const startPolling = () => {
     pollingIntervalRef.current = setInterval(() => {
       fetchMessages();
-    }, 2000); // Poll every 2 seconds
+    }, 2000);
   };
 
   const stopPolling = () => {
@@ -147,13 +173,11 @@ function Chat() {
 
       if (!response.ok) throw new Error('Failed to fetch messages');
       const data = await response.json();
-
       setMessages(data);
 
-      // Set the flag to mark messages as read when the chat becomes visible
       if (isChatVisible && selectedUser.email !== loggedInUser.email) {
         await markMessagesAsRead(data);
-        await updateUnreadCount(); // Refresh unread count after marking as read
+        await updateUnreadCount();
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -162,6 +186,7 @@ function Chat() {
 
   // Function to update unread count
   const updateUnreadCount = async () => {
+    
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`http://localhost:5000/api/messages/unread`, {
@@ -172,16 +197,26 @@ function Chat() {
 
       if (!response.ok) throw new Error('Failed to fetch unread messages count');
       const data = await response.json();
-      setUnreadCount(data.unreadCount);
+      
+      const unreads = data.filter(message => message.receiverId === loggedInUser.email && message.readAt === null);
+
+      console.log('second unreads',unreads);
+
+      //setUnreadCount(data.unreadCount);
+      console.log('second unread');
     } catch (error) {
       console.error('Error fetching unread messages count:', error);
     }
+    /*
+    const unreadMessages = messagesToMark.filter(msg => msg.readAt == null && msg.receiverId === loggedInUser.email);
+    console.log('update count :'+unreadMessages.length);
+    console.log('update const');
+    */
   };
 
   // Function to mark messages as read
   const markMessagesAsRead = async (messagesToMark) => {
     const unreadMessages = messagesToMark.filter(msg => !msg.readAt && msg.receiverId === loggedInUser.email);
-
     if (unreadMessages.length === 0) return;
 
     try {
@@ -194,8 +229,6 @@ function Chat() {
       });
 
       if (!response.ok) throw new Error('Failed to mark messages as read');
-
-      // Update local state to mark messages as read instantly
       setMessages(prevMessages =>
         prevMessages.map(msg => 
           (!msg.readAt && msg.receiverId === loggedInUser.email 
@@ -229,24 +262,23 @@ function Chat() {
 
       if (!response.ok) throw new Error('Failed to send message');
       const sentMessage = await response.json();
-
-      // Update messages immediately after sending without waiting for polling
       setMessages(prevMessages => [...prevMessages, sentMessage]);
-      setNewMessage(''); // Clear input
+      setNewMessage('');
+      //await updateUnreadCount();
     } catch (error) {
       console.error('Error sending message:', error);
     }
   };
 
-  // Function to handle user selection
+  // Handle user selection
   const handleUserSelect = (user) => {
     setSelectedUser(user);
-    setMessages([]); // Clear messages when switching users
+    setMessages([]);
   };
 
   const handleBackToUserList = () => {
-    setSelectedUser(null); // Reset selected user
-    setMessages([]); // Clear messages when going back
+    setSelectedUser(null);
+    setMessages([]);
   };
 
   if (loading) {
@@ -255,19 +287,13 @@ function Chat() {
 
   return (
     <>
- {/* Chat Icon in the lower-left corner */}
-{loggedInUser && ( // Only render the chat icon if the user is logged in
-  <div className="chat-icon" onClick={() => setIsChatVisible(!isChatVisible)}>
-    <span role="img" aria-label="message" style={{ fontSize: '24px', marginRight: '8px' }}>💬</span> {/* Message emoji */}
-    <div className="unread-count">{unreadCount}</div> {/* Show unread count even if it's 0 */}
-  </div>
-)}
+      {loggedInUser && (
+        <div className="chat-icon" onClick={() => setIsChatVisible(!isChatVisible)}>
+          <span role="img" aria-label="message" style={{ fontSize: '24px', marginRight: '8px' }}>💬</span>
+          <div className="unread-count">{unreadCount}</div>
+        </div>
+      )}
 
-
-
-
-
-      {/* Chat Box (conditionally visible) */}
       {isChatVisible && (
         <div className="chat">
           <div className="chat-title">
@@ -275,14 +301,13 @@ function Chat() {
             {selectedUser ? (
               <>
                 <h2>Chat with {selectedUser.firstName}</h2>
-                <button onClick={handleBackToUserList}>Back</button> {/* Back button */}
+                <button onClick={handleBackToUserList}>Back</button>
               </>
             ) : (
               <h2>Select a user</h2>
             )}
           </div>
 
-          {/* User List (conditionally rendered) */}
           {!selectedUser && (
             <div className="user-list">
               {users.map((user) => (

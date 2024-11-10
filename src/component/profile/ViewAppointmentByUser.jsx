@@ -10,6 +10,7 @@ function ViewAppointmentByUser() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [bookedAppointments, setBookedAppointments] = useState([]);
   const navigate = useNavigate();
 
   const [editingAppointment, setEditingAppointment] = useState(null);
@@ -51,19 +52,20 @@ function ViewAppointmentByUser() {
     fetchUserInfo(token);
     const dates = generateAvailableDates();
     setAvailableDates(dates);
+    fetchBookedAppointments();
   }, [navigate]);
 
   const fetchUserInfo = async (token) => {
     try {
-      const response = await axios.get('http://localhost:5000/verify-token', {
+      const response = await axios.get('http://localhost:5000/api/verify-token', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
         withCredentials: true,
       });
 
-      const { firstName, lastName, email, phoneNumber, dob } = response.data.user;
-      setUser({ firstName, lastName, email, phoneNumber, dob });
+      const { firstName, lastName, email, phoneNumber, dob, clinic } = response.data.user;
+      setUser({ firstName, lastName, email, phoneNumber, dob, clinic });
 
       fetchAppointments(token, email);
     } catch (error) {
@@ -94,6 +96,19 @@ function ViewAppointmentByUser() {
       console.error('Error fetching appointments:', err);
       setError('Failed to fetch appointments');
       setLoading(false);
+    }
+  };
+
+  const fetchBookedAppointments = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/booked-appointments');
+      if (response.status === 200) {
+        setBookedAppointments(response.data.bookedAppointments);
+      } else {
+        console.error('Failed to fetch booked appointments');
+      }
+    } catch (error) {
+      console.error('Error fetching booked appointments:', error);
     }
   };
 
@@ -183,6 +198,11 @@ function ViewAppointmentByUser() {
     }
   };
 
+  const handleCancelAppointment = (appointmentId) => {
+    // Change status to 'Cancelled'
+    updateAppointmentStatus(appointmentId, 'Cancelled');
+  };
+
   const toggleExpansion = (expand) => {
     setIsContainerExpanded(expand);
     if (!expand) {
@@ -219,6 +239,7 @@ function ViewAppointmentByUser() {
           <p>Email: {user.email}</p>
           <p>Phone: {user.phoneNumber}</p>
           <p>Date of Birth: {user.dob}</p>
+          <p>clinic: {user.clinic}</p>
         </div>
       )}
 
@@ -304,15 +325,19 @@ function ViewAppointmentByUser() {
                               generateTimeSlots={generateTimeSlots}
                               selectedTimeFrom={selectedTimeFrom}
                               handleTimeSelect={handleTimeSelect}
+                              bookedAppointments={bookedAppointments}
                             />
                           )}
                         </div>
 
                         <button className="ProfileAppointmentButton" onClick={handleUpdateAppointment}>Update Appointment</button>
+                        <button className="ProfileAppointmentButton" onClick={() => handleCancelAppointment(editingAppointment._id)}>
+                          Cancel Appointment
+                        </button>
                         <button className="ProfileAppointmentButton" onClick={() => {
                           setEditingAppointment(null);
                           toggleExpansion(false);
-                        }}>Cancel</button>
+                        }}>Close</button>
                       </div>
                     </td>
                   </tr>

@@ -10,20 +10,22 @@ html, body, #root {
   align-items: center;    /* Center horizontally */
   width: 100%;
   margin: 0 auto;
-  gap: 30px; /* Space between different sections */
+  gap: 20px; /* Space between different sections */
 }
 
 /* Updated styles for card-container */
 .card-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px; /* Space between cards */
+  grid-template-columns: repeat(4, 1fr); /* 4 cards per row by default */
+  gap: 20px; /* Space between cards */
   background-color: white;
   padding: 20px;
   width: 90%;
   max-width: 1200px;
   margin: 0 auto;
   z-index: 2;
+  justify-content: center; /* Center the row if not filled */
+  align-items: center; /* Vertically center items */
 }
 
 /* Styling for the card element */
@@ -34,6 +36,7 @@ html, body, #root {
   padding: 20px;
   transition: transform 0.3s, box-shadow 0.3s;
   text-align: center;
+  margin: auto; /* Center each card individually */
 }
 
 .card-container .card:hover {
@@ -79,28 +82,44 @@ html, body, #root {
 }
 
 /* Responsive Adjustments */
-/* 3 Columns for Larger Screens */
-@media (min-width: 1024px) {
+/* 4 Columns for Larger Screens */
+@media (min-width: 1200px) {
+  .card-container {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px; /* Adjusted gap for larger screens */
+    justify-content: center; /* Center cards for incomplete rows */
+  }
+}
+
+/* 3 Columns for Medium-Large Screens */
+@media (min-width: 992px) and (max-width: 1199px) {
   .card-container {
     grid-template-columns: repeat(3, 1fr);
+    gap: 20px; /* Space between cards */
+    justify-content: center; /* Center cards for incomplete rows */
   }
 }
 
 /* 2 Columns for Medium Screens */
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 768px) and (max-width: 991px) {
   .card-container {
     grid-template-columns: repeat(2, 1fr);
+    gap: 15px; /* Smaller gap for medium screens */
+    justify-content: center; /* Center cards for incomplete rows */
   }
 }
 
-/* 1 Column for Smaller Screens */
+/* 1 Column for Small Screens */
 @media (max-width: 767px) {
   .card-container {
     grid-template-columns: 1fr; /* Stack cards vertically on smaller screens */
     width: 90%;
+    gap: 10px; /* Smallest gap for mobile screens */
+    justify-content: center; /* Center cards for incomplete rows */
   }
 
   .card-container .card {
     max-width: 100%;
+    margin: 0 auto; /* Ensure cards are centered */
   }
 }

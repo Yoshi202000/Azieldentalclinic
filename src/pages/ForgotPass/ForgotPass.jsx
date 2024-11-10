@@ -82,7 +82,7 @@ const Forgot = () => {
       const response = await fetch('http://localhost:5000/api/change-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, newPassword, code: enteredCode }),
+        body: JSON.stringify({ email, newPassword}),
       });
       
       const data = await response.json();

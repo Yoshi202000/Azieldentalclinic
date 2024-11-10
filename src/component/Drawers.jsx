@@ -114,10 +114,10 @@ const DrawerComponent = () => {
               <a href="/home" className="drawer-link">Home</a>
             </li>
             <li className="drawer-item">
-              <a href="#services" className="drawer-link">Services</a>
+              <a href="/services" className="drawer-link">Services</a>
             </li>
             <li className="drawer-item">
-              <a href="#appointment" className="drawer-link">Appointment</a>
+              <a href="/appointment" className="drawer-link">Appointment</a>
             </li>
             <li className="drawer-item">
               <a href="#branches" className="drawer-link">Branches</a>

@@ -53,8 +53,7 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
       handleInputChange({ target: { name: 'firstName', value: '' } });
       handleInputChange({ target: { name: 'lastName', value: '' } });
       handleInputChange({ target: { name: 'dob', value: '' } });
-      handleInputChange({ target: { name: 'email', value: '' } });
-      handleInputChange({ target: { name: 'phoneNumber', value: '' } });
+      handleInputChange({ target: { name: 'clinic', value: '' } });
     }
   };
 
@@ -77,6 +76,17 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
 
       <div className="stepthree">
         <div>
+        <label>Choose your clinic</label>
+        <label>Choose your clinic</label>
+        <select 
+          name='bookedClinic' 
+          value={formData.bookedClinic} 
+          onChange={handleInputChange}
+        >
+          <option value="" disabled>Choose your clinic</option>
+          <option value="Aziel Dental Clinic">Aziel Dental Clinic</option>
+          <option value="Arts of Millennials Dental Clinic">Arts of Millennials Dental Clinic</option>
+        </select>
           <label>Date of Birth</label>
           <input
             type="date"

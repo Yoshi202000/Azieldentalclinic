@@ -10,6 +10,7 @@ const appointmentSchema = new mongoose.Schema({
     appointmentDate: { type: String, required: true },
     appointmentTimeFrom: { type: String, required: true },
     appointmentType: { type: String, required: true },
+    bookedClinic: { type: String, required: true },
     appointmentStatus: { type: String, default: 'pending' },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     userEmail: { type: String, required: true },

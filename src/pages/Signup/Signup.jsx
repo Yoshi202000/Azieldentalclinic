@@ -35,7 +35,7 @@ function Signup() {
         }
 
         try {
-            const response = await fetch('http://localhost:5000/send-verification', {
+            const response = await fetch('http://localhost:5000/api/send-verification', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -66,10 +66,17 @@ function Signup() {
             return;
         }
 
+        // Send verification code before signing up
+        await handleSendVerification();
+
+        if (error) {
+            return;
+        }
+
         const { firstName, lastName, email, phoneNumber, password, verifyEmailCode } = formData;
 
         try {
-            const response = await fetch('http://localhost:5000/signup', {
+            const response = await fetch('http://localhost:5000/api/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -87,7 +94,7 @@ function Signup() {
             const result = await response.json();
             if (response.ok) {
                 setSuccessMessage(result.message);
-                alert('email was sent successfully please verify your email');
+                alert('Email was sent successfully. Please verify your email.');
                 navigate('/login'); // Redirect to login page on successful registration
             } else {
                 setError(result.message || 'Signup failed');
@@ -144,15 +151,17 @@ function Signup() {
                                 onChange={handleChange}
                             />
                         </div>
-                        {verificationSent ? (
+                        {verificationSent && (
                             <div className="form-group">
                                 <label htmlFor="verifyEmailCode">Verification Code</label>
-                                
+                                <input
+                                    type="text"
+                                    id="verifyEmailCode"
+                                    placeholder="Enter verification code"
+                                    value={formData.verifyEmailCode}
+                                    onChange={handleChange}
+                                />
                             </div>
-                        ) : (
-                            <button type="button" className="signup-button" onClick={handleSendVerification}>
-                                Send Verification Code
-                            </button>
                         )}
                         <div className="form-group">
                             <label htmlFor="phoneNumber">Phone Number</label>
@@ -184,7 +193,7 @@ function Signup() {
                                 onChange={handleChange}
                             />
                         </div>
-                        <button type="submit" className="signup-button">Sign Up</button>
+                        <button type="submit" className="signup-button" onClick={handleSendVerification}>Sign Up</button>
 
                         <p>already have an account? <a href="/login">Log in</a></p>
                     </form>

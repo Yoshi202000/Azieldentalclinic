@@ -12,6 +12,7 @@ function Notification() {
   const [selectedNotification, setSelectedNotification] = useState(null);
   const notificationRef = useRef(null);
 
+  // Fetch notifications from the server
   const fetchNotifications = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -61,7 +62,13 @@ function Notification() {
         );
       }
 
-      roleSpecificNotifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      // Sort notifications to show unread first
+      roleSpecificNotifications.sort((a, b) => {
+        if (a.isRead === b.isRead) {
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        }
+        return a.isRead ? 1 : -1;
+      });
 
       setNotifications(roleSpecificNotifications);
       setLoading(false);
@@ -76,6 +83,7 @@ function Notification() {
     }
   }, [navigate]);
 
+  // Toggle dropdown visibility and fetch notifications if opened
   const toggleDropdown = () => {
     if (!isOpen) {
       fetchNotifications();
@@ -83,6 +91,18 @@ function Notification() {
     setIsOpen(!isOpen);
   };
 
+  // Set up polling to refresh notifications every 5 seconds
+  useEffect(() => {
+    fetchNotifications(); // Fetch initially when component mounts
+
+    const interval = setInterval(() => {
+      fetchNotifications(); // Poll every 5 seconds
+    }, 5000);
+
+    return () => clearInterval(interval); // Cleanup interval on component unmount
+  }, [fetchNotifications]);
+
+  // Close dropdown if clicked outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (notificationRef.current && !notificationRef.current.contains(event.target)) {
@@ -96,6 +116,7 @@ function Notification() {
     };
   }, [notificationRef]);
 
+  // Mark a notification as read
   const markNotificationAsRead = async (notificationId, notificationType) => {
     try {
       await axios.post('http://localhost:5000/api/mark-notification-read', {
@@ -105,6 +126,7 @@ function Notification() {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
 
+      // Update the local state to mark the notification as read
       setNotifications(prevNotifications =>
         prevNotifications.map(notification =>
           notification._id === notificationId
@@ -117,11 +139,29 @@ function Notification() {
     }
   };
 
+  // Delete a notification
+  const deleteNotification = async (notificationId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/delete-notification/${notificationId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+
+      // Update the local state to remove the notification
+      setNotifications(prevNotifications =>
+        prevNotifications.filter(notification => notification._id !== notificationId)
+      );
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+    }
+  };
+
+  // Handle notification click
   const handleNotificationClick = (notification) => {
     setSelectedNotification(notification);
     markNotificationAsRead(notification._id, notification.type);
   };
 
+  // Close modal
   const closeModal = () => {
     setSelectedNotification(null);
   };
@@ -152,7 +192,6 @@ function Notification() {
                 <li
                   key={index}
                   className={`notification-item ${notification.type} ${notification.isRead ? 'read' : 'unread'}`}
-                  onClick={() => handleNotificationClick(notification)}
                 >
                   <div className="notification-header">
                     <span className="notification-type">{notification.type.toUpperCase()}</span>
@@ -160,7 +199,12 @@ function Notification() {
                       {new Date(notification.createdAt).toLocaleString()}
                     </span>
                   </div>
-                  <p className="notification-message">{notification.message}</p>
+                  <p className="notification-message" onClick={() => handleNotificationClick(notification)}>
+                    {notification.message}
+                  </p>
+                  <button className="delete-notification-btn" onClick={() => deleteNotification(notification._id)}>
+                    Delete
+                  </button>
                 </li>
               ))}
             </ul>

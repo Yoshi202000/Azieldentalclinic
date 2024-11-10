@@ -12,7 +12,7 @@ const authenticateToken = (req, res, next) => {
     return res.status(401).json({ message: 'No token provided' });
   }
 
-  const tokenValue = token.startsWith("Bearer ") ? token.slice(7, token.length) : token;
+  const tokenValue = token.startsWith("Bearer ") ? token.slice(7) : token;
   jwt.verify(tokenValue, 'your_jwt_secret', (err, user) => {
     if (err) {
       console.log("Token verification failed:", err.message);
@@ -87,22 +87,11 @@ router.put('/messages/read/:senderId', authenticateToken, async (req, res) => {
 // Get unread message count for the logged-in user
 router.get('/messages/unread', authenticateToken, async (req, res) => {
   try {
-    const receiverId = req.user.email;
-
-    // Count documents with receiverId as the logged-in user and readAt as null
-    const unreadCount = await Message.countDocuments({
-      receiverId,
-      readAt: null,
-    });
-
-    // Ensure the response is always { unreadCount: 0 } or another positive integer
-    res.status(200).json({ unreadCount: unreadCount || 0 });
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching unread messages count: ' + error.message });
+    const unreadMessages = await Message.find({ readAt: null , receiverId: req.user.email });
+    res.status(200).json(unreadMessages); // Ensure you're sending a JSON response with status 200
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch usersInformation' });
   }
 });
-
-
-
 
 export default router;

@@ -15,7 +15,6 @@ router.get('/api/verify-token', (req, res) => {
             return res.status(401).json({ message: 'Invalid token' });
         }
     
-        console.log('Decoded token:', decoded); // Add this line for debugging
     
         res.status(200).json({ 
             user: { 
@@ -23,7 +22,8 @@ router.get('/api/verify-token', (req, res) => {
                 lastName: decoded.lastName, 
                 phoneNumber: decoded.phoneNumber, 
                 email: decoded.email, 
-                role: decoded.role // Make sure this is included
+                role: decoded.role, 
+                clinic: decoded.clinic,
             },
             token
         });

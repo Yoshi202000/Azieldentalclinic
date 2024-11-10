@@ -9,15 +9,14 @@ body, html {
 .first-container {
   position: relative;
   width: 100%;
-  padding: 10px;
   height: 100%;
   display: flex;
   align-items: center;
-  margin-top: 80px;
+  margin-top: 90px;
   justify-content: space-between;
   overflow: hidden;
   z-index: 5;
-  background-color: transparent; /* Background color to match the design */
+  background-color: transparent;
   box-sizing: border-box;
 }
 
@@ -33,44 +32,41 @@ body, html {
   background-position: center;
   z-index: 1;
   opacity: 1;
-  padding: var(--section-padding, 200px); /* Default to 200px if not set */
+  padding: var(--section-padding, 200px);
 }
-
 
 .content {
-  margin-top: 100px;
   display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
   max-width: 1200px;
-  margin: 0 auto; /* Center within the parent container */
-  padding: 0 20px; /* Optional: Adjust padding to maintain some space on the sides */
+  margin: 0 auto;
+  padding: 0 20px;
   box-sizing: border-box;
   z-index: 1;
-  margin-top: 100px;
 }
-
-
 
 .text-section {
   color: black;
   padding: 0 2em;
   max-width: 800px;
   box-sizing: border-box;
-  padding-right: 8em;
 }
 
 .text-section h1 {
   font-size: 60px;
   margin-bottom: 15px;
   font-weight: bold;
+  text-align: left;
 }
 
 .text-section h2 {
   font-size: 35px;
   margin-bottom: 10px;
   font-weight: bold;
+  text-align: left;
 }
 
 .text-section p {
@@ -96,11 +92,11 @@ body, html {
   position: relative;
   z-index: 1;
   box-sizing: border-box;
-  margin-right: auto; /* Automatically push the image to the right */
+  margin-left: 20px;
 }
 
 .dentist-image {
-  width: 700px;
+  width: 600px;
   max-width: 100%;
   height: auto;
   border-radius: 10px;
@@ -112,69 +108,159 @@ body, html {
 
 /* Responsive Design */
 
-
+/* Medium Screens */
 @media (max-width: 1024px) {
-  .content {
-    flex-direction: row;
-    display: flex;
-    align-items: center; /* Center align items */
-    text-align: center; /* Center text content */
-  }
-
-  .image-section {
-    margin-left: 0; /* Reset margin for smaller screens */
-    margin-top: 20px; /* Add some spacing on top */
-    margin-left: auto;
-    display: flex;
-
-    display: none; /* Ensure image is visible on small screens */
-  }
-
-  .text-section {
-    max-width: 100%; /* Make text section full width */
-    padding: 0 1em; /* Reduce padding for smaller screens */
-  }
-
-  .text-section h1 {
-    font-size: 28px; /* Adjust font size for smaller screens */
-    
-  }
-
-  .text-section h2 {
-    font-size: 18px; /* Adjust font size for smaller screens */
-  }
-
-  .text-section p {
-    font-size: 14px; /* Adjust font size for smaller screens */
-  }
-
   .first-container {
-    padding: 0 10px; /* Reduce padding on smaller screens */
-    margin-top: 0px;
+    height: auto; /* Adjust container height to fit content */
+    margin-top: 0; /* Remove the top margin */
   }
 
   .background-overlay {
-    background-image: url('/src/assets/clinic.png'); /* Change background image for small screens */
-    margin-top: auto;
+    background-image: url('/src/assets/clinic.png');
+    opacity: 0.8;
+    height: auto; /* Set height to auto to fit content */
+    min-height: 50vh; /* Set a minimum height to keep the background visible */
   }
-}
 
-@media (max-width: 480px) {
+  .content {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Center content vertically */
+    text-align: center;
+    padding: 0 20px;
+    margin-top: 20px;
+    margin-bottom: 20px; /* Add some margin to ensure proper spacing */
+    height: auto; /* Adjust height to fit content */
+  }
+
+  .text-section {
+    max-width: 100%;
+    text-align: center; /* Center text on smaller screens */
+  }
+
   .text-section h1 {
-    font-size: 24px; /* Further adjust font size for very small screens */
+    font-size: 40px;
+    text-align: center;
   }
 
   .text-section h2 {
-    font-size: 16px;
+    font-size: 24px;
+    text-align: center;
   }
 
   .text-section p {
-    font-size: 12px;
+    font-size: 18px;
   }
 
   .search-button {
-    padding: 10px 15px; /* Adjust button padding */
-    font-size: 14px; /* Adjust button font size */
+    margin: 20px auto; /* Center the button */
+  }
+
+  .image-section {
+    display: none; /* Hide the image section on smaller screens */
   }
 }
 
+/* Small Screens */
+@media (max-width: 768px) {
+  .first-container {
+    height: auto; /* Adjust container height to fit content */
+    margin-top: 0; /* Remove top margin */
+  }
+
+  .background-overlay {
+    background-image: url('/src/assets/clinic.png');
+    opacity: 0.8;
+    height: auto; /* Set height to auto to fit content */
+    min-height: 50vh; /* Set a minimum height to keep the background visible */
+  }
+
+  .content {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Center content vertically */
+    text-align: center;
+    padding: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px; /* Add some margin to ensure proper spacing */
+    height: auto; /* Adjust height to fit content */
+  }
+
+  .text-section {
+    text-align: center; /* Center text content */
+  }
+
+  .text-section h1 {
+    font-size: 32px;
+    text-align: center;
+  }
+
+  .text-section h2 {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .text-section p {
+    font-size: 16px;
+  }
+
+  .search-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 20px auto; /* Center the button */
+  }
+
+  .image-section {
+    display: none; /* Ensure image is hidden */
+  }
+}
+
+/* Extra Small Screens */
+@media (max-width: 480px) {
+  .first-container {
+    height: auto; /* Adjust container height to fit content */
+    margin-top: 0; /* Remove top margin */
+  }
+
+  .background-overlay {
+    background-image: url('/src/assets/clinic.png');
+    opacity: 0.7;
+    height: auto; /* Set height to auto to fit content */
+    min-height: 50vh; /* Set a minimum height to keep the background visible */
+  }
+
+  .content {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Center content vertically */
+    text-align: center;
+    padding: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px; /* Add some margin to ensure proper spacing */
+    height: auto; /* Adjust height to fit content */
+  }
+
+  .text-section h1 {
+    font-size: 28px;
+    text-align: center;
+  }
+
+  .text-section h2 {
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .text-section p {
+    font-size: 14px;
+  }
+
+  .search-button {
+    padding: 8px 15px;
+    font-size: 14px;
+    margin: 20px auto; /* Center the button */
+  }
+
+  .image-section {
+    display: none; /* Ensure the image section is hidden */
+  }
+}
