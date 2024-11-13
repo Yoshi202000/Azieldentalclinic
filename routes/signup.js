@@ -76,7 +76,7 @@ router.post('/signup', async (req, res) => {
         const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
         // Verification email content
-        const verificationLink = `http://localhost:5000/api/verify-email?token=${token}`;
+        const verificationLink = `${import.meta.env.VITE_BACKEND_URL}/api/verify-email?token=${token}`;
 
         // Send verification email
         try {
@@ -142,7 +142,7 @@ router.post('/send-verification', async (req, res) => {
 
     try {
         const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' }); // Shorter expiry for verification code
-        const verificationLink = `http://localhost:5000/api/verify-email?token=${token}`;
+        const verificationLink = `${import.meta.env.VITE_BACKEND_URL}/api/verify-email?token=${token}`;
 
         await transporter.sendMail({
             from: process.env.EMAIL_USER,

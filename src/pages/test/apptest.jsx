@@ -23,8 +23,8 @@ const TestLogin = () => {
       return;
     }
 
-    axios.get('http://localhost:5000/verify-token', {
-        headers: {
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/verify-token`, {
+      headers: {
           Authorization: `${token}`,
         },
         withCredentials: true, // If using cookies

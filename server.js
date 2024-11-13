@@ -20,6 +20,7 @@ import viewFeedbackRoutes from './routes/viewFeedback.js';
 import notificationRoutes from './routes/notificationRoutes.js'; // Add this line
 import messageRoutes from './routes/message.js';  // Add this line
 import updateUserRoutes from './routes/updateUserRole.js'
+import unreadRoutes from './routes/unread.js'
 
 const app = express();
 dotenv.config();
@@ -64,9 +65,9 @@ app.use('/api/feedback', viewFeedbackRoutes);
 app.use('/api', notificationRoutes); // Add this line
 app.use('/api', messageRoutes);  // Add this line
 app.use('/api', updateUserRoutes);
-
+app.use('/api', unreadRoutes);
 // Start server
-const PORT = process.env.PORT || 5000; // Fallback to port 5000
+const PORT = process.env.PORT || 5000; 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

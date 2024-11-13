@@ -27,6 +27,12 @@ function ViewAppointment() {
   const editSectionRef = useRef(null);
   const navigate = useNavigate();
 
+  const [currentPage, setCurrentPage] = useState(1); // New state for current page
+  const appointmentsPerPage = 5; // Number of appointments to display per page
+
+  const [editingAppointmentId, setEditingAppointmentId] = useState(null); // New state to track the currently editing appointment
+
+  // Effect to fetch user info and available dates on component mount
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -40,9 +46,10 @@ function ViewAppointment() {
     setAvailableDates(dates);
   }, [navigate]);
 
+  // Function to fetch user information from the server
   const fetchUserInfo = async (token) => {
     try {
-      const response = await axios.get('http://localhost:5000/api/verify-token', {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -63,9 +70,10 @@ function ViewAppointment() {
     }
   };
   
+  // Function to fetch appointments for the logged-in user
   const fetchAppointments = async (token, clinic) => {
     try {
-      const response = await axios.get('http://localhost:5000/ViewAppointment', {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -87,92 +95,114 @@ function ViewAppointment() {
     }
   };
 
+  // Function to update the status of an appointment
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:5000/ViewAppointment/updateStatus', 
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment/updateStatus`, 
         { appointmentId, newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      setAppointments(prevAppointments => 
-        prevAppointments.map(app => 
-          app._id === response.data._id ? response.data : app
+      setAppointments(prevAppointments =>
+        prevAppointments.map(app =>
+          app._id === response.data._id ? { ...app, appointmentTimeFrom: response.data.appointmentTimeFrom } : app
         )
       );
+      
     } catch (err) {
       console.error('Error updating appointment status:', err);
       setError('Failed to update appointment status');
     }
   };
 
+  // Function to handle editing an appointment
   const handleEditAppointment = (appointment) => {
-    if (editingAppointment && editingAppointment._id === appointment._id) {
-      setEditingAppointment(null);
+    if (editingAppointmentId === appointment._id) {
+      setEditingAppointmentId(null); // Close the editing section
       setIsContainerExpanded(false);
       setShowTypeChange(false);
       setShowDateTimeChange(false);
     } else {
+      setEditingAppointmentId(appointment._id); // Set the currently editing appointment
       setEditingAppointment(appointment);
       setIsContainerExpanded(true);
       setShowTypeChange(false);
       setShowDateTimeChange(false);
       setSelectedCard(appointment.appointmentType);
       setSelectedDate(appointment.appointmentDate);
-      setSelectedTimeFrom(appointment.appointmentTime);
+      setSelectedTimeFrom(appointment.appointmentTimeFrom);
       const dates = generateAvailableDates();
       setAvailableDates(dates);
     }
   };
 
+  // Function to handle card selection for appointment type
   const handleCardSelect = (cardName) => setSelectedCard(cardName);
+
+  // Function to handle date selection for the appointment
   const handleDateSelect = (date) => {
     setSelectedDate(date);
     setSelectedTimeFrom(null); 
   };
   
+  // Function to handle time selection for the appointment
   const handleTimeSelect = (type, time) => {
     if (type === 'from') setSelectedTimeFrom(time);
   };
 
+  // Function to update an appointment with new details
   const handleUpdateAppointment = async () => {
     try {
       const token = localStorage.getItem('token');
+      // Use the old time if the selected time is null
       const updatedAppointment = {
         appointmentType: selectedCard,
         appointmentDate: selectedDate,
-        appointmentTime: selectedTimeFrom,
+        appointmentTimeFrom: selectedTimeFrom || editingAppointment.appointmentTimeFrom,
       };
-
+  
       if (selectedDate !== editingAppointment.appointmentDate) {
-        updatedAppointment.appointmentStatus = 'Rebooked';
+        updatedAppointment.appointmentStatus = 'Rebooked'; // Change status if the date is different
       }
-
+  
       const response = await axios.put(
-        `http://localhost:5000/api/updateAppointment/${editingAppointment._id}`,
+      `${import.meta.env.VITE_BACKEND_URL}/api/updateAppointment/${editingAppointment._id}`,
         updatedAppointment,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
+  
+      // Update the state with the new appointment data
       setAppointments(prevAppointments =>
         prevAppointments.map(app =>
-          app._id === response.data._id ? response.data : app
+          app._id === response.data._id ? { 
+            ...app, 
+            appointmentDate: response.data.appointmentDate, 
+            appointmentTimeFrom: response.data.appointmentTimeFrom,
+            appointmentType: response.data.appointmentType, // Update the appointment type
+            appointmentStatus: response.data.appointmentStatus // Update the appointment status if changed
+          } : app
         )
       );
-
-      setEditingAppointment(null);
-      setShowTypeChange(false);
-      setShowDateTimeChange(false);
+  
+      // Reset the editing state after successful update
+      setEditingAppointmentId(null); // Close the edit appointment container
+      setEditingAppointment(null); // Reset editing appointment
+      setShowTypeChange(false); // Reset type change visibility
+      setShowDateTimeChange(false); // Reset date/time change visibility
     } catch (error) {
       console.error('Error updating appointment:', error);
       setError('Failed to update appointment');
     }
   };
+  
 
+  // Function to cancel an appointment
   const handleCancelAppointment = (appointmentId) => {
     updateAppointmentStatus(appointmentId, 'Cancelled');
   };
 
+  // Function to toggle the expansion of the edit section
   const toggleExpansion = (expand) => {
     setIsContainerExpanded(expand);
     if (!expand) {
@@ -187,6 +217,7 @@ function ViewAppointment() {
     }
   };
 
+  // Function to filter and sort appointments based on user input
   const filteredAppointments = appointments.filter(appointment => {
     const nameMatch = `${appointment.patientFirstName} ${appointment.patientLastName}`.toLowerCase().includes(nameFilter.toLowerCase());
     const typeMatch = !typeFilter || appointment.appointmentType.toLowerCase().includes(typeFilter.toLowerCase());
@@ -200,19 +231,54 @@ function ViewAppointment() {
     return 0;
   });
 
+  const totalPages = Math.ceil(filteredAppointments.length / appointmentsPerPage); // Calculate total pages
+
+  // Function to handle moving to the next page of appointments
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prevPage => prevPage + 1);
+    }
+  };
+
+  // Function to handle moving to the previous page of appointments
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prevPage => prevPage - 1);
+    }
+  };
+
+  // Function to get appointments for the current page
+  const displayedAppointments = filteredAppointments
+    .filter(appointment => editingAppointmentId ? appointment._id === editingAppointmentId : true) // Show only the editing appointment if one is being edited
+    .slice((currentPage - 1) * appointmentsPerPage, currentPage * appointmentsPerPage);
+
+  // Function to generate time slots for appointments
+  const generateTimeSlots = (start, end) => {
+    const timeSlots = [];
+    let current = new Date();
+    current.setHours(start, 0, 0);
+    
+    const endTime = new Date();
+    endTime.setHours(end, 0, 0);
+  
+    while (current < endTime) {
+      const nextTime = new Date(current.getTime() + 15 * 60000);
+      const formattedTime = `${current.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})} → ${nextTime.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}`;
+      timeSlots.push(formattedTime);
+      current = nextTime;
+    }
+    
+    return timeSlots;
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
   return (
     <div className={`AdminAppointmentContainer ${isContainerExpanded ? 'expanded' : ''}`}>
-      {user && (
-        <div className="UserInfo">
-          <h2>Welcome, {user.firstName} {user.lastName}!</h2>
-          <p>Clinic: {user.clinic}</p>
-        </div>
-      )}
+      
       <h1>Pending and Rebooked Appointments</h1>
-      <div className="AdminAppointmentFilters">
+      <div className="FilterSortSection">
         <input
           type="text"
           placeholder="Filter by patient name"
@@ -234,116 +300,120 @@ function ViewAppointment() {
           <option value="desc">Date Descending</option>
         </select>
       </div>
-      {filteredAppointments.length === 0 ? (
+      {displayedAppointments.length === 0 ? (
         <p>No pending or rebooked appointments found.</p>
       ) : (
-        <table className="AdminAppointmentTable">
-          <thead>
-            <tr>
-              <th>Patient Name</th>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Type</th>
-              <th>Clinic</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredAppointments.map((appointment) => (
-              <React.Fragment key={appointment._id}>
-                <tr>
-                  <td>{`${appointment.patientFirstName} ${appointment.patientLastName}`}</td>
-                  <td>{appointment.appointmentDate}</td>
-                  <td>{appointment.appointmentTimeFrom}</td>
-                  <td>{appointment.appointmentType}</td>
-                  <td>{appointment.bookedClinic}</td>
-                  <td>{appointment.appointmentStatus}</td>
-                  <td>
-                    <button className="AdminAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
-                      {editingAppointment && editingAppointment._id === appointment._id ? 'Close' : 'Edit'}
-                    </button>
-                  </td>
-                </tr>
-                {editingAppointment && editingAppointment._id === appointment._id && (
+        <div className='table-responsive-container'>
+        <div className="table-responsive">
+          <table className="AdminAppointmentTable">
+            <thead>
+              <tr>
+                <th>Patient Name</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Type</th>
+                <th>Clinic</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {displayedAppointments.map((appointment) => (
+                <React.Fragment key={appointment._id}>
                   <tr>
-                    <td colSpan="6">
-                      <div 
-                        ref={editSectionRef}
-                        className={`AdminAppointmentEditSection ${isContainerExpanded ? 'expanded' : ''}`}
-                      >
-                        <h2>Edit Appointment</h2>
-                        <div className="AdminAppointmentEditButtons">
-                          <button className="AdminAppointmentButton" onClick={() => {
-                            setShowTypeChange(!showTypeChange);
-                            setShowDateTimeChange(false);
-                          }}>
-                            Change Appointment Type
-                          </button>
-                          <button className="AdminAppointmentButton" onClick={() => {
-                            setShowDateTimeChange(!showDateTimeChange);
-                            setShowTypeChange(false);
-                          }}>
-                            Change Date and Time
-                          </button>
-                        </div>
-
-                        <div className="AdminAppointmentEditContent">
-                          {showTypeChange && (
-                            <AppointmentStepOne
-                              selectedCard={selectedCard}
-                              handleCardSelect={handleCardSelect}
-                            />
-                          )}
-
-                          {showDateTimeChange && (
-                            <AppointmentStepTwo
-                              availableDates={availableDates}
-                              selectedDate={selectedDate}
-                              handleDateSelect={handleDateSelect}
-                              generateTimeSlots={generateTimeSlots}
-                              selectedTimeFrom={selectedTimeFrom}
-                              handleTimeSelect={handleTimeSelect}
-                              bookedAppointments={bookedAppointments} // Pass booked appointments here
-                            />
-                          )}
-                        </div>
-
-                        <div className="AdminAppointmentActionButtons">
-                          <button className="AdminAppointmentButton UpdateButton" onClick={handleUpdateAppointment}>
-                            Update Appointment
-                          </button>
-                          <button className="AdminAppointmentButton CancelButton" onClick={() => handleCancelAppointment(editingAppointment._id)}>
-                            Cancel Appointment
-                          </button>
-                          <button className="AdminAppointmentButton CloseButton" onClick={() => {
-                            setEditingAppointment(null);
-                            toggleExpansion(false);
-                          }}>
-                            Close
-                          </button>
-                        </div>
-
-                        <div className="AdminAppointmentStatusButtons">
-                          {['Cancelled', 'Completed', 'Not Showed'].map(status => (
-                            <button
-                              key={status}
-                              className="AdminAppointmentStatusButton"
-                              onClick={() => updateAppointmentStatus(appointment._id, status)}
-                            >
-                              {status}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                    <td>{`${appointment.patientFirstName} ${appointment.patientLastName}`}</td>
+                    <td>{appointment.appointmentDate}</td>
+                    <td>{appointment.appointmentTimeFrom}</td>
+                    <td>{appointment.appointmentType}</td>
+                    <td>{appointment.bookedClinic}</td>
+                    <td>{appointment.appointmentStatus}</td>
+                    <td>
+                      <button className="AdminAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
+                        {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}
+                      </button>
                     </td>
                   </tr>
-                )}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
+                  {editingAppointmentId === appointment._id && (
+                    <tr>
+                      <td colSpan="10">
+                        <div 
+                          ref={editSectionRef}
+                          className={`AdminAppointmentEditSection ${isContainerExpanded ? 'expanded' : ''}`}
+                        >
+                          <h2>Edit Appointment</h2>
+                          <div className="AdminAppointmentEditButtons">
+                            <button className="AdminAppointmentButton" onClick={() => {
+                              setShowTypeChange(!showTypeChange);
+                              setShowDateTimeChange(false);
+                            }}>
+                              Change Appointment Type
+                            </button>
+                            <button className="AdminAppointmentButton" onClick={() => {
+                              setShowDateTimeChange(!showDateTimeChange);
+                              setShowTypeChange(false);
+                            }}>
+                              Change Date and Time
+                            </button>
+                          </div>
+
+                          <div className="AdminAppointmentEditContent">
+                            {showTypeChange && (
+                              <AppointmentStepOne
+                                selectedCard={selectedCard}
+                                handleCardSelect={handleCardSelect}
+                              />
+                            )}
+
+                            {showDateTimeChange && (
+                              <AppointmentStepTwo
+                                availableDates={availableDates}
+                                selectedDate={selectedDate}
+                                handleDateSelect={handleDateSelect}
+                                generateTimeSlots={generateTimeSlots}
+                                selectedTimeFrom={selectedTimeFrom}
+                                handleTimeSelect={handleTimeSelect}
+                                bookedAppointments={bookedAppointments} // Pass booked appointments here
+                              />
+                            )}
+                          </div>
+
+                          <div className="AdminAppointmentActionButtons">
+                            <button className="AdminAppointmentButton UpdateButton" onClick={handleUpdateAppointment}>
+                              Update Appointment
+                            </button>
+                            <button className="AdminAppointmentButton CancelButton" onClick={() => handleCancelAppointment(editingAppointmentId)}>
+                              Cancel Appointment
+                            </button>
+                            
+                          </div>
+
+                          <div className="AdminAppointmentStatusButtons">
+                            {['Cancelled', 'Completed', 'Not Showed'].map(status => (
+                              <button
+                                key={status}
+                                className="AdminAppointmentStatusButton"
+                                onClick={() => updateAppointmentStatus(appointment._id, status)}
+                              >
+                                {status}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        </div>
       )}
+      <div className="pagination">
+        <button onClick={handlePreviousPage} disabled={currentPage === 1}>Previous</button>
+        <span>Page {currentPage} of {totalPages}</span>
+        <button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
+      </div>
     </div>
   );
 }

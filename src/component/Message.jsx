@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DrawerComponent from './Drawers';
+import Footer from './Footer'
 import './Message.css';
 
 const MessagePage = () => {
@@ -11,6 +13,11 @@ const MessagePage = () => {
   const [patients, setPatients] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState(null);
+  const [unreadMessages, setUnreadMessages] = useState([]);
+  const messagesContainerRef = useRef(null);
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  const [isChatVisible, setIsChatVisible] = useState(false);
+  const messagesEndRef = useRef(null);
 
   // Fetch logged-in user information
   useEffect(() => {
@@ -23,7 +30,7 @@ const MessagePage = () => {
 
     const fetchLoggedInUser = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/verify-token', {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -51,7 +58,7 @@ const MessagePage = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://localhost:5000/UserInformation');
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/UserInformation`);
         if (!response.ok) throw new Error('Failed to fetch users');
         const data = await response.json();
         
@@ -75,6 +82,35 @@ const MessagePage = () => {
     }
   }, [loggedInUser]);
 
+  // Fetch unread messages for the logged-in user
+  const fetchUnreadMessages = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch messages');
+      const data = await response.json();
+      const unread = data.filter(message => message.readAt === null && message.receiverId === loggedInUser.email);
+      setUnreadMessages(unread);
+    } catch (error) {
+      console.error('Error fetching unread messages:', error);
+    }
+  };
+
+  // Poll for unread messages every 5 seconds
+  useEffect(() => {
+    if (loggedInUser) {
+      fetchUnreadMessages();
+    }
+  }, [loggedInUser]);
+
   // Fetch messages when a user is selected or periodically
   useEffect(() => {
     const fetchMessages = async () => {
@@ -82,7 +118,7 @@ const MessagePage = () => {
 
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:5000/api/messages/${selectedUser.email}`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages/${selectedUser.email}`, {
           headers: {
             Authorization: token,
           },
@@ -97,11 +133,11 @@ const MessagePage = () => {
 
         // Scroll to bottom when new messages arrive
         const chatMessages = document.querySelector('.chat-messages');
-        if (chatMessages) {
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+        // if (chatMessages) {
+        //   chatMessages.scrollTop = chatMessages.scrollHeight;
+        // }
       } catch (error) {
-        console.error('Error fetching messages:', error);
+        // console.error('Error fetching messages:', error);
       }
     };
 
@@ -121,7 +157,7 @@ const MessagePage = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/messages/read/${selectedUser.email}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages/read/${selectedUser.email}`, {
         method: 'PUT',
         headers: {
           Authorization: token,
@@ -151,7 +187,7 @@ const MessagePage = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/messages', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -173,7 +209,7 @@ const MessagePage = () => {
       // Scroll to bottom after sending
       const chatMessages = document.querySelector('.chat-messages');
       if (chatMessages) {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        // chatMessages.scrollTop = chatMessages.scrollHeight;
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -188,11 +224,63 @@ const MessagePage = () => {
     }
   }, [messages]);
 
+  // Handle scroll event to check if user is at the bottom
+  const handleScroll = () => {
+    const container = messagesContainerRef.current;
+    if (container) {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      setIsAtBottom(scrollTop + clientHeight >= scrollHeight - 1);
+      
+      // If the user scrolls up, do not scroll to the bottom
+      if (!isAtBottom) {
+        return;
+      }
+    }
+  };
+
+  // Add the scroll event listener
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [messagesContainerRef]);
+
+  // Scroll to the bottom when the chat is opened
+  useEffect(() => {
+    if (isChatVisible) {
+      // Timeout to ensure the DOM is updated before scrolling
+      setTimeout(() => {
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      }, 0);
+    }
+  }, [isChatVisible]);
+
   if (loading) {
     return <p>Loading...</p>;
   }
 
+  // Sort users to show those with unread messages first
+  const sortedAdmins = admins.sort((a, b) => {
+    const aHasUnread = unreadMessages.some(message => message.senderId === a.email);
+    const bHasUnread = unreadMessages.some(message => message.senderId === b.email);
+    return (bHasUnread ? 1 : 0) - (aHasUnread ? 1 : 0);
+  });
+
+  const sortedPatients = patients.sort((a, b) => {
+    const aHasUnread = unreadMessages.some(message => message.senderId === a.email);
+    const bHasUnread = unreadMessages.some(message => message.senderId === b.email);
+    return (bHasUnread ? 1 : 0) - (aHasUnread ? 1 : 0);
+  });
+
   return (
+    <>
+    <DrawerComponent/>
     <div className="chat-page">
       <div className="users-sidebar">
         {/* Logged-in user section */}
@@ -213,47 +301,59 @@ const MessagePage = () => {
         )}
 
         {/* Show Admins section only if user is a patient */}
-        {loggedInUser?.role === 'patient' && admins.length > 0 && (
+        {loggedInUser?.role === 'patient' && sortedAdmins.length > 0 && (
           <div className="users-section">
             <div className="users-header">
               <h3>Available Admins</h3>
             </div>
             <div className="users-list">
-              {admins.map((user) => (
-                <div
-                  key={user._id}
-                  className={`user-item ${selectedUser?._id === user._id ? 'active' : ''}`}
-                  onClick={() => handleUserSelect(user)}
-                >
-                  <div className="user-info">
-                    <span className="user-name">{user.firstName} {user.lastName}</span>
-                    <span className="user-role">{user.role}</span>
+              {sortedAdmins.map((user) => {
+                const hasUnreadMessages = unreadMessages.some(message => message.senderId === user.email);
+                return (
+                  <div
+                    key={user._id}
+                    className={`user-item ${selectedUser?._id === user._id ? 'active' : ''}`}
+                    onClick={() => handleUserSelect(user)}
+                  >
+                    <div className="user-info">
+                      <span className="user-name" style={{ fontWeight: hasUnreadMessages ? 'bold' : 'normal' }}>
+                        {user.firstName} {user.lastName}
+                      </span>
+                      <span className="user-role">{user.role}</span>
+                      {hasUnreadMessages && <span className="unread-count">({unreadMessages.length})</span>}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
 
         {/* Show Patients section only if user is an admin */}
-        {loggedInUser?.role === 'admin' && patients.length > 0 && (
+        {loggedInUser?.role === 'admin' && sortedPatients.length > 0 && (
           <div className="users-section">
             <div className="users-header">
               <h3>Patients</h3>
             </div>
             <div className="users-list">
-              {patients.map((user) => (
-                <div
-                  key={user._id}
-                  className={`user-item ${selectedUser?._id === user._id ? 'active' : ''}`}
-                  onClick={() => handleUserSelect(user)}
-                >
-                  <div className="user-info">
-                    <span className="user-name">{user.firstName} {user.lastName}</span>
-                    <span className="user-role">{user.role}</span>
+              {sortedPatients.map((user) => {
+                const hasUnreadMessages = unreadMessages.some(message => message.senderId === user.email);
+                return (
+                  <div
+                    key={user._id}
+                    className={`user-item ${selectedUser?._id === user._id ? 'active' : ''}`}
+                    onClick={() => handleUserSelect(user)}
+                  >
+                    <div className="user-info">
+                      <span className="user-name" style={{ fontWeight: hasUnreadMessages ? 'bold' : 'normal' }}>
+                        {user.firstName} {user.lastName}
+                      </span>
+                      <span className="user-role">{user.role}</span>
+                      {hasUnreadMessages && <span className="unread-count">({unreadMessages.length})</span>}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -264,7 +364,7 @@ const MessagePage = () => {
           <h2>{selectedUser ? `Chat with ${selectedUser.firstName} ${selectedUser.lastName}` : 'Select a user'}</h2>
         </div>
         
-        <div className="chat-messages">
+        <div className="chat-messages" ref={messagesContainerRef}>
           {messages.map((message) => (
             <div 
               key={message._id} 
@@ -304,6 +404,8 @@ const MessagePage = () => {
         )}
       </div>
     </div>
+    <Footer/>
+    </>
   );
 };
 

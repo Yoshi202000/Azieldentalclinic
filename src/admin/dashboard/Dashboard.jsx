@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import './dashboard.css';
-import AccountSettings from '../../component/admin/AccountSettings';
 import PatientsInformation from '../../component/admin/PatientsInformation';
 import ViewAppointment from '../../component/admin/ViewAppointment';
 import CompletedAppointment from '../../component/admin/CompletedAppointment';
 import ViewFeedback from '../../component/admin/ViewFeedback';
 import ApproveToAdmin from '../../component/admin/ApproveToAdmin'
+import AccountSettings from '../../component/profile/AccountSettings'
 import DrawerComponent from '../../component/Drawers';
 import Footer from '../../component/Footer';
 
@@ -41,7 +41,7 @@ function Dashboard() {
             className={activeComponent === 'AccountSettings' ? 'active' : ''}
             onClick={() => setActiveComponent('AccountSettings')}
           >
-            Account Settings
+            Profile Information
           </button>
           <button
             className={activeComponent === 'PatientsInformation' ? 'active' : ''}

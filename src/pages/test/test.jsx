@@ -25,8 +25,8 @@ const Test = () => {
     }
 
     axios
-      .get('http://localhost:5000/verify-token', {
-        headers: {
+    .get(`${import.meta.env.VITE_BACKEND_URL}/verify-token`, {
+      headers: {
           Authorization: `${token}`,
         },
         withCredentials: true, // if using cookies
@@ -61,7 +61,7 @@ const Test = () => {
     e.preventDefault(); // Prevent page refresh
     const token = localStorage.getItem('token');
   
-    axios.put('http://localhost:5000/api/updateAccount', formData, {
+    axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/updateAccount`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

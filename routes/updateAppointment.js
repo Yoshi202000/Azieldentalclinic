@@ -6,7 +6,7 @@ const router = express.Router();
 router.put('/updateAppointment/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { appointmentType, appointmentDate, appointmentTime } = req.body;
+    const { appointmentType, appointmentDate, appointmentTimeFrom } = req.body;
 
     // Fetch the current appointment
     const currentAppointment = await Appointment.findById(id);
@@ -18,14 +18,14 @@ router.put('/updateAppointment/:id', async (req, res) => {
     // Check if the date or time has changed
     const isRebooked = 
       currentAppointment.appointmentDate !== appointmentDate ||
-      currentAppointment.appointmentTime !== appointmentTime;
+      currentAppointment.appointmentTimeFrom !== appointmentTimeFrom;
 
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       id,
       { 
         appointmentType, 
         appointmentDate, 
-        appointmentTime,
+        appointmentTimeFrom,
         // Set status to 'Rebooked' if date or time has changed
         appointmentStatus: isRebooked ? 'Rebooked' : currentAppointment.appointmentStatus
       },

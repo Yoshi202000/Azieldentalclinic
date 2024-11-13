@@ -18,8 +18,8 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
 
     // Fetch user data only once on component mount
     axios
-      .get('http://localhost:5000/api/verify-token', {
-        headers: {
+    .get(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
+      headers: {
           Authorization: `${token}`,
         },
         withCredentials: true,
@@ -75,8 +75,6 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
       </label>
 
       <div className="stepthree">
-        <div>
-        <label>Choose your clinic</label>
         <label>Choose your clinic</label>
         <select 
           name='bookedClinic' 
@@ -87,55 +85,50 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
           <option value="Aziel Dental Clinic">Aziel Dental Clinic</option>
           <option value="Arts of Millennials Dental Clinic">Arts of Millennials Dental Clinic</option>
         </select>
-          <label>Date of Birth</label>
-          <input
-            type="date"
-            name="dob"
-            placeholder="Date of Birth"
-            value={formData.dob}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div>
-          <label>First Name</label>
-          <input
-            type="text"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleInputChange}
-            readOnly={!isForOther} // Allow editing only if for someone else
-          />
-        </div>
-        <div>
-          <label>Last Name</label>
-          <input
-            type="text"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleInputChange}
-            readOnly={!isForOther} // Allow editing only if for someone else
-          />
-        </div>
-        <div>
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            readOnly={!isForOther} // Allow editing only if for someone else
-          />
-        </div>
-        <div>
-          <label>Phone Number</label>
-          <input
-            type="tel"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleInputChange}
-            readOnly={!isForOther} // Allow editing only if for someone else
-          />
-        </div>
+
+        <label>Date of Birth</label>
+        <input
+          type="date"
+          name="dob"
+          value={formData.dob}
+          onChange={handleInputChange}
+        />
+
+        <label>First Name</label>
+        <input
+          type="text"
+          name="firstName"
+          value={formData.firstName}
+          onChange={handleInputChange}
+          readOnly={!isForOther}
+        />
+
+        <label>Last Name</label>
+        <input
+          type="text"
+          name="lastName"
+          value={formData.lastName}
+          onChange={handleInputChange}
+          readOnly={!isForOther}
+        />
+
+        <label>Email</label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleInputChange}
+          readOnly={!isForOther}
+        />
+
+        <label>Phone Number</label>
+        <input
+          type="tel"
+          name="phoneNumber"
+          value={formData.phoneNumber}
+          onChange={handleInputChange}
+          readOnly={!isForOther}
+        />
       </div>
     </div>
   );

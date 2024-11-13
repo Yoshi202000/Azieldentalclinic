@@ -62,6 +62,7 @@
 /* Main content */
 .profileMainContent {
     flex: 3;
+    margin-top: 100px;
     background-color: #fff;
     padding: 20px;
     border-radius: 10px;
@@ -135,8 +136,14 @@
     border-collapse: collapse;
     margin-top: 20px;
     overflow-x: auto;
-    display: block;
     max-width: 100%;
+    table-layout: fixed; /* Ensures columns scale proportionally */
+}
+
+.ProfileAppointmentTable thead,
+.ProfileAppointmentTable tbody{
+    width: 100%;
+    
 }
 
 .ProfileAppointmentTable th,

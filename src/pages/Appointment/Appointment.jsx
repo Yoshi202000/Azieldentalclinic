@@ -53,7 +53,7 @@ const Appointment = () => {
 
   const fetchBookedAppointments = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/booked-appointments');
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/booked-appointments`);
       if (response.status === 200) {
         setBookedAppointments(response.data.bookedAppointments);
       } else {
@@ -109,7 +109,7 @@ const Appointment = () => {
     
 
     try {
-      const response = await fetch('http://localhost:5000/appointments', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/appointments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

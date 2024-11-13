@@ -3,6 +3,7 @@ import '../../admin/dashboard/Dashboard.css';
 import AppointmentStepOne from '../appointmentPage/AppointmentStepOne'; // Import the necessary components
 import AppointmentStepTwo from '../appointmentPage/AppointmentStepTwo';
 import { generateAvailableDates } from '../../utils/appDate';
+import './ViewAppointment.css'
 
 const PatientsInformation = () => {
   const [users, setUsers] = useState([]);
@@ -46,7 +47,7 @@ const PatientsInformation = () => {
   // Function to fetch users from the backend
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:5000/UserInformation'); // Ensure the correct URL
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/UserInformation`); // Ensure the correct URL
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -61,7 +62,7 @@ const PatientsInformation = () => {
   // New function to fetch appointments
   const fetchAppointments = async () => {
     try {
-      const response = await fetch('http://localhost:5000/ViewAppointment');
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -134,7 +135,7 @@ const PatientsInformation = () => {
         appointmentTimeFrom: selectedTimeFrom,
       };
 
-      const response = await fetch(`http://localhost:5000/api/updateAppointment/${editingAppointment._id}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/updateAppointment/${editingAppointment._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -164,7 +165,7 @@ const PatientsInformation = () => {
   const handleCancelAppointment = async (appointmentId) => {
     // Logic to cancel the appointment (API call to update the status to 'Cancelled')
     try {
-      const response = await fetch(`http://localhost:5000/api/cancelAppointment/${appointmentId}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cancelAppointment/${appointmentId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -202,7 +203,7 @@ const PatientsInformation = () => {
             onChange={(e) => setSearchTerm(e.target.value)} // Update search term on input change
             className="SearchInput"
           />
-          <table className="PITable">
+          <table className="AdminAppointmentTable">
             <thead>
               <tr>
                 <th>First Name</th>
@@ -236,7 +237,7 @@ const PatientsInformation = () => {
                 </button>
               </div>
               {filteredAppointments.length > 0 ? (
-                <table className="PIAppointmentsTable">
+                <table className="AdminAppointmentTable">
                   <thead>
                     <tr>
                       <th>Date</th>

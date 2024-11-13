@@ -173,64 +173,69 @@ const ApproveToAdmin = () => {
         <p className="PIError">Error fetching data: {error}</p>
       ) : (
         <>
-          {user && <p className="UserInfo">Hello, {user.firstName} from {user.clinic}</p>}
+        <p>search user</p>
           <input
             type="text"
             placeholder="Search by user name"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="SearchInput"
+            className="SearchInput styled-input"
           />
           {showPasswordPopup && selectedUser && (
-            <div className="PasswordPopup">
+            <div className="PasswordPopup styled-popup">
               <p>Are you sure you want to change {selectedUser.firstName} {selectedUser.lastName}'s role to {actionType === 'approve' ? 'admin' : 'patient'} and clinic to {actionType === 'approve' ? user.clinic : 'both'}?</p>
               <input
                 type="password"
                 placeholder="Enter your password to confirm"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="PasswordInput"
+                className="PasswordInput styled-input"
               />
-              <button onClick={executeAction} className="PIButton">Confirm Action</button>
+              <div className="ButtonContainer">
+                <button onClick={executeAction} className="PIButton">Confirm Action</button>
+                <button onClick={() => setShowPasswordPopup(false)} className="CancelButton">Cancel</button>
+              </div>
             </div>
           )}
-          <table className="PITable">
-            <thead>
-              <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Role</th>
-                <th>Clinic</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user._id} onClick={() => handleUserClick(user)}>
-                  <td>{user.firstName}</td>
-                  <td>{user.lastName}</td>
-                  <td>{user.email}</td>
-                  <td>{user.phoneNumber}</td>
-                  <td>{user.role}</td>
-                  <td>{user.clinic}</td>
-                  <td>
-                    {user.role === 'patient' && (
-                      <button className="PIButton" onClick={() => handleAction(user._id, 'approve')}>
-                        Approve as Admin
-                      </button>
-                    )}
-                    {user.role === 'admin' && (
-                      <button className="PIButton" onClick={() => handleAction(user._id, 'revert')}>
-                        Revert to Patient
-                      </button>
-                    )}
-                  </td>
+          <div className="PiTableDiv">
+            <table className="PITable">
+              <thead>
+                <tr>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Email</th>
+                  <th>Phone Number</th>
+                  <th>Role</th>
+                  <th>Clinic</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredUsers.map((user) => (
+                  <tr key={user._id} onClick={() => handleUserClick(user)}>
+                    <td>{user.firstName}</td>
+                    <td>{user.lastName}</td>
+                    <td>{user.email}</td>
+                    <td>{user.phoneNumber}</td>
+                    <td>{user.role}</td>
+                    <td>{user.clinic}</td>
+                    <td>
+                      {user.role === 'patient' && (
+                        <button className="PIButton" onClick={() => handleAction(user._id, 'approve')}>
+                          Approve as Admin
+                        </button>
+                      )}
+                      {user.role === 'admin' && (
+                        <button className="PIButton" onClick={() => handleAction(user._id, 'revert')}>
+                          Revert to Patient
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
     </div>

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import AppointmentStepOne from '../appointmentPage/AppointmentStepOne';
 import AppointmentStepTwo from '../appointmentPage/AppointmentStepTwo';
 import { generateAvailableDates } from '../../utils/appDate';
+import '../../pages/Profile/Profile.css'
 
 function ViewAppointmentByUser() {
   const [user, setUser] = useState(null);
@@ -57,7 +58,7 @@ function ViewAppointmentByUser() {
 
   const fetchUserInfo = async (token) => {
     try {
-      const response = await axios.get('http://localhost:5000/api/verify-token', {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -80,7 +81,7 @@ function ViewAppointmentByUser() {
 
   const fetchAppointments = async (token, userEmail) => {
     try {
-      const response = await axios.get('http://localhost:5000/ViewAppointment', {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -101,7 +102,7 @@ function ViewAppointmentByUser() {
 
   const fetchBookedAppointments = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/booked-appointments');
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/booked-appointments`);
       if (response.status === 200) {
         setBookedAppointments(response.data.bookedAppointments);
       } else {
@@ -115,7 +116,7 @@ function ViewAppointmentByUser() {
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:5000/ViewAppointment/updateStatus', 
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment/updateStatus`, 
         { appointmentId, newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -146,7 +147,7 @@ function ViewAppointmentByUser() {
       setShowDateTimeChange(false);
       setSelectedCard(appointment.appointmentType);
       setSelectedDate(appointment.appointmentDate);
-      setSelectedTimeFrom(appointment.appointmentTime);
+      setSelectedTimeFrom(appointment.appointmentTimeFrom);
       // Regenerate available dates when editing an appointment
       const dates = generateAvailableDates();
       setAvailableDates(dates);
@@ -169,7 +170,7 @@ function ViewAppointmentByUser() {
       const updatedAppointment = {
         appointmentType: selectedCard,
         appointmentDate: selectedDate,
-        appointmentTime: selectedTimeFrom,
+        appointmentTimeFrom: selectedTimeFrom,
       };
 
       // Check if the date has changed
@@ -178,7 +179,7 @@ function ViewAppointmentByUser() {
       }
 
       const response = await axios.put(
-        `http://localhost:5000/api/updateAppointment/${editingAppointment._id}`,
+`${import.meta.env.VITE_BACKEND_URL}/api/updateAppointment/${editingAppointment._id}`,
         updatedAppointment,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -232,16 +233,7 @@ function ViewAppointmentByUser() {
 
   return (
     <div className={`ProfileAppointmentContainer ${isContainerExpanded ? 'expanded' : ''}`}>
-      {user && (
-        <div className="ProfileAppointmentUserInfo">
-          <h2>User Information</h2>
-          <p>Name: {user.firstName} {user.lastName}</p>
-          <p>Email: {user.email}</p>
-          <p>Phone: {user.phoneNumber}</p>
-          <p>Date of Birth: {user.dob}</p>
-          <p>clinic: {user.clinic}</p>
-        </div>
-      )}
+      
 
       <h1>Your Appointments</h1>
       

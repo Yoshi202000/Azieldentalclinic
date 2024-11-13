@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import DrawerComponent from '../../component/Drawers';
 import Footer from '../../component/Footer';
+import Chat from '../../component/chat'
 import profilePic1 from '../../assets/doctor1.png';
 // component from profile 
 import Dashboard from '../../component/profile/Dashboard';
@@ -27,27 +28,13 @@ const Profile = () => {
 
   return (
     <>
+    <Chat/>
     <DrawerComponent/>
-    <div className="profilePageWrapper">
-      <div className='profileContainer'>
-        <div className='profileSidebar'>
-          <button className={`profileButton ${activeComponent === 'Dashboard' ? 'active' : ''}`} onClick={() => setActiveComponent('Dashboard')}>
-            Dashboard
-          </button>
-          <button className={`profileButton ${activeComponent === 'AccountSettings' ? 'active' : ''}`} onClick={() => setActiveComponent('AccountSettings')}>
-            Account Settings
-          </button>
-          <button className={`profileButton ${activeComponent === 'ViewAppointments' ? 'active' : ''}`} onClick={() => setActiveComponent('ViewAppointments')}>
-            View Appointments
-          </button>
-        </div>
-
-        <div className='profileMainContent'>
-          {renderComponent()}
-        </div>
-      </div>
-      <Footer />
+    <div className='profileMainContent'>
+    <AccountSettings />
+    <ViewAppointmentByUser />
     </div>
+      <Footer />
     </>
   );
 };

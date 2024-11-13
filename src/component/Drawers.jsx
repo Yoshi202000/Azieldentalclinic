@@ -24,7 +24,7 @@ const DrawerComponent = () => {
   const handleLogout = async () => {
     try {
       // Call the backend logout endpoint to clear the server-side cookie
-      await axios.post(`http://localhost:5000/logout`, {}, { withCredentials: true });
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/logout`, {}, { withCredentials: true });
   
       // Clear client-side storage
       localStorage.removeItem('token'); // Remove the token from localStorage
@@ -75,7 +75,7 @@ const DrawerComponent = () => {
               <a href={isLoggedIn ? "/appointment" : "#"} className="navbar-link" onClick={handleAppointmentClick}>Appointment</a>
             </li>
             <li className="navbar-item">
-              <a href="#branches" className="navbar-link">Branches</a>
+              <a href="/dashboard" className="navbar-link">Branches</a>
             </li>
             
             {isLoggedIn && (
@@ -120,7 +120,7 @@ const DrawerComponent = () => {
               <a href="/appointment" className="drawer-link">Appointment</a>
             </li>
             <li className="drawer-item">
-              <a href="#branches" className="drawer-link">Branches</a>
+              <a href="/dashboard" className="drawer-link">Branches</a>
             </li>
 
             {isLoggedIn && (

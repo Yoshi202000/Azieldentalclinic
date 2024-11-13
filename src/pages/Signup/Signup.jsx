@@ -35,7 +35,7 @@ function Signup() {
         }
 
         try {
-            const response = await fetch('http://localhost:5000/api/send-verification', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/send-verification`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ function Signup() {
         const { firstName, lastName, email, phoneNumber, password, verifyEmailCode } = formData;
 
         try {
-            const response = await fetch('http://localhost:5000/api/signup', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -15,7 +15,7 @@ const Forgot = () => {
   const handleSendCode = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/send-code', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/send-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -44,7 +44,7 @@ const Forgot = () => {
   const handleVerifyCode = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/verify-code', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/verify-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code: enteredCode }),
@@ -79,7 +79,7 @@ const Forgot = () => {
       return;
     }
     try {
-      const response = await fetch('http://localhost:5000/api/change-password', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/change-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, newPassword}),

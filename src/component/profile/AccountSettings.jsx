@@ -26,7 +26,7 @@ const AccountSettings = () => {
 
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/verify-token', {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`, // Ensure Bearer token format
@@ -72,36 +72,7 @@ const AccountSettings = () => {
 
     const token = localStorage.getItem('token');
 
-    try {
-      // Update this URL to match the server route
-      const response = await fetch('http://localhost:5000/api/updateAccount', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-        credentials: 'include',
-      });
-
-      const data = await response.json(); // Parse the response
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Unauthorized. Please log in again.');
-        }
-        throw new Error('Failed to update profile.');
-      }
-
-      setMessage(data.message || 'Profile updated successfully!');
-      setIsError(false);
-    } catch (error) {
-      console.error('Error updating profile:', error.message);
-      setMessage(error.message);
-      setIsError(true);
-    } finally {
-      setIsSubmitting(false); // Reset submitting state
-    }
+    
   };
   
 
@@ -111,18 +82,20 @@ const AccountSettings = () => {
 
   return (
     <div className="account-settings-container">
-      <h1>Account Settings</h1>
+      <h1>Profile Information</h1>
       {message && <p className={isError ? 'error-message' : 'success-message'}>{message}</p>}
       <form onSubmit={handleSubmit}>
         <label htmlFor="firstName">First Name:</label>
         <input 
           type="text"
+          readOnly
           name="firstName"
           value={formData.firstName || ''}
           onChange={handleInputChange}
         />
         <label htmlFor="lastName">Last Name:</label>
         <input 
+        readOnly
           type="text"
           name="lastName"
           value={formData.lastName || ''}
@@ -130,6 +103,7 @@ const AccountSettings = () => {
         />
         <label htmlFor="email">Email:</label>
         <input 
+        readOnly
           type="email"
           name="email"
           value={formData.email || ''}
@@ -137,14 +111,12 @@ const AccountSettings = () => {
         />
         <label htmlFor="phoneNumber">Phone Number:</label>
         <input 
+        readOnly
           type="text"
           name="phoneNumber"
           value={formData.phoneNumber || ''}
           onChange={handleInputChange}
         />
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Submitting...' : 'Edit Profile'}
-        </button>
       </form>
     </div>
   );

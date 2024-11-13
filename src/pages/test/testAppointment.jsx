@@ -9,8 +9,8 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
 
   React.useEffect(() => {
     axios
-      .get('http://localhost:5000/verify-token', {
-        withCredentials: true, // Include cookies with the request
+    .get(`${import.meta.env.VITE_BACKEND_URL}/verify-token`, {
+      withCredentials: true, // Include cookies with the request
       })
       .then((response) => {
         setUser(response.data.user);

@@ -24,7 +24,7 @@ function Notification() {
     try {
       setLoading(true);
       // Fetch user data
-      const userResponse = await fetch('http://localhost:5000/api/verify-token', {
+      const userResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -41,11 +41,10 @@ function Notification() {
       // Fetch notifications based on user role
       let notificationsResponse;
       if (userData.user.role.toLowerCase() === 'admin') {
-        notificationsResponse = await axios.get('http://localhost:5000/api/admin-notifications', {
-          headers: { Authorization: `Bearer ${token}` }
+        notificationsResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin-notifications`, {          headers: { Authorization: `Bearer ${token}` }
         });
       } else {
-        notificationsResponse = await axios.get('http://localhost:5000/api/patient-notifications', {
+        notificationsResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/patient-notifications`, {
           headers: { Authorization: `Bearer ${token}` }
         });
       }
@@ -119,7 +118,7 @@ function Notification() {
   // Mark a notification as read
   const markNotificationAsRead = async (notificationId, notificationType) => {
     try {
-      await axios.post('http://localhost:5000/api/mark-notification-read', {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/mark-notification-read`, {
         notificationId,
         notificationType
       }, {
@@ -142,7 +141,7 @@ function Notification() {
   // Delete a notification
   const deleteNotification = async (notificationId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/delete-notification/${notificationId}`, {
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/delete-notification/${notificationId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
 

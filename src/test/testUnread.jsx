@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Chat.css'; // Import your CSS
 
-function Chat() {
+function TestUnread() {
   const navigate = useNavigate();
   const [isChatVisible, setIsChatVisible] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -14,9 +14,6 @@ function Chat() {
   const [unreadCount, setUnreadCount] = useState(0);
   const pollingIntervalRef = useRef(null);
   const [unreadMessages, setUnreadMessages] = useState([]);
-  const messagesEndRef = useRef(null); // Reference for scrolling to the bottom
-  const messagesContainerRef = useRef(null); // Reference for messages container
-  const [isAtBottom, setIsAtBottom] = useState(true); // Track if user is at the bottom
 
   // Fetch logged-in user information
   useEffect(() => {
@@ -26,7 +23,8 @@ function Chat() {
     
     const fetchLoggedInUser = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {          method: 'GET',
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
+          method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -81,7 +79,8 @@ function Chat() {
       if (!token) return;
 
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages`, {          method: 'GET',
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages`, {
+          method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -140,7 +139,8 @@ function Chat() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages/${selectedUser.email}`, {        headers: {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages/${selectedUser.email}`, {
+        headers: {
           Authorization: `Bearer ${token}`,
         },
       });
@@ -173,6 +173,11 @@ function Chat() {
       const data = await response.json();
       
       const unreads = data.filter(message => message.receiverId === loggedInUser.email && message.readAt === null);
+
+      console.log('second unreads',unreads);
+
+      //setUnreadCount(data.unreadCount);
+      console.log('second unread');
     } catch (error) {
       console.error('Error fetching unread messages count:', error);
     }
@@ -250,46 +255,6 @@ function Chat() {
     setMessages([]);
   };
 
-  // Scroll to the bottom when the chat is opened
-  useEffect(() => {
-    if (isChatVisible) {
-      // Timeout to ensure the DOM is updated before scrolling
-      setTimeout(() => {
-        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-      }, 0);
-    } else {
-      // Reset scroll position when chat is closed
-      setIsAtBottom(true);
-    }
-  }, [isChatVisible]);
-
-  // Handle scroll event to check if user is at the bottom
-  const handleScroll = () => {
-    const container = messagesContainerRef.current;
-    if (container) {
-      const { scrollTop, scrollHeight, clientHeight } = container;
-      setIsAtBottom(scrollTop + clientHeight >= scrollHeight - 1);
-      
-      // If the user scrolls up, do not scroll to the bottom
-      if (!isAtBottom) {
-        return;
-      }
-    }
-  };
-
-  // Add the scroll event listener
-  useEffect(() => {
-    const container = messagesContainerRef.current;
-    if (container) {
-      container.addEventListener('scroll', handleScroll);
-    }
-    return () => {
-      if (container) {
-        container.removeEventListener('scroll', handleScroll);
-      }
-    };
-  }, [messagesContainerRef]);
-
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -297,16 +262,9 @@ function Chat() {
   return (
     <>
       {loggedInUser && (
-        <div className="chat-icon" onClick={() => setIsChatVisible(!isChatVisible)}>
-          <span role="img" aria-label="message" style={{ fontSize: '24px', marginRight: '8px' }}>💬</span>
-          <div className="unread-count">{unreadMessages.length}</div>
-        </div>
-      )}
-
-      {isChatVisible && (
         <div className="chat">
           <div className="chat-title">
-            <h1 onClick={() => navigate('/message')}>Chat</h1>
+            <h1>Chat</h1>
             {selectedUser ? (
               <>
                 <h2>Chat with {selectedUser.firstName}</h2>
@@ -317,10 +275,11 @@ function Chat() {
             )}
           </div>
 
+         
+
           {!selectedUser && (
             <div className="user-list">
               {users.map((user) => {
-                // Check if the user has unread messages
                 const hasUnreadMessages = unreadMessages.some(message => message.senderId === user.email);
                 return (
                   <div 
@@ -359,7 +318,6 @@ function Chat() {
                   </div>
                 </div>
               ))}
-              <div ref={messagesEndRef} /> {/* Reference for scrolling */}
             </div>
           </div>
 
@@ -381,4 +339,4 @@ function Chat() {
   );
 }
 
-export default Chat;
+export default TestUnread;

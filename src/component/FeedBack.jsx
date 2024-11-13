@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import '../styles/FeedBack.css'; // We'll create this file for styling
 import DrawerComponent from './Drawers';
 import axios from 'axios'; // Make sure to install axios: npm install axios
+import Footer from './Footer'
+import Chat from './chat';
 
 // At the top of your file, set the base URL for axios
-axios.defaults.baseURL = 'http://localhost:5000'; // or whatever your server URL is
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL; // Use environment variable for server URL
 
 const FeedBack = () => {
   const [rating, setRating] = useState(0);
@@ -35,7 +37,9 @@ const FeedBack = () => {
 
   return (
     <>
+    <Chat></Chat>
       <DrawerComponent />
+      <div className="FBfeedbackContainer">
       <div className="FBfeedback">
         <h2>We'd love to hear your feedback!</h2>
         {showSuccessMessage && (
@@ -78,6 +82,8 @@ const FeedBack = () => {
           <button type="submit">Submit Feedback</button>
         </form>
       </div>
+      </div>
+      <Footer/>
     </>
   );
 };

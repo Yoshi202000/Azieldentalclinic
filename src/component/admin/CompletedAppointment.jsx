@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../../admin/dashboard/Dashboard.css';
+import './ViewAppointment.css';
 
 const CompletedAppointment = () => {
   const [appointments, setAppointments] = useState([]);
@@ -10,7 +11,7 @@ const CompletedAppointment = () => {
   // Function to fetch appointments from the backend
   const fetchAppointments = async () => {
     try {
-      const response = await fetch('http://localhost:5000/ViewAppointment');
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -56,7 +57,9 @@ const CompletedAppointment = () => {
       ) : filteredAppointments.length === 0 ? (
         <p>No appointments found for the selected filter.</p>
       ) : (
-        <table className="patients-table">
+        <div className='table-responsive-container'>
+          <div className='table-responsive'>
+        <table className="AdminAppointmentTable">
           <thead>
             <tr>
               <th>Patient First Name</th>
@@ -78,6 +81,8 @@ const CompletedAppointment = () => {
             ))}
           </tbody>
         </table>
+        </div>
+        </div>
       )}
     </div>
   );

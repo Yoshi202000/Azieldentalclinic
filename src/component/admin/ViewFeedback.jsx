@@ -29,6 +29,7 @@ const ViewFeedback = () => {
 
   return (
     <>
+    
       <div className="view-feedback-container">
         <h2>Feedback Submissions</h2>
         {feedbacks.length === 0 ? (

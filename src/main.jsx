@@ -15,14 +15,15 @@ import Profile from './pages/Profile/Profile.jsx';
 import Forgot from './pages/ForgotPass/ForgotPass.jsx';
 import Dashboard from './admin/dashboard/Dashboard.jsx';
 import Services from './pages/Services/services.jsx';
+import FeedBack from './component/FeedBack.jsx';
+import MessagePage from './component/Message.jsx';
 
 // import pages not yet done section
-import FeedBack from './component/FeedBack.jsx';
+
 
 // Test components (for testing purposes)
-import MessagePage from './component/Message.jsx';
+
 import Chat from './component/chat.jsx'
-import ApproveToAdmin from './component/admin/ApproveToAdmin.jsx';
   
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -30,9 +31,9 @@ createRoot(document.getElementById('root')).render(
       <Routes>
 
         {/* test component */}
-        <Route path="/message" element={<MessagePage />} />
+        {/* scroll function is not yet done */}
         <Route path="/chat" element={<Chat />} />
-        <Route path='toadmin' element={<ApproveToAdmin/>}/>
+
         {/* Public Routes */}
         <Route path="/" element={<App />} />
         <Route path="/home" element={<App />} />
@@ -45,6 +46,7 @@ createRoot(document.getElementById('root')).render(
 
         {/* Protected Routes for Patients onlys */}
         {/* not yet done for design*/}
+        
         <Route 
           path="/feedBack" 
           element={
@@ -56,6 +58,17 @@ createRoot(document.getElementById('root')).render(
 
 
         {/* Protected Routes for Patients and Admins */}
+
+        {/* scroll function is not yet done */}
+        <Route 
+        path="/message" 
+        element={
+          <ProtectedRoute allowedRoles={["patient", "admin"]}>
+        <MessagePage />
+        </ProtectedRoute>
+        } />
+
+        {/* appointmentStepThree design */}
         <Route 
           path="/appointment" 
           element={
@@ -64,16 +77,19 @@ createRoot(document.getElementById('root')).render(
             </ProtectedRoute>
           } 
         />
+        {/* remove the admin route once done */}
         <Route 
           path="/profile" 
           element={
-            <ProtectedRoute allowedRoles={["patient", "admin"]}>
+            <ProtectedRoute allowedRoles={["patient"]}>
               <Profile />
             </ProtectedRoute>
           } 
         />
 
         {/* Protected Routes for Admins Only */}
+
+        {/* show the profile information */}
         <Route 
           path="/dashboard" 
           element={

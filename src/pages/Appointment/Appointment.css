@@ -189,6 +189,11 @@ html, body {
   text-align: center;
 }
 
+.appointment-date {
+  padding: 0;
+}
+
+
 .appointment-type {
   text-align: center;
   width: 100%;
@@ -236,7 +241,7 @@ html, body {
   width: 100%;
   max-width: 600px;
   padding: 10px;
-  margin: 10px 0;
+  margin: 1px 0;
   border-radius: 4px;
   border: 1px solid #ccc;
 }
@@ -269,6 +274,7 @@ button.complete-button {
 /* Calendar and Time Slots Section */
 .calendar-time-container {
   display: flex;
+  flex-direction: row;
   gap: 20px;
   justify-content: center;
   align-items: flex-start;
@@ -284,7 +290,6 @@ button.complete-button {
   max-height: 400px;
   overflow-y: auto;
   flex: 1;
-  min-width: 250px;
 }
 
 .calendar-container {
@@ -320,12 +325,175 @@ button.complete-button {
 
 @media (max-width: 768px) {
   .calendar-time-container {
-    flex-direction: column;
+    display: flex;
+    flex-direction: row; /* Keep them in a row */
+    align-items: flex-start; /* Align items to the start */
+    width: 100%;
+    justify-content: space-between; /* Space between the containers */
+  }
+
+  .calendar-container,
+  .time-slots-container {
+    width: 40%; /* Set width to 45% to fit both in a row */
+  }
+}
+
+/* Responsive adjustments for AppointmentStepTwo */
+@media (max-width: 768px) {
+  .appointment-date {
+    width: 90%; /* Make appointment date full width */
+    margin: 0 auto; /* Center align */
+    padding: 10px; /* Reduce padding */
+  }
+
+  .calendar-time-container {
+    display: flex;
+    flex-direction: row; /* Keep them in a row */
+    justify-content: space-between; /* Space between the containers */
+    width: 100%; /* Full width */
+    flex-wrap: wrap; /* Allow wrapping */
+  }
+
+  .calendar-container,
+  .time-slots-container {
+    width: 50%; /* Set width to 45% to fit both in a row */
+    padding: 10px; /* Add padding for better spacing */
+  }
+
+  .calendar,
+  .time-slots {
+    list-style: none; /* Remove default list styles */
+    padding: 0; /* Remove padding */
+  }
+
+  .calendar li,
+  .time-slots li {
+    padding: 10px; /* Reduce padding for list items */
+    margin-bottom: 5px; /* Reduce margin between items */
+    background-color: #e8f4ff; /* Background color for list items */
+    color: #007bff; /* Text color */
+    border-radius: 5px; /* Rounded corners */
+    text-align: center; /* Center text */
+    cursor: pointer; /* Pointer cursor on hover */
+  }
+
+  .calendar li.selected,
+  .time-slots li.selected {
+    background-color: #007bff; /* Highlight selected items */
+    color: #fff; /* Change text color for selected items */
+  }
+}
+
+/* Responsive adjustments for AppointmentStepOne */
+@media (max-width: 768px) {
+  .app-card-container {
+    flex-direction: row;
     align-items: center;
+    width: 90%;
+    max-width: 300px;
+  }
+
+  .app-card {
+    width: 100%;
+  }
+}
+
+/* Additional Styles for Appointment Step Three */
+.appointment-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.stepthree {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Space between form elements */
+  width: 100%;
+  max-width: 400px; /* Limit width for better appearance */
+}
+
+.stepthree label {
+  font-weight: bold; /* Make labels bold */
+}
+
+.stepthree input, 
+.stepthree select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%; /* Full width for inputs */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+}
+
+.stepthree input:focus, 
+.stepthree select:focus {
+  border-color: #4D869C; /* Change border color on focus */
+  outline: none; /* Remove default outline */
+}
+
+/* Styles for Admin Appointment Edit Section Buttons */
+.AdminAppointmentEditButtons,
+.AdminAppointmentActionButtons {
+  display: flex;
+  flex-direction: row; /* Align buttons in a row */
+  justify-content: space-between; /* Space between buttons */
+  width: 100%; /* Full width for the button container */
+  margin-bottom: 10px; /* Space below the button container */
+}
+
+.AdminAppointmentButton {
+  flex: 1; /* Make buttons take equal space */
+  margin: 0 5px; /* Add margin between buttons */
+  padding: 10px; /* Adjust padding for better appearance */
+}
+
+.AdminAppointmentStatusButtons {
+  display: flex;
+  flex-direction: row; /* Align status buttons in a row */
+  justify-content: space-between; /* Space between status buttons */
+  width: 100%; /* Full width for the status button container */
+}
+
+.AdminAppointmentStatusButton {
+  flex: 1; /* Make status buttons take equal space */
+  margin: 0 5px; /* Add margin between status buttons */
+}
+
+@media (max-width: 350px) {
+
+  .appointment-container{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+  .appointment-date{
+    width: 90%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .time-slots  li{
+    
+  font-size: xx-small;
+  }
+
+  .calendar-time-container {
+    gap: 0;
+  }
+
+  .calendar-container,
+  .calendar-time-container h3{
+    font-size: xx-small;
   }
   .calendar-container,
   .time-slots-container {
-    max-width: 100%;
-    width: 90%;
+    width: 20%;
   }
+  .calendar-container,
+.time-slots-container  li{
+  padding: 0;
+}
+
 }
