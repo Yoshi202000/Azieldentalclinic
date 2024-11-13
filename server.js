@@ -49,6 +49,7 @@ mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('Connected to MongoDB server'))
     .catch(err => console.error('Error connecting to MongoDB', err));
 
+    app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 app.use('/api', signupRoutes);
 app.use(loginRoutes);
@@ -66,6 +67,12 @@ app.use('/api', notificationRoutes); // Add this line
 app.use('/api', messageRoutes);  // Add this line
 app.use('/api', updateUserRoutes);
 app.use('/api', unreadRoutes);
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+
 // Start server
 const PORT = process.env.PORT || 5000; 
 app.listen(PORT, () => {
