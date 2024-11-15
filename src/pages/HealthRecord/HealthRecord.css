@@ -1,0 +1,143 @@
+.health-record-container {
+    max-width: 600px;
+    margin-top: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+.health-record-container h1 {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.health-record-container p.info-message {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 20px;
+    text-align: center;
+    background-color: #e8f4ff;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.question {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.question label {
+    display: block;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.question div {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.question label input[type="radio"] {
+    margin-right: 5px;
+}
+
+button.health-record-submit {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button.health-record-submit:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+button.health-record-submit:hover:not(:disabled) {
+    background-color: #45a049;
+}
+
+.success-message {
+    color: #4CAF50;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.error-message {
+    color: #e74c3c;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1027px) {
+    .health-record-container {
+        padding: 15px;
+        margin: 20px auto;
+    }
+
+    .health-record-container h1 {
+        font-size: 20px;
+    }
+
+    .health-record-container p.info-message {
+        font-size: 13px;
+    }
+
+    .question label {
+        font-size: 16px;
+    }
+
+    button.health-record-submit {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .health-record-container {
+        padding: 10px;
+        margin: 20px auto;
+    }
+
+    .health-record-container h1 {
+        font-size: 18px;
+    }
+
+    .health-record-container p.info-message {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .question label {
+        font-size: 15px;
+    }
+
+    .question div {
+        gap: 5px;
+    }
+
+    button.health-record-submit {
+        font-size: 13px;
+        padding: 8px;
+    }
+}

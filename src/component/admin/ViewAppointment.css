@@ -155,6 +155,58 @@
   background-color: #45a049;
 }
 
+.sales-summary-container {
+  padding: 20px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.sales-summary-title {
+  text-align: center;
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.sales-summary-error,
+.sales-summary-no-data {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #d9534f;
+}
+
+.sales-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.sales-summary-card {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s;
+}
+
+.sales-summary-card:hover {
+  transform: scale(1.02);
+}
+
+.sales-summary-card-title {
+  font-size: 1.2rem;
+  color: #4caf50;
+  margin-bottom: 10px;
+}
+
+.sales-summary-card-total {
+  font-size: 1rem;
+  color: #333;
+}
+
+
 /* Responsive Styles */
 @media (max-width: 768px) {
   .AdminAppointmentContainer {
@@ -297,4 +349,96 @@
     padding: 6px;
     font-size: 10px;
   }
+}
+/* Container styling for filter buttons */
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Filter buttons title styling */
+.filter-buttons h3 {
+  width: 100%;
+  text-align: center;
+  color: #555;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+/* Default button styling */
+.filter-buttons button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  background-color: #e0e0e0;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+/* Hover and active state styling */
+.filter-buttons button:hover {
+  background-color: #d0d0d0;
+}
+
+.filter-buttons button:active {
+  transform: scale(0.97);
+}
+
+/* Active button styling */
+.filter-buttons button.active {
+  background-color: #4caf50;
+  color: white;
+  font-weight: 600;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .filter-buttons {
+    gap: 8px;
+  }
+
+  .filter-buttons button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Additional adjustments for very small screens */
+@media (max-width: 480px) {
+  .filter-buttons {
+    gap: 5px;
+    justify-content: space-evenly;
+  }
+
+  .filter-buttons button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    border-radius: 15px;
+  }
+}
+.sort-button-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.sort-button {
+  padding: 8px 20px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: white;
+  background-color: #4caf50;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.sort-button:hover {
+  background-color: #45a049;
 }

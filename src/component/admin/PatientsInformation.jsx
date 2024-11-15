@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import '../../admin/dashboard/Dashboard.css';
-import AppointmentStepOne from '../appointmentPage/AppointmentStepOne'; // Import the necessary components
+import AppointmentStepOne from '../appointmentPage/AppointmentStepOne';
 import AppointmentStepTwo from '../appointmentPage/AppointmentStepTwo';
 import { generateAvailableDates } from '../../utils/appDate';
 import './ViewAppointment.css'
@@ -210,7 +210,7 @@ const PatientsInformation = () => {
                 <th>Last Name</th>
                 <th>Email</th>
                 <th>Phone Number</th>
-                {/* Role column is removed since we only show patients */}
+                <th>test</th>
               </tr>
             </thead>
             <tbody>
@@ -220,116 +220,170 @@ const PatientsInformation = () => {
                   <td>{user.lastName}</td>
                   <td>{user.email}</td>
                   <td>{user.phoneNumber}</td>
-                  {/* Role display is removed */}
+                  <td>{user.questionOne === true ? 'Yes' : user.questionOne === false ? 'No' : 'N/A'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-          {selectedUser && showAppointments && (
+          {selectedUser && (
             <>
-              <div className="PIAppointmentsHeader">
-                <h2 className="PIAppointmentsTitle">
-                  Appointments for {selectedUser.firstName} {selectedUser.lastName}
-                </h2>
-                <button className="PIButton" onClick={toggleAppointments}>
-                  Hide Appointments
-                </button>
-              </div>
-              {filteredAppointments.length > 0 ? (
-                <table className="AdminAppointmentTable">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Time</th>
-                      <th>Type</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredAppointments.map((appointment) => (
-                      <React.Fragment key={appointment._id}>
+              {showAppointments && (
+                <>
+                  <div className="PIAppointmentsHeader">
+                    <h2 className="PIAppointmentsTitle">
+                      Appointments for {selectedUser.firstName} {selectedUser.lastName}
+                    </h2>
+                    <button className="PIButton" onClick={toggleAppointments}>
+                      Hide Appointments
+                    </button>
+                  </div>
+                  {filteredAppointments.length > 0 ? (
+                    <table className="AdminAppointmentTable">
+                      <thead>
                         <tr>
-                          <td>{appointment.appointmentDate}</td>
-                          <td>{appointment.appointmentTimeFrom}</td>
-                          <td>{appointment.appointmentType}</td>
-                          <td>{appointment.appointmentStatus}</td>
-                          <td>
-                            <button className="PIButton" onClick={() => handleEditAppointment(appointment)}>
-                              {editingAppointment && editingAppointment._id === appointment._id ? 'Close' : 'Edit'}
-                            </button>
-                          </td>
+                          <th>Date</th>
+                          <th>Time</th>
+                          <th>Type</th>
+                          <th>Status</th>
+                          <th>Actions</th>
                         </tr>
-                        {editingAppointment && editingAppointment._id === appointment._id && (
-                          <tr>
-                            <td colSpan="5">
-                              <div 
-                                ref={editSectionRef}
-                                className={`PIEditSection ${isContainerExpanded ? 'expanded' : ''}`}
-                              >
-                                <h2>Edit Appointment</h2>
-                                <div className="PIEditButtons">
-                                  <button className="PIButton" onClick={() => {
-                                    setShowTypeChange(!showTypeChange);
-                                    setShowDateTimeChange(false);
-                                  }}>
-                                    Change Appointment Type
-                                  </button>
-                                  <button className="PIButton" onClick={() => {
-                                    setShowDateTimeChange(!showDateTimeChange);
-                                    setShowTypeChange(false);
-                                  }}>
-                                    Change Date and Time
-                                  </button>
-                                </div>
+                      </thead>
+                      <tbody>
+                        {filteredAppointments.map((appointment) => (
+                          <React.Fragment key={appointment._id}>
+                            <tr>
+                              <td>{appointment.appointmentDate}</td>
+                              <td>{appointment.appointmentTimeFrom}</td>
+                              <td>{appointment.appointmentType}</td>
+                              <td>{appointment.appointmentStatus}</td>
+                              <td>
+                                <button className="PIButton" onClick={() => handleEditAppointment(appointment)}>
+                                  {editingAppointment && editingAppointment._id === appointment._id ? 'Close' : 'Edit'}
+                                </button>
+                              </td>
+                            </tr>
+                            {editingAppointment && editingAppointment._id === appointment._id && (
+                              <tr>
+                                <td colSpan="5">
+                                  <div 
+                                    ref={editSectionRef}
+                                    className={`PIEditSection ${isContainerExpanded ? 'expanded' : ''}`}
+                                  >
+                                    <h2>Edit Appointment</h2>
+                                    <div className="PIEditButtons">
+                                      <button className="PIButton" onClick={() => {
+                                        setShowTypeChange(!showTypeChange);
+                                        setShowDateTimeChange(false);
+                                      }}>
+                                        Change Appointment Type
+                                      </button>
+                                      <button className="PIButton" onClick={() => {
+                                        setShowDateTimeChange(!showDateTimeChange);
+                                        setShowTypeChange(false);
+                                      }}>
+                                        Change Date and Time
+                                      </button>
+                                    </div>
 
-                                <div className="PIEditContent">
-                                  {showTypeChange && (
-                                    <AppointmentStepOne
-                                      selectedCard={selectedCard}
-                                      handleCardSelect={handleCardSelect}
-                                    />
-                                  )}
+                                    <div className="PIEditContent">
+                                      {showTypeChange && (
+                                        <AppointmentStepOne
+                                          selectedCard={selectedCard}
+                                          handleCardSelect={handleCardSelect}
+                                        />
+                                      )}
 
-                                  {showDateTimeChange && (
-                                    <AppointmentStepTwo
-                                      availableDates={availableDates}
-                                      selectedDate={selectedDate}
-                                      handleDateSelect={handleDateSelect}
-                                      selectedTimeFrom={selectedTimeFrom}
-                                      handleTimeSelect={handleTimeSelect}
-                                      generateTimeSlots={generateTimeSlots}
-                                      bookedAppointments={bookedAppointments}
-                                    />
-                                  )}
-                                </div>
+                                      {showDateTimeChange && (
+                                        <AppointmentStepTwo
+                                          availableDates={availableDates}
+                                          selectedDate={selectedDate}
+                                          handleDateSelect={handleDateSelect}
+                                          selectedTimeFrom={selectedTimeFrom}
+                                          handleTimeSelect={handleTimeSelect}
+                                          generateTimeSlots={generateTimeSlots}
+                                          bookedAppointments={bookedAppointments}
+                                        />
+                                      )}
+                                    </div>
 
-                                <div className="PIActionButtons">
-                                  <button className="PIButton" onClick={handleUpdateAppointment}>
-                                    Update Appointment
-                                  </button>
-                                  <button className="PIButton" onClick={() => handleCancelAppointment(editingAppointment._id)}>
-                                    Cancel Appointment
-                                  </button>
-                                  <button className="PIButton" onClick={() => {
-                                    setEditingAppointment(null);
-                                    setIsContainerExpanded(false);
-                                  }}>
-                                    Close
-                                  </button>
-                                </div>
-                              </div>
-                            </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
-                    ))}
+                                    <div className="PIActionButtons">
+                                      <button className="PIButton" onClick={handleUpdateAppointment}>
+                                        Update Appointment
+                                      </button>
+                                      <button className="PIButton" onClick={() => handleCancelAppointment(editingAppointment._id)}>
+                                        Cancel Appointment
+                                      </button>
+                                      <button className="PIButton" onClick={() => {
+                                        setEditingAppointment(null);
+                                        setIsContainerExpanded(false);
+                                      }}>
+                                        Close
+                                      </button>
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </React.Fragment>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <p className="PINoAppointments">No appointments found for this patient.</p>
+                  )}
+                </>
+              )}
+
+              <div className="PIQuestionsHeader">
+                <h2 className="PIQuestionsTitle">
+                  Health Record for {selectedUser.firstName} {selectedUser.lastName}
+                </h2>
+                <table className="AdminAppointmentTable">
+                  <tbody>
+                    <tr>
+                      <td>Question One:</td>
+                      <td>{selectedUser.questionOne === true ? 'Yes' : selectedUser.questionOne === false ? 'No' : 'N/A'}</td>
+                    </tr>
+                    <tr>
+                      <td>Question Two:</td>
+                      <td>{selectedUser.questionTwo === true ? 'Yes' : selectedUser.questionTwo === false ? 'No' : 'N/A'}</td>
+                    </tr>
+                    <tr>
+                      <td>Question Three:</td>
+                      <td>{selectedUser.questionThree === true ? 'Yes' : selectedUser.questionThree === false ? 'No' : 'N/A'}</td>
+                    </tr>
+                    <tr>
+                      <td>Question Four:</td>
+                      <td>{selectedUser.questionFour === true ? 'Yes' : selectedUser.questionFour === false ? 'No' : 'N/A'}</td>
+                    </tr>
+                    <tr>
+                      <td>Question Five:</td>
+                      <td>{selectedUser.questionFive === true ? 'Yes' : selectedUser.questionFive === false ? 'No' : 'N/A'}</td>
+                    </tr>
+                    <tr>
+                      <td>Question Six:</td>
+                      <td>{selectedUser.questionSix === true ? 'Yes' : selectedUser.questionSix === false ? 'No' : 'N/A'}</td>
+                    </tr>
+                    <tr>
+                      <td>Question Seven:</td>
+                      <td>{selectedUser.questionSeven === true ? 'Yes' : selectedUser.questionSeven === false ? 'No' : 'N/A'}</td>
+                    </tr>
+                    <tr>
+                      <td>Question Eight:</td>
+                      <td>{selectedUser.questionEight === true ? 'Yes' : selectedUser.questionEight === false ? 'No' : 'N/A'}</td>
+                    </tr>
+                    <tr>
+                      <td>Question Nine:</td>
+                      <td>{selectedUser.questionNine === true ? 'Yes' : selectedUser.questionNine === false ? 'No' : 'N/A'}</td>
+                    </tr>
+                    <tr>
+                      <td>Question Ten:</td>
+                      <td>{selectedUser.questionTen === true ? 'Yes' : selectedUser.questionTen === false ? 'No' : 'N/A'}</td>
+                    </tr>
                   </tbody>
                 </table>
-              ) : (
-                <p className="PINoAppointments">No appointments found for this patient.</p>
-              )}
+              </div>
             </>
           )}
         </>

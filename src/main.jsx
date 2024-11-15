@@ -17,14 +17,12 @@ import Dashboard from './admin/dashboard/Dashboard.jsx';
 import Services from './pages/Services/services.jsx';
 import FeedBack from './component/FeedBack.jsx';
 import MessagePage from './component/Message.jsx';
+import HealthRecord from './pages/HealthRecord/HealthRecord.jsx';
 
 // import pages not yet done section
-
-
 // Test components (for testing purposes)
-
 import Chat from './component/chat.jsx'
-  
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
@@ -52,6 +50,14 @@ createRoot(document.getElementById('root')).render(
           element={
             <ProtectedRoute allowedRoles={["patient"]}>
               <FeedBack />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/healthRecord" 
+          element={
+            <ProtectedRoute allowedRoles={["patient"]}>
+              <HealthRecord />
             </ProtectedRoute>
           } 
         />

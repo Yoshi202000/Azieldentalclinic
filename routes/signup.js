@@ -76,13 +76,13 @@ router.post('/signup', async (req, res) => {
         const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
         // Verification email content
-        const verificationLink = `${import.meta.env.VITE_BACKEND_URL}/api/verify-email?token=${token}`;
+        const verificationLink = `http://localhost:5000/api/verify-email?token=${token}`;
 
         // Send verification email
         try {
             await transporter.sendMail({
                 from: process.env.EMAIL_USER,
-                to: newUser.email,
+                to: email,
                 subject: 'Verify your email',
                 text: `Click this link to verify your email: ${verificationLink}`,
             });
@@ -103,15 +103,19 @@ router.post('/signup', async (req, res) => {
 // Email verification route
 router.get('/verify-email', async (req, res) => {
     const token = req.query.token;
+    if (!token) {
+        console.error('Token is missing in the request');
+        return res.status(400).json({ message: 'Token is required' });
+    }
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const email = decoded.email;
+        console.log('Decoded email from token:', email); // Log decoded email
 
-        // Find the user by email and update the emailVerified field
         const user = await User.findOne({ email });
         if (!user) {
-            console.error('Verification error: User not found');
+            console.error('Verification error: User not found for email:', email);
             return res.status(404).json({ message: 'User not found' });
         }
 
@@ -131,6 +135,7 @@ router.get('/verify-email', async (req, res) => {
     }
 });
 
+
 // Add this route to handle sending verification code
 router.post('/send-verification', async (req, res) => {
     const { email } = req.body;
@@ -141,8 +146,8 @@ router.post('/send-verification', async (req, res) => {
     }
 
     try {
-        const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' }); // Shorter expiry for verification code
-        const verificationLink = `${import.meta.env.VITE_BACKEND_URL}/api/verify-email?token=${token}`;
+        const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const verificationLink = `http://localhost:5000/api/verify-email?token=${token}`;
 
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
@@ -154,9 +159,10 @@ router.post('/send-verification', async (req, res) => {
         console.log('Verification code sent to:', email);
         res.status(200).json({ message: 'Verification code sent! Check your email.' });
     } catch (error) {
-        console.error('Failed to send verification email:', error);
-        res.status(500).json({ message: 'Failed to send verification email' });
+        console.error('Failed to send verification email:', error); // Detailed error log
+        res.status(500).json({ message: 'Failed to send verification email', error: error.message });
     }
 });
+
 
 export default router;

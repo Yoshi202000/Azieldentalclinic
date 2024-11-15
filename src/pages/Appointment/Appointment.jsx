@@ -95,6 +95,17 @@ const Appointment = () => {
       return;
     }
 
+    let fee;
+  if (selectedCard === 'Tooth Extractions') {
+    fee = '1000';
+  } else if (selectedCard === 'Dental Fillings') {
+    fee = '1500';
+  } else if (selectedCard === 'Braces & Orthodontics') {
+    fee = '2000';
+  } else {
+    fee = '0'; // Default fee or handle cases where the appointmentType is not one of the specified ones
+  }
+
     const appointmentDetails = {
       patientFirstName: formData.firstName,
       patientLastName: formData.lastName,
@@ -105,8 +116,9 @@ const Appointment = () => {
       appointmentDate: selectedDate,
       appointmentTimeFrom: selectedTimeFrom,
       appointmentType: selectedCard,
+      fee,
     };
-    
+    console.log('Appointment Details:', appointmentDetails);
 
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/appointments`, {
@@ -121,7 +133,7 @@ const Appointment = () => {
       const result = await response.json();
       if (response.ok) {
         alert('Appointment booked successfully!');
-        navigate('/home');
+        navigate('/healthRecord');
       } else {
         alert(`Error: ${result.message}`);
       }

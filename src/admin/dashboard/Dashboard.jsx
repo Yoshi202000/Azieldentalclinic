@@ -6,6 +6,7 @@ import CompletedAppointment from '../../component/admin/CompletedAppointment';
 import ViewFeedback from '../../component/admin/ViewFeedback';
 import ApproveToAdmin from '../../component/admin/ApproveToAdmin'
 import AccountSettings from '../../component/profile/AccountSettings'
+import AdminSales from '../../component/admin/AdminSales';
 import DrawerComponent from '../../component/Drawers';
 import Footer from '../../component/Footer';
 
@@ -26,6 +27,8 @@ function Dashboard() {
         return <ViewFeedback />;
       case 'ToAdmin':
         return <ApproveToAdmin/>
+        case 'AdminSales':
+          return <AdminSales/>
       default:
         return <h2>Select an option</h2>;
     }
@@ -62,16 +65,22 @@ function Dashboard() {
             Completed Appointments
           </button>
           <button
-            className={activeComponent === 'ViewFeedback' ? 'active' : ''}
-            onClick={() => setActiveComponent('ViewFeedback')}
+            className={activeComponent === 'AdminSales' ? 'active' : ''}
+            onClick={() => setActiveComponent('AdminSales')}
           >
-            View Feedback
+            Total Sales
           </button>
           <button
             className={activeComponent === 'ToAdmin' ? 'active' : ''}
             onClick={() => setActiveComponent('ToAdmin')}
           >
             Approve User to Admin
+          </button>
+          <button
+            className={activeComponent === 'ViewFeedback' ? 'active' : ''}
+            onClick={() => setActiveComponent('ViewFeedback')}
+          >
+            View Feedback
           </button>
           </div>
         </div>

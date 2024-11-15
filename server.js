@@ -20,7 +20,9 @@ import viewFeedbackRoutes from './routes/viewFeedback.js';
 import notificationRoutes from './routes/notificationRoutes.js'; // Add this line
 import messageRoutes from './routes/message.js';  // Add this line
 import updateUserRoutes from './routes/updateUserRole.js'
-import unreadRoutes from './routes/unread.js'
+import unreadRoutes from './routes/unread.js';
+import healthRecordRoutes from './routes/healthRecord.js';
+
 
 const app = express();
 dotenv.config();
@@ -49,7 +51,7 @@ mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('Connected to MongoDB server'))
     .catch(err => console.error('Error connecting to MongoDB', err));
 
-    app.use(express.static(path.join(__dirname, 'public')));
+    // app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 app.use('/api', signupRoutes);
 app.use(loginRoutes);
@@ -67,10 +69,12 @@ app.use('/api', notificationRoutes); // Add this line
 app.use('/api', messageRoutes);  // Add this line
 app.use('/api', updateUserRoutes);
 app.use('/api', unreadRoutes);
+app.use('/api', healthRecordRoutes);
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+
+// app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// });
 
 
 // Start server

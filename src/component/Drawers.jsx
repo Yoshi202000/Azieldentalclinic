@@ -6,15 +6,41 @@ import Notification from './notification'; // Import the Notification component
 const DrawerComponent = () => {
   const [open, setOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
-    // Check if the user is logged in by checking for a token in localStorage
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
+    const verifyAuth = async () => {
+      console.log("Verifying auth...");
+      const token = localStorage.getItem('token'); // Check token from localStorage as a quick validation
+
+      if (!token) {
+        console.log("Not logged in");
+        setIsLoggedIn(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
+          withCredentials: true,
+        });
+
+        console.log("Auth response:", response.data);
+
+        if (response.status === 200 && response.data.user && response.data.user.role) {
+          setIsLoggedIn(true);
+          setUserRole(response.data.user.role);
+          console.log("User role:", response.data.user.role);
+        } else {
+          console.log("Invalid response or missing role");
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.error("Auth error:", error);
+        setIsLoggedIn(false);
+      }
+    };
+
+    verifyAuth();
   }, []);
 
   const toggleDrawer = (newOpen) => () => {
@@ -28,11 +54,11 @@ const DrawerComponent = () => {
   
       // Clear client-side storage
       localStorage.removeItem('token'); // Remove the token from localStorage
-      localStorage.removeItem('role');  // Remove any additional user data, like role
       sessionStorage.clear();           // Clear all session storage
   
-      // Update the state to reflect that the user is logged out (if you have one)
-      setIsLoggedIn(false); 
+      // Update the state to reflect that the user is logged out
+      setIsLoggedIn(false);
+      setUserRole(null); // Reset user role
   
       // Redirect to login page
       window.location.href = '/login';
@@ -75,7 +101,12 @@ const DrawerComponent = () => {
               <a href={isLoggedIn ? "/appointment" : "#"} className="navbar-link" onClick={handleAppointmentClick}>Appointment</a>
             </li>
             <li className="navbar-item">
-              <a href="/dashboard" className="navbar-link">Branches</a>
+              <a 
+                href={userRole === 'admin' ? '/dashboard' : userRole === 'patient' ? '/profile' : '#'} 
+                className="navbar-link"
+              >
+                {userRole === 'admin' ? 'Dashboard' : userRole === 'patient' ? 'Profile' : ''}
+              </a>
             </li>
             
             {isLoggedIn && (
@@ -120,7 +151,12 @@ const DrawerComponent = () => {
               <a href="/appointment" className="drawer-link">Appointment</a>
             </li>
             <li className="drawer-item">
-              <a href="/dashboard" className="drawer-link">Branches</a>
+              <a 
+                href={userRole === 'admin' ? '/dashboard' : userRole === 'patient' ? '/profile' : '#'} 
+                className="drawer-link"
+              >
+                {userRole === 'admin' ? 'Dashboard' : userRole === 'patient' ? 'Profile' : ''}
+              </a>
             </li>
 
             {isLoggedIn && (

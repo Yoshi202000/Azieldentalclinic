@@ -6,6 +6,7 @@ import '../../pages/Appointment/Appointment.css';
 const AppointmentStepThree = ({ formData, handleInputChange }) => {
   const [loading, setLoading] = useState(true);
   const [isForOther, setIsForOther] = useState(false);
+  const [userData, setUserData] = useState({}); // State to hold user data
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,8 +19,8 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
 
     // Fetch user data only once on component mount
     axios
-    .get(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
-      headers: {
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
+        headers: {
           Authorization: `${token}`,
         },
         withCredentials: true,
@@ -29,11 +30,21 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
 
         console.log('Fetched Data:', { firstName, lastName, email, phoneNumber });
 
+        // Store fetched data in userData state for future reference
+        const userData = {
+          firstName: firstName || '',
+          lastName: lastName || '',
+          email: email || '',
+          phoneNumber: phoneNumber || '',
+        };
+        setUserData(userData);
+
+        // Set initial values if not "for other"
         if (!isForOther) {
-          handleInputChange({ target: { name: 'firstName', value: firstName || '' } });
-          handleInputChange({ target: { name: 'lastName', value: lastName || '' } });
-          handleInputChange({ target: { name: 'email', value: email || '' } });
-          handleInputChange({ target: { name: 'phoneNumber', value: phoneNumber || '' } });
+          handleInputChange({ target: { name: 'firstName', value: userData.firstName } });
+          handleInputChange({ target: { name: 'lastName', value: userData.lastName } });
+          handleInputChange({ target: { name: 'email', value: userData.email } });
+          handleInputChange({ target: { name: 'phoneNumber', value: userData.phoneNumber } });
         }
 
         setLoading(false);
@@ -43,17 +54,22 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
         alert('Error fetching user data. Please log in again.');
         navigate('/login');
       });
-  }, [navigate]);  // Only include necessary dependencies
+  }, [navigate]);
 
-  // No need to put handleInputChange here if it's not changing frequently
-
+  // Handle checkbox change for "Appointment is for someone else"
   const handleCheckboxChange = () => {
-    setIsForOther(!isForOther);
-    if (!isForOther) {
+    const newValue = !isForOther;
+    setIsForOther(newValue);
+
+    if (newValue) {
+      // If "for other" is checked, clear out fields
       handleInputChange({ target: { name: 'firstName', value: '' } });
       handleInputChange({ target: { name: 'lastName', value: '' } });
       handleInputChange({ target: { name: 'dob', value: '' } });
-      handleInputChange({ target: { name: 'clinic', value: '' } });
+    } else {
+      // If "for other" is unchecked, restore original user data
+      handleInputChange({ target: { name: 'firstName', value: userData.firstName } });
+      handleInputChange({ target: { name: 'lastName', value: userData.lastName } });
     }
   };
 
