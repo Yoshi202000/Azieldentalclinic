@@ -3,9 +3,24 @@ import jwt from 'jsonwebtoken';
 import Appointment from '../models/Appointment.js'; // Assuming your Appointment model is in the models folder
 import AdminNotification from '../models/AdminNotification.js';
 import PatientNotification from '../models/PatientNotification.js';
+import sendMessage from '../utils/sendMessage.js'; // Import the sendMessage function
+import emailQueue from '../utils/emailQueue.js'; // Import the email queue
+import Bull from 'bull';
+import nodemailer from 'nodemailer';
+import cron from 'node-cron';
+
+
+
 
 const router = express.Router();
 
+const transporter = nodemailer.createTransport({
+  service: 'Gmail', // or another email service
+  auth: {
+    user: process.env.EMAIL_USER, // Your email
+    pass: process.env.EMAIL_PASS, // Your email password or app password
+  },
+});
 
 const authenticateToken = (req, res, next) => {
   //const token = req.cookies.authToken; // Read token from cookies
@@ -13,8 +28,6 @@ const authenticateToken = (req, res, next) => {
 
   const token = req.headers[tokenHeaderKey];
 
-  //console.log(req);
-  console.log(token);
 
   if (!token) {
       return res.status(401).json({ message: 'No token provided' });
@@ -52,16 +65,15 @@ router.post('/appointments', authenticateToken, async (req, res) => {
     bookedClinic 
   } = req.body;
 
-  // Calculate fee based on appointment type
   let fee;
   if (appointmentType === 'Tooth Extractions') {
-      fee = '1000';
+    fee = '1000';
   } else if (appointmentType === 'Dental Fillings') {
-      fee = '1500';
+    fee = '1500';
   } else if (appointmentType === 'Braces & Orthodontics') {
-      fee = '2000';
+    fee = '2000';
   } else {
-      fee = '0'; // Default fee if appointmentType is not one of the specified types
+    fee = '0';
   }
 
   try {
@@ -76,36 +88,47 @@ router.post('/appointments', authenticateToken, async (req, res) => {
       bookedClinic,
       appointmentType,
       userId: req.user.userId,
-      userEmail: req.user.email, // Add this line to store the user's email
+      userEmail: req.user.email,
       appointmentStatus: 'pending',
-      fee, // Include the calculated fee
+      fee,
     });
 
     const savedAppointment = await newAppointment.save();
 
-    // Create admin notification
     const adminNotification = new AdminNotification({
       appointmentId: savedAppointment._id,
-      userEmail: req.user.email, // Add this line to store the user's email
-      message: `New appointment booked by ${patientFirstName} ${patientLastName} (${req.user.email}) for ${appointmentDate} at ${appointmentTimeFrom} for the clinic of ${bookedClinic}.`,
+      userEmail: req.user.email,
+      message: `New appointment booked by ${patientFirstName} ${patientLastName} (${req.user.email}) for ${appointmentDate} at ${appointmentTimeFrom} at ${bookedClinic}.`,
     });
     await adminNotification.save();
 
-    // Create patient notification
     const patientNotification = new PatientNotification({
       userId: req.user.userId,
-      userEmail: req.user.email, // Add this line to store the user's email
+      userEmail: req.user.email,
       appointmentId: savedAppointment._id,
-      message: `Your appointment for ${appointmentType} on ${appointmentDate} at ${appointmentTimeFrom} for the clinic of ${bookedClinic} has been booked successfully.`,
+      message: `Your appointment for ${appointmentType} on ${appointmentDate} at ${appointmentTimeFrom} at ${bookedClinic} has been booked successfully.`,
     });
     await patientNotification.save();
 
-    res.status(201).json({ message: 'Appointment booked successfully!' });
+    // if (appointmentType === 'Braces & Orthodontics') {
+    //   const emailDetails = {
+    //     to: patientEmail,
+    //     subject: 'Appointment Confirmation: Braces & Orthodontics',
+    //     text: `Dear ${patientFirstName} ${patientLastName}, your appointment for Braces & Orthodontics on ${appointmentDate} at ${appointmentTimeFrom} has been booked successfully.`,
+    //   };
+
+    //   // Schedule the email to be sent in 5 minutes (300,000 ms)
+    //   const fiveMinuteDelay = 5 * 60 * 1000; // 5 minutes in milliseconds
+    //   await emailQueue.add(emailDetails, { delay: fiveMinuteDelay });
+
+    //   console.log('Email scheduled for:', patientEmail);
+    // }
+
+    res.status(201).json({ message: 'Appointment booked and email scheduled successfully!' });
   } catch (error) {
     res.status(500).json({ message: 'Error booking appointment: ' + error.message });
   }
 });
-
 
 // Add this new route to fetch all booked appointments
 router.get('/booked-appointments', async (req, res) => {
@@ -116,5 +139,6 @@ router.get('/booked-appointments', async (req, res) => {
     res.status(500).json({ message: 'Error fetching booked appointments' });
   }
 });
+
 
 export default router;
