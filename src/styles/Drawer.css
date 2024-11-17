@@ -31,12 +31,16 @@ body, html {
   flex: 0 0 auto; /* Prevent logo from growing */
   display: flex;
   justify-content: flex-start; /* Align logo to the left */
-  
+  margin: 0;
 }
 
 .logo {
-  height: 60px; /* Adjust logo size */
+  height: 60px; /* Set the visible height */
+  width: 140px; /* Automatically scale width */
+  object-fit: cover; /* Crop the image */
+  object-position: center; /* Center the image within the container */
 }
+
 
 /* Navbar menu on the right */
 .navbar-menu {

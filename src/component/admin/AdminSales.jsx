@@ -177,7 +177,7 @@ const AdminSales = () => {
         <button onClick={() => handleTypeFilterChange('All')} className={typeFilter === 'All' ? 'active' : ''}>All</button>
         <button onClick={() => handleTypeFilterChange('Braces & Orthodontics')} className={typeFilter === 'Braces & Orthodontics' ? 'active' : ''}>Braces & Orthodontics</button>
         <button onClick={() => handleTypeFilterChange('Tooth Extractions')} className={typeFilter === 'Tooth Extractions' ? 'active' : ''}>Tooth Extractions</button>
-        <button onClick={() => handleTypeFilterChange('Dental Fillings')} className={typeFilter === 'Dental Fillings' ? 'active' : ''}>Dental Fillings</button>
+        <button onClick={() => handleTypeFilterChange('dental cleaning')} className={typeFilter === 'dental cleaning' ? 'active' : ''}>dental cleaning</button>
       </div>
 
       {/* Date Filter */}

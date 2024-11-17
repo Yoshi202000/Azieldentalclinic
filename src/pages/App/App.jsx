@@ -1,12 +1,11 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import DrawerComponent from '../../component/Drawers';
 import Footer from '../../component/Footer';
 import First from '../../component/First';
 import Card from '../../component/Card';
-import profilePic1 from '../../assets/azielDental.png';
-import profilePic2 from '../../assets/hero-bg.png';
-import extract from '../../assets/toothExtraction.png'
+import extract from '../../assets/remove.png'
+import clean from '../../assets/clean.png'
+import brace from '../../assets/brace.png'
 import './App.css';
 import Doctors from '../../component/Doctors';
 import Chat from '../../component/chat';
@@ -31,22 +30,12 @@ function App() {
           <Card
             name="Braces & Orthodontics"
             description="I am a dentist specializing in braces and orthodontics"
-            image={extract}
+            image={brace}
           />
           <Card
-            name="Dental Fillings"
-            description="I am a dentist specializing in dental fillings"
-            image={extract}
-          />
-          <Card
-            name="Dental Fillings"
-            description="I am a dentist specializing in general dentistry"
-            image={extract}
-          />
-          <Card
-            name="Dental Fillings"
-            description="I am a dentist specializing in root canal treatments"
-            image={extract}
+            name="dental cleaning"
+            description="I am a dentist specializing in dental cleaning"
+            image={clean}
           />
         </div>
 

@@ -342,43 +342,43 @@ const PatientsInformation = () => {
                 <table className="AdminAppointmentTable">
                   <tbody>
                     <tr>
-                      <td>Question One:</td>
+                      <td>Smoking status:</td>
                       <td>{selectedUser.questionOne === true ? 'Yes' : selectedUser.questionOne === false ? 'No' : 'N/A'}</td>
                     </tr>
                     <tr>
-                      <td>Question Two:</td>
+                      <td>Known allergies:</td>
                       <td>{selectedUser.questionTwo === true ? 'Yes' : selectedUser.questionTwo === false ? 'No' : 'N/A'}</td>
                     </tr>
                     <tr>
-                      <td>Question Three:</td>
+                      <td>Current medications:</td>
                       <td>{selectedUser.questionThree === true ? 'Yes' : selectedUser.questionThree === false ? 'No' : 'N/A'}</td>
                     </tr>
                     <tr>
-                      <td>Question Four:</td>
+                      <td>Previous dental surgeries:</td>
                       <td>{selectedUser.questionFour === true ? 'Yes' : selectedUser.questionFour === false ? 'No' : 'N/A'}</td>
                     </tr>
                     <tr>
-                      <td>Question Five:</td>
+                      <td>Anesthesia-related complications history:</td>
                       <td>{selectedUser.questionFive === true ? 'Yes' : selectedUser.questionFive === false ? 'No' : 'N/A'}</td>
                     </tr>
                     <tr>
-                      <td>Question Six:</td>
+                      <td>Current pain or discomfort:</td>
                       <td>{selectedUser.questionSix === true ? 'Yes' : selectedUser.questionSix === false ? 'No' : 'N/A'}</td>
                     </tr>
                     <tr>
-                      <td>Question Seven:</td>
+                      <td>Heart condition history:</td>
                       <td>{selectedUser.questionSeven === true ? 'Yes' : selectedUser.questionSeven === false ? 'No' : 'N/A'}</td>
                     </tr>
                     <tr>
-                      <td>Question Eight:</td>
+                      <td>Pregnancy status:</td>
                       <td>{selectedUser.questionEight === true ? 'Yes' : selectedUser.questionEight === false ? 'No' : 'N/A'}</td>
                     </tr>
                     <tr>
-                      <td>Question Nine:</td>
+                      <td>Relevant medical conditions:</td>
                       <td>{selectedUser.questionNine === true ? 'Yes' : selectedUser.questionNine === false ? 'No' : 'N/A'}</td>
                     </tr>
                     <tr>
-                      <td>Question Ten:</td>
+                      <td>Additional information:</td>
                       <td>{selectedUser.questionTen === true ? 'Yes' : selectedUser.questionTen === false ? 'No' : 'N/A'}</td>
                     </tr>
                   </tbody>

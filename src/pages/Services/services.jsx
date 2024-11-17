@@ -2,7 +2,10 @@ import React from 'react';
 import Drawer from '../../component/Drawers';
 import Footer from '../../component/Footer';
 import Card from '../../component/Card';
-import profilePic1 from '../../assets/azielDental.png';
+import brace from '../../assets/brace.png';
+import clean from '../../assets/clean.png';
+import remove from '../../assets/remove.png';
+import clinic from '../../assets/clinic.png'
 import './services.css';
 
 // Import your images here
@@ -19,7 +22,7 @@ const Services = () => {
         </div>
         <div className="Services-main-content">          
           <div className="Services-image-container">
-            <img src="https://via.placeholder.com/400x300" alt="Dental Services" className="Services-main-image" />
+          <img src={clinic} alt="Dental Services" className="Services-main-image" />
           </div>
           <div className="Services-text-container">
             <h2 className="Services-main-title">Expert Dental Care</h2>
@@ -31,32 +34,17 @@ const Services = () => {
           <Card 
             name="Tooth Extractions" 
             description="Safe and efficient tooth removal procedures" 
-            image={profilePic1} 
+            image={remove} 
           />
           <Card 
             name="Braces & Orthodontics" 
             description="Straighten your teeth for a perfect smile" 
-            image={profilePic1}  
+            image={brace}  
           />
           <Card 
-            name="Dental Fillings" 
+            name="dental cleaning" 
             description="Restore damaged teeth with quality fillings" 
-            image={profilePic1} 
-          />
-          <Card 
-            name="Teeth Cleaning" 
-            description="Professional cleaning for optimal oral health" 
-            image={profilePic1} 
-          />
-          <Card 
-            name="Root Canal Treatment" 
-            description="Preserve your natural tooth with advanced endodontic care" 
-            image={profilePic1} 
-          />
-          <Card 
-            name="Dental Implants" 
-            description="Permanent solution for missing teeth with natural-looking results" 
-            image={profilePic1} 
+            image={clean} 
           />
         </div>
       </div>

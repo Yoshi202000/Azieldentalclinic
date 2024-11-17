@@ -98,7 +98,7 @@ const Appointment = () => {
     let fee;
   if (selectedCard === 'Tooth Extractions') {
     fee = '1000';
-  } else if (selectedCard === 'Dental Fillings') {
+  } else if (selectedCard === 'dental cleaning') {
     fee = '1500';
   } else if (selectedCard === 'Braces & Orthodontics') {
     fee = '2000';

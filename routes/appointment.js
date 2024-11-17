@@ -3,11 +3,7 @@ import jwt from 'jsonwebtoken';
 import Appointment from '../models/Appointment.js'; // Assuming your Appointment model is in the models folder
 import AdminNotification from '../models/AdminNotification.js';
 import PatientNotification from '../models/PatientNotification.js';
-import sendMessage from '../utils/sendMessage.js'; // Import the sendMessage function
-import emailQueue from '../utils/emailQueue.js'; // Import the email queue
-import Bull from 'bull';
 import nodemailer from 'nodemailer';
-import cron from 'node-cron';
 
 
 
@@ -68,7 +64,7 @@ router.post('/appointments', authenticateToken, async (req, res) => {
   let fee;
   if (appointmentType === 'Tooth Extractions') {
     fee = '1000';
-  } else if (appointmentType === 'Dental Fillings') {
+  } else if (appointmentType === 'Dental cleaning') {
     fee = '1500';
   } else if (appointmentType === 'Braces & Orthodontics') {
     fee = '2000';

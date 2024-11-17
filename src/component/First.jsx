@@ -31,7 +31,7 @@ const First = () => {
 
       <div className="content">
         <div className="text-section">
-          <h1>Welcome to Aziel Dental Clinic</h1>
+          <h1>Welcome to Aziel and arts of millennials Dental Clinic</h1>
           <h2>Book Appointment.</h2>
           <p>Book Services and Doctors.</p>
           <button className="search-button" onClick={handleAppointmentClick}>

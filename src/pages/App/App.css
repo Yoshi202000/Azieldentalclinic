@@ -16,7 +16,7 @@ html, body, #root {
 /* Updated styles for card-container */
 .card-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 cards per row by default */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjust columns dynamically */
   gap: 20px; /* Space between cards */
   background-color: white;
   padding: 20px;
@@ -27,6 +27,7 @@ html, body, #root {
   justify-content: center; /* Center the row if not filled */
   align-items: center; /* Vertically center items */
 }
+
 
 /* Styling for the card element */
 .card-container .card {
@@ -85,7 +86,6 @@ html, body, #root {
 /* 4 Columns for Larger Screens */
 @media (min-width: 1200px) {
   .card-container {
-    grid-template-columns: repeat(4, 1fr);
     gap: 20px; /* Adjusted gap for larger screens */
     justify-content: center; /* Center cards for incomplete rows */
   }

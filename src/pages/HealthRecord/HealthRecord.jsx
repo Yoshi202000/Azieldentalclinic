@@ -5,6 +5,36 @@ import DrawerComponent from '../../component/Drawers';
 import Chat from '../../component/chat';
 import Footer from '../../component/Footer';
 
+const Question = ({ questionKey, questionLabel, value, onChange }) => {
+  return (
+    <div className="question">
+      <label>{questionLabel}</label>
+      <div>
+        <label>
+          <input
+            type="radio"
+            name={questionKey}
+            value="yes"
+            checked={value === true}
+            onChange={() => onChange(true)}
+          />
+          Yes
+        </label>
+        <label>
+          <input
+            type="radio"
+            name={questionKey}
+            value="no"
+            checked={value === false}
+            onChange={() => onChange(false)}
+          />
+          No
+        </label>
+      </div>
+    </div>
+  );
+};
+
 const HealthRecord = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -45,10 +75,10 @@ const HealthRecord = () => {
         if (!response.ok) {
           throw new Error('Session expired or invalid.');
         }
-        
+
         const data = await response.json();
         const { healthRecord } = data.user || {}; // Assuming health data is under `healthRecord`
-        
+
         setHealthData({
           questionOne: healthRecord?.questionOne || null,
           questionTwo: healthRecord?.questionTwo || null,
@@ -61,7 +91,7 @@ const HealthRecord = () => {
           questionNine: healthRecord?.questionNine || null,
           questionTen: healthRecord?.questionTen || null,
         });
-        
+
         setLoading(false);
       } catch (error) {
         alert('Session expired or invalid. Please log in again.');
@@ -120,52 +150,85 @@ const HealthRecord = () => {
   if (loading) {
     return <p>Loading...</p>;
   }
+
   return (
     <>
-    <DrawerComponent />
+      <DrawerComponent />
 
-    <div className="health-record-container">
-      <h1>Update Health Record</h1>
-      <p className="info-message">
-        This questionnaire is optional and can be completed at the clinic if necessary. If you are booking an appointment on behalf of someone else, please leave this questionnaire unanswered.
-      </p>
-      {message && <p className={isError ? 'error-message' : 'success-message'}>{message}</p>}
-      <form onSubmit={handleSubmit}>
-        {Object.keys(healthData).map((questionKey, index) => (
-          <div key={questionKey} className="question">
-            <label>{`Question ${index + 1}`}</label>
-            <div>
-              <label>
-                <input
-                  type="radio"
-                  name={questionKey}
-                  value="yes"
-                  checked={healthData[questionKey] === true}
-                  onChange={() => handleAnswerChange(questionKey, true)}
-                />
-                Yes
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name={questionKey}
-                  value="no"
-                  checked={healthData[questionKey] === false}
-                  onChange={() => handleAnswerChange(questionKey, false)}
-                />
-                No
-              </label>
-            </div>
-          </div>
-        ))}
-        <button className="health-record-submit" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Submitting...' : 'Submit'}
-        </button>
-      </form>
-    </div>
-    <Footer />
-    <Chat />
-
+      <div className="health-record-container">
+        <h1>Update Health Record</h1>
+        <p className="info-message">
+          This questionnaire is optional and can be completed at the clinic if necessary. If you are booking an appointment on behalf of someone else, please leave this questionnaire unanswered.
+        </p>
+        {message && <p className={isError ? 'error-message' : 'success-message'}>{message}</p>}
+        <form onSubmit={handleSubmit}>
+          <Question
+            questionKey="questionOne"
+            questionLabel="Are you currently smoking?"
+            value={healthData.questionOne}
+            onChange={(answer) => handleAnswerChange('questionOne', answer)}
+          />
+          <Question
+            questionKey="questionTwo"
+            questionLabel="Do you have any known allergies?"
+            value={healthData.questionTwo}
+            onChange={(answer) => handleAnswerChange('questionTwo', answer)}
+          />
+          <Question
+            questionKey="questionThree"
+            questionLabel="Are you taking any medications?"
+            value={healthData.questionThree}
+            onChange={(answer) => handleAnswerChange('questionThree', answer)}
+          />
+          <Question
+            questionKey="questionFour"
+            questionLabel="Have you had any previous dental surgeries? "
+            value={healthData.questionFour}
+            onChange={(answer) => handleAnswerChange('questionFour', answer)}
+          />
+          <Question
+            questionKey="questionFive"
+            questionLabel="Do you have a history of anesthesia-related complications? "
+            value={healthData.questionFive}
+            onChange={(answer) => handleAnswerChange('questionFive', answer)}
+          />
+          <Question
+            questionKey="questionSix"
+            questionLabel="Are you experiencing any pain or discomfort at the moment?"
+            value={healthData.questionSix}
+            onChange={(answer) => handleAnswerChange('questionSix', answer)}
+          />
+          <Question
+            questionKey="questionSeven"
+            questionLabel="Do you have a history of heart conditions? "
+            value={healthData.questionSeven}
+            onChange={(answer) => handleAnswerChange('questionSeven', answer)}
+          />
+          <Question
+            questionKey="questionEight"
+            questionLabel="Are you currently pregnant?"
+            value={healthData.questionEight}
+            onChange={(answer) => handleAnswerChange('questionEight', answer)}
+          />
+          <Question
+            questionKey="questionNine"
+            questionLabel="Do you have any medical conditions we should be aware of?"
+            value={healthData.questionNine}
+            onChange={(answer) => handleAnswerChange('questionNine', answer)}
+          />
+          <Question
+            questionKey="questionTen"
+            questionLabel="Do you have any specific concerns about the upcoming procedure?"
+            value={healthData.questionTen}
+            onChange={(answer) => handleAnswerChange('questionTen', answer)}
+          />
+          <button className="health-record-submit" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Submitting...' : 'Submit'}
+          </button>
+        </form>
+      </div>
+      <Footer />
+      <Chat />
     </>
   );
 };
