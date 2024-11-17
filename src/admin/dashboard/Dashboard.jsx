@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './dashboard.css';
+import './Dashboard.css';
 import PatientsInformation from '../../component/admin/PatientsInformation';
 import ViewAppointment from '../../component/admin/ViewAppointment';
 import CompletedAppointment from '../../component/admin/CompletedAppointment';
