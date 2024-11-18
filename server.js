@@ -43,7 +43,9 @@ app.use(cors({
             callback(new Error('Not allowed by CORS'));
         }
     },
-    credentials: true
+    origin: ' http://213.190.4.136:5174/',  // Or your domain, if applicable
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
 }));
 
 // MongoDB connection
