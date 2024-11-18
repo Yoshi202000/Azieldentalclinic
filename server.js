@@ -33,20 +33,25 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser()); // Use cookie-parser middleware
 
-// CORS configuration
-const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176'];
-app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    origin: ' http://213.190.4.136:5174/',  // Or your domain, if applicable
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
+const allowedOrigins = [
+    'http://localhost:5173', 
+    'http://localhost:5174', 
+    'http://localhost:5175', 
+    'http://localhost:5176', 
+    'http://213.190.4.136:5174' // Your server IP address
+  ];
+  app.use(cors({
+      origin: function (origin, callback) {
+          if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+              callback(null, true);
+          } else {
+              callback(new Error('Not allowed by CORS'));
+          }
+      },
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      credentials: true
+  }));
+  
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
