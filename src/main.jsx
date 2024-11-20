@@ -18,10 +18,26 @@ import Services from './pages/Services/services.jsx';
 import FeedBack from './component/FeedBack.jsx';
 import MessagePage from './component/Message.jsx';
 import HealthRecord from './pages/HealthRecord/HealthRecord.jsx';
+import SuccessVerify from './pages/SuccessVerify/SuccessVerify.jsx';
 
 // import pages not yet done section
 // Test components (for testing purposes)
 import Chat from './component/chat.jsx'
+
+
+const ProtectedVerificationRoute = ({ children }) => {
+  const queryParams = new URLSearchParams(window.location.search);
+  const token = queryParams.get('token'); // Get token from the URL
+
+  if (token) {
+    return children; // Allow access if token is present
+  } else {
+    // Redirect to home or login if token is not valid
+    return <Navigate to="/login" replace />;
+  }
+};
+
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -40,9 +56,18 @@ createRoot(document.getElementById('root')).render(
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot" element={<Forgot />} />
         
-
+        {/* protected route for verify email */}
+        <Route
+          path="/verify-email"
+          element={
+            <ProtectedVerificationRoute>
+              <SuccessVerify />
+            </ProtectedVerificationRoute>
+          }
+        />
         {/* Protected Routes for Patients onlys */}
         {/* not yet done for design*/}
+        
         
         <Route 
           path="/feedBack" 
