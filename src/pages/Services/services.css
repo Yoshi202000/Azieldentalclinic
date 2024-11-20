@@ -67,8 +67,8 @@
 }
 
 .Services-dental-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
   justify-content: center;
   max-width: 1200px;
@@ -79,8 +79,22 @@
 .Services-dental-grid .card:hover {
   transform: translateY(-5px);
 }
-
-
+.service-card {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 100%;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.service-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
 
 
 @media (max-width: 980px) {
@@ -109,6 +123,10 @@
   .Services-dental-grid{
     display: flex;
     flex-direction: column;
+  }
+  .service-card {
+    flex-direction: column; /* Stack content vertically */
+    text-align: center; /* Center align text */
   }
 }
 
