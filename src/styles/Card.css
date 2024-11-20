@@ -25,7 +25,9 @@
   color: white;
   border-color: #7AB2B2;
 }
-
+.card p {
+  font-size: 10px;
+}
 /* Responsive Styles */
 /* Small Screens (Mobile Devices) */
 @media (max-width: 980px) {

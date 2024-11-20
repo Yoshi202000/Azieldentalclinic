@@ -212,6 +212,7 @@ html, body {
   padding: 15px;
   border-radius: 5px;
   border: none;
+  flex-wrap: nowrap;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
   font-size: 1em;
@@ -331,7 +332,7 @@ html, body {
   .PIButton, .CancelButton {
     padding: 8px 10px; /* Smaller padding for buttons */
     font-size: 0.8em; /* Smaller font size for button text */
-    max-width: 120px; /* Set a maximum width for buttons */
+    max-width: auto; /* Set a maximum width for buttons */
     white-space: nowrap; /* Prevent text from wrapping */
     overflow: hidden; /* Hide overflow text */
     text-overflow: ellipsis; /* Add ellipsis for overflow text */
@@ -381,9 +382,13 @@ html, body {
     margin-right: 5px;
     overflow-x: auto; /* Allow horizontal scrolling */
   }
+  .PIHideButton {
+    font-size: 2em;
+  }
 
   .PIButton {
     width: 100%;
+    white-space: nowrap;
   }
 
   .PITable th,
@@ -467,10 +472,17 @@ html, body {
     overflow: visible; /* Allow full display of button text */
   }
   .PIContainer h1,
-  .PIContainer p,
   .PIContainer input{
     font-size: 2.5em;
   }
 
+  .PIAppointmentsTitle{
+    font-size: 2em;
+  }
+
 }
 
+
+.PIAppointmentsTitle{
+  font-size: 1em;
+}

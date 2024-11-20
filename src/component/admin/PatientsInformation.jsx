@@ -232,8 +232,8 @@ const PatientsInformation = () => {
                     <h2 className="PIAppointmentsTitle">
                       Appointments for {selectedUser.firstName} {selectedUser.lastName}
                     </h2>
-                    <button className="PIButton" onClick={toggleAppointments}>
-                      Hide Appointments
+                    <button className="PIHideButton" onClick={toggleAppointments}>
+                      Hide Appointments & Health Record
                     </button>
                   </div>
                   {filteredAppointments.length > 0 ? (
@@ -333,55 +333,57 @@ const PatientsInformation = () => {
                 </>
               )}
 
-              <div className="PIQuestionsHeader">
-                <h2 className="PIQuestionsTitle">
-                  Health Record for {selectedUser.firstName} {selectedUser.lastName}
-                </h2>
-                <table className="AdminAppointmentTable">
-                  <tbody>
-                    <tr>
-                      <td>Smoking status:</td>
-                      <td>{selectedUser.questionOne === true ? 'Yes' : selectedUser.questionOne === false ? 'No' : 'N/A'}</td>
-                    </tr>
-                    <tr>
-                      <td>Known allergies:</td>
-                      <td>{selectedUser.questionTwo === true ? 'Yes' : selectedUser.questionTwo === false ? 'No' : 'N/A'}</td>
-                    </tr>
-                    <tr>
-                      <td>Current medications:</td>
-                      <td>{selectedUser.questionThree === true ? 'Yes' : selectedUser.questionThree === false ? 'No' : 'N/A'}</td>
-                    </tr>
-                    <tr>
-                      <td>Previous dental surgeries:</td>
-                      <td>{selectedUser.questionFour === true ? 'Yes' : selectedUser.questionFour === false ? 'No' : 'N/A'}</td>
-                    </tr>
-                    <tr>
-                      <td>Anesthesia-related complications history:</td>
-                      <td>{selectedUser.questionFive === true ? 'Yes' : selectedUser.questionFive === false ? 'No' : 'N/A'}</td>
-                    </tr>
-                    <tr>
-                      <td>Current pain or discomfort:</td>
-                      <td>{selectedUser.questionSix === true ? 'Yes' : selectedUser.questionSix === false ? 'No' : 'N/A'}</td>
-                    </tr>
-                    <tr>
-                      <td>Heart condition history:</td>
-                      <td>{selectedUser.questionSeven === true ? 'Yes' : selectedUser.questionSeven === false ? 'No' : 'N/A'}</td>
-                    </tr>
-                    <tr>
-                      <td>Pregnancy status:</td>
-                      <td>{selectedUser.questionEight === true ? 'Yes' : selectedUser.questionEight === false ? 'No' : 'N/A'}</td>
-                    </tr>
-                    <tr>
-                      <td>Relevant medical conditions:</td>
-                      <td>{selectedUser.questionNine === true ? 'Yes' : selectedUser.questionNine === false ? 'No' : 'N/A'}</td>
-                    </tr>
-                    <tr>
-                      <td>Additional information:</td>
-                      <td>{selectedUser.questionTen === true ? 'Yes' : selectedUser.questionTen === false ? 'No' : 'N/A'}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              {showAppointments && (
+                <div className="PIQuestionsHeader">
+                  <h2 className="PIQuestionsTitle">
+                    Health Record for {selectedUser.firstName} {selectedUser.lastName}
+                  </h2>
+                  <table className="AdminAppointmentTable">
+                    <tbody>
+                      <tr>
+                        <td>Smoking status:</td>
+                        <td>{selectedUser.questionOne === true ? 'Yes' : selectedUser.questionOne === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Known allergies:</td>
+                        <td>{selectedUser.questionTwo === true ? 'Yes' : selectedUser.questionTwo === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Current medications:</td>
+                        <td>{selectedUser.questionThree === true ? 'Yes' : selectedUser.questionThree === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Previous dental surgeries:</td>
+                        <td>{selectedUser.questionFour === true ? 'Yes' : selectedUser.questionFour === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Anesthesia-related complications history:</td>
+                        <td>{selectedUser.questionFive === true ? 'Yes' : selectedUser.questionFive === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Current pain or discomfort:</td>
+                        <td>{selectedUser.questionSix === true ? 'Yes' : selectedUser.questionSix === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Heart condition history:</td>
+                        <td>{selectedUser.questionSeven === true ? 'Yes' : selectedUser.questionSeven === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Pregnancy status:</td>
+                        <td>{selectedUser.questionEight === true ? 'Yes' : selectedUser.questionEight === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Relevant medical conditions:</td>
+                        <td>{selectedUser.questionNine === true ? 'Yes' : selectedUser.questionNine === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Additional information:</td>
+                        <td>{selectedUser.questionTen === true ? 'Yes' : selectedUser.questionTen === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </>
           )}
         </>

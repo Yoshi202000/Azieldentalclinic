@@ -281,8 +281,8 @@ const MessagePage = () => {
   return (
     <>
     <DrawerComponent/>
-    <div className="chat-page-unique">
-      <div className="users-sidebar-unique">
+    <div className="chat-page">
+      <div className="users-sidebar">
         {/* Logged-in user section */}
         {loggedInUser && (
           <div className="logged-in-user">
@@ -302,8 +302,8 @@ const MessagePage = () => {
 
         {/* Show Admins section only if user is a patient */}
         {loggedInUser?.role === 'patient' && sortedAdmins.length > 0 && (
-          <div className="users-section-unique">
-            <div className="users-header-unique">
+          <div className="users-section">
+            <div className="users-header">
               <h3>Available Admins</h3>
             </div>
             <div className="users-list">
@@ -312,11 +312,11 @@ const MessagePage = () => {
                 return (
                   <div
                     key={user._id}
-                    className={`user-item-unique ${selectedUser?._id === user._id ? 'active' : ''}`}
+                    className={`user-item ${selectedUser?._id === user._id ? 'active' : ''}`}
                     onClick={() => handleUserSelect(user)}
                   >
-                    <div className="user-info-unique">
-                      <span className="user-name-unique" style={{ fontWeight: hasUnreadMessages ? 'bold' : 'normal' }}>
+                    <div className="user-info">
+                      <span className="user-name" style={{ fontWeight: hasUnreadMessages ? 'bold' : 'normal' }}>
                         {user.firstName} {user.lastName}
                       </span>
                       <span className="user-role">{user.role}</span>
@@ -359,8 +359,8 @@ const MessagePage = () => {
         )}
       </div>
 
-      <div className="chat-container-unique">
-        <div className="chat-header-unique">
+      <div className="chat-container">
+        <div className="chat-header">
           <h2>{selectedUser ? `Chat with ${selectedUser.firstName} ${selectedUser.lastName}` : 'Select a user'}</h2>
         </div>
         
@@ -368,12 +368,12 @@ const MessagePage = () => {
           {messages.map((message) => (
             <div 
               key={message._id} 
-              className={`message-item-unique ${message.senderId === loggedInUser.email ? 'message-own-unique' : ''}`}
+              className={`message-item ${message.senderId === loggedInUser.email ? 'message-own' : ''}`}
             >
-              <div className="message-content-unique">
-                <p className="message-text-unique">{message.content}</p>
-                <div className="message-info-unique">
-                  <span className="essage-time-unique">
+              <div className="message-content">
+                <p className="message-text">{message.content}</p>
+                <div className="message-info">
+                  <span className="message-time">
                     {new Date(message.sentAt).toLocaleTimeString([], { 
                       hour: '2-digit', 
                       minute: '2-digit' 
@@ -391,15 +391,15 @@ const MessagePage = () => {
         </div>
 
         {selectedUser && (
-          <form className="chat-input-form-unique" onSubmit={handleSendMessage}>
+          <form className="chat-input-form" onSubmit={handleSendMessage}>
             <input
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Type a message..."
-              className=".chat-input-unique"
+              className="chat-input"
             />
-            <button type="submit" className="send-button-unique">Send</button>
+            <button type="submit" className="send-button">Send</button>
           </form>
         )}
       </div>
