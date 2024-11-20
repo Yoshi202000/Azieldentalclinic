@@ -245,7 +245,6 @@
 }
 
 @media (max-width: 980px) {
-  .notifications-content,
   .notification-header{
     max-width: none;
     max-height: none;
