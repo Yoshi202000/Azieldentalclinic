@@ -26,13 +26,13 @@ import Chat from './component/chat.jsx'
 
 
 const ProtectedVerificationRoute = ({ children }) => {
-  const queryParams = new URLSearchParams(window.location.search);
+  const location = useLocation(); // Use useLocation to get the current URL
+  const queryParams = new URLSearchParams(location.search);
   const token = queryParams.get('token'); // Get token from the URL
-
   if (token) {
     return children; // Allow access if token is present
   } else {
-    // Redirect to home or login if token is not valid
+    // Redirect to login if token is not valid
     return <Navigate to="/login" replace />;
   }
 };
