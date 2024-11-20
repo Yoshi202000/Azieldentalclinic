@@ -47,7 +47,7 @@ createRoot(document.getElementById('root')).render(
         {/* test component */}
         {/* scroll function is not yet done */}
         <Route path="/chat" element={<Chat />} />
-        <Route path="/verify-email" element={<SuccessVerify />} />
+        {/* <Route path="/verify-email" element={<SuccessVerify />} /> */}
         {/*done responsive  */}
         {/* Public Routes */}
         <Route path="/" element={<App />} />
@@ -58,14 +58,14 @@ createRoot(document.getElementById('root')).render(
         <Route path="/forgot" element={<Forgot />} />
         
         {/* protected route for verify email */}
-        {/* <Route
+        <Route
           path="/verify-email"
           element={
             <ProtectedVerificationRoute>
               <SuccessVerify />
             </ProtectedVerificationRoute>
           }
-        /> */}
+        />
         {/* Protected Routes for Patients onlys */}
         {/* not yet done for design*/}
         
