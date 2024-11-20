@@ -99,26 +99,35 @@ router.post('/signup', async (req, res) => {
         res.status(500).json({ message: 'An error occurred while registering the user' });
     }
 });
-try {
-    if (user.emailVerified) {
-        console.error('Verification error: Email already verified');
-        // Redirect to the login page with a status indicating the email has already been verified
-        return res.redirect('http://213.190.4.136:5173/login?status=already-verified');
+// Email verification route
+router.get('/verify-email', async (req, res) => {
+    const token = req.query.token;
+    if (!token) {
+        console.error('Token is missing in the request');
+        return res.status(400).send('<h1>Token is required</h1>');
     }
 
-    // Mark the user's email as verified
-    user.emailVerified = true;
-    await user.save();
-
-    console.log('Email verified successfully for user:', email);
-    // Redirect to the login page in the frontend with a success status
-    res.redirect('http://213.190.4.136:5173/login?status=success');
-} catch (error) {
-    console.error('Email verification failed:', error);
-    // Redirect to the login page with an error status
-    res.redirect('http://213.190.4.136:5173/login?status=invalid-token');
-}
-
+    try {
+        if (user.emailVerified) {
+            console.error('Verification error: Email already verified');
+            // Redirect to the login page with a status indicating the email has already been verified
+            return res.redirect('http://213.190.4.136:5173/login?status=already-verified');
+        }
+    
+        // Mark the user's email as verified
+        user.emailVerified = true;
+        await user.save();
+    
+        console.log('Email verified successfully for user:', email);
+        // Redirect to the login page in the frontend with a success status
+        res.redirect('http://213.190.4.136:5173/login?status=success');
+    } catch (error) {
+        console.error('Email verification failed:', error);
+        // Redirect to the login page with an error status
+        res.redirect('http://213.190.4.136:5173/login?status=invalid-token');
+    }
+      
+});
 
 
 
