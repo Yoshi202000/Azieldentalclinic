@@ -104,7 +104,6 @@ function Signup() {
             <div className="signUpForm">
                 <div className="signupDesignContainer">
                     <h1>Welcome to Aziel and Arts of Millennial Dental Clinic</h1>
-                    <p>hello world</p>
                 </div>
                 <div className="signup-container">
                     <h2 className="signup-title">Create an Account</h2>

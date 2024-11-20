@@ -19,6 +19,7 @@ function SuccessVerify() {
         } else if (status === 'invalid-token') {
             setStatusMessage('Invalid or expired token. Please try again.');
         } else {
+            console.warn('Unrecognized verification status:', status);
             setStatusMessage('An unknown error occurred.');
         }
     }, [location]);
@@ -34,9 +35,11 @@ function SuccessVerify() {
             </div>
             <div className="success-message-box">
                 <h1>{statusMessage}</h1>
-                <button onClick={handleLoginRedirect} className="login-button">
-                    Go to Login
-                </button>
+                {statusMessage !== 'Invalid or expired token. Please try again.' && (
+                    <button onClick={handleLoginRedirect} className="login-button" aria-label="Go to login page after successful verification">
+                        Go to Login
+                    </button>
+                )}
             </div>
         </div>
     );
