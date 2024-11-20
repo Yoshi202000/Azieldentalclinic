@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import DrawerComponent from '../../component/Drawers';
 import Footer from '../../component/Footer';
 import Chat from '../../component/chat'
-import profilePic1 from '../../assets/doctor1.png';
 // component from profile 
 import Dashboard from '../../component/profile/Dashboard';
 import AccountSettings from '../../component/profile/AccountSettings';

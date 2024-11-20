@@ -54,6 +54,7 @@ html, body {
   width: 100%;
 }
 
+
 .DashContent button {
   color: #ffffff;
   background-color: #4c7a80;
@@ -244,182 +245,6 @@ html, body {
   background-color: #5577aa;
 }
 
-/* Responsive adjustments for the edit section */
-@media (max-width: 768px) {
-  .DashContainer {
-    flex-direction: column;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-  }
-
-  .DashContent,
-  .DashMainContainer {
-    width: 100%;
-    padding: 0;
-  }
-
-  .button-container button{
-    width: 100%;
-  }
-
-  .DashMainContainer {
-    overflow-y: auto;
-  }
-
-  .PIEditSection {
-    padding: 10px;
-  }
-
-  .PIEditButtons,
-  .PIActionButtons {
-    flex-direction: column;
-    gap: 10px;
-  }
-  .PITable{
-    margin-right: 5px;
-  }
-  .PIButton {
-    width: 100%;
-  }
-
-  .PITable th,
-  .PITable td,
-  .PIAppointmentsTable th,
-  .PIAppointmentsTable td {
-    padding: 8px;
-    font-size: 0.8em;
-  }
-
-  .PIAppointmentsTableContainer {
-    overflow-x: auto;
-  }
-}
-
-/* Responsive Styles for Dashboard Container */
-@media (max-width: 1024px) {
-  .DashContainer {
-    flex-direction: column;
-    width: 100%;
-    margin-top: 10px;
-    height: auto;
-    padding: 0;
-  }
-  .DashMainContainer{
-    width: 100%;
-  }
-
-  .DashContent {
-    width: 100%;
-    align-items: center;
-  }
-
-  .DashContent h1 {
-    font-size: 1.3em;
-  }
-
-  .button-container {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-  }
-  
-  .DashContent button {
-    margin: 0px;
-    padding: 12px;
-  }
-
-  .DashMainContainer {
-    padding: 0;
-  }
-
-  .PITable,
-  .PIAppointmentsTable,
-  .patients-table {
-    font-size: 0.85em;
-  }
-
-  .PITable th,
-  .PITable td,
-  .PIAppointmentsTable th,
-  .PIAppointmentsTable td,
-  .patients-table th,
-  .patients-table td {
-    padding: 10px;
-    text-align: left;
-  }
-}
-
-@media (max-width: 480px) {
-  .DashContainer {
-    flex-direction: column;
-    width: 100%;
-    padding: 0;
-    margin: 0;
-  }
-
-  .DashContent {
-    padding: 0;
-    width: 100%;
-  }
-
-  .DashContent h1 {
-    font-size: 1.1em;
-    text-align: center;
-  }
-
-  .button-container {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-  }
-  .button-container button {
-    width: 100%;
-  }
-
-  .DashContent button {
-    width: 100%;
-    padding: 8px;
-    margin: 5px;
-  }
-
-  .DashMainContainer {
-    padding: 0;
-    overflow-y: auto;
-  }
-
-  .PIAppointmentsTableContainer {
-    overflow-x: auto; /* Enable horizontal scrolling */
-  }
-
-  .PITable,
-  .PIAppointmentsTable,
-  .patients-table {
-    overflow-x: hidden;
-    display: block;
-    white-space: nowrap;
-  }
-
-  .PITable th,
-  .PITable td,
-  .PIAppointmentsTable th,
-  .PIAppointmentsTable td,
-  .patients-table th,
-  .patients-table td {
-    padding: 8px;
-    font-size: 0.75em;
-  }
-
-  .PIEditButtons .PIButton,
-  .PIActionButtons .PIButton {
-    width: 100%;
-    padding: 10px;
-  }
-}
-
 /* Center buttons in the button-container */
 .button-container {
   display: flex;
@@ -490,14 +315,17 @@ html, body {
   text-align: left; /* Align text to the left */
 }
 
+
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (max-width: 980px) {
   .PITable {
     min-width: 800px; /* Keep the minimum width to ensure scrolling */
+    overflow-x: auto; /* Allow horizontal scrolling */
+    display: block; /* Ensure table behaves as a block element to enable scrolling */
   }
 
   .PITable th, .PITable td {
-    font-size: 0.8em; /* Reduce font size for smaller screens */
+    font-size: 1.5em; /* Increase font size for better readability */
   }
 
   .PIButton, .CancelButton {
@@ -508,4 +336,141 @@ html, body {
     overflow: hidden; /* Hide overflow text */
     text-overflow: ellipsis; /* Add ellipsis for overflow text */
   }
+  .styled-popup{
+      font-size: 12px;
+  }
+
+  .ButtonContainer button{
+    font-size: 2.2em;
+    width: auto;
+    max-width: none;
+  }
 }
+
+/* Responsive adjustments for the edit section */
+@media (max-width: 980px) {
+  .DashContainer {
+    flex-direction: column;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    height: auto; /* Set height to auto to fit content */
+  }
+
+  .DashContent,
+  .DashMainContainer {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .DashMainContainer {
+    overflow-y: auto;
+  }
+
+  .PIEditSection {
+    padding: 10px;
+  }
+
+  .PIEditButtons,
+  .PIActionButtons {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .PITable {
+    margin-right: 5px;
+    overflow-x: auto; /* Allow horizontal scrolling */
+  }
+
+  .PIButton {
+    width: 100%;
+  }
+
+  .PITable th,
+  .PITable td,
+  .PIAppointmentsTable th,
+  .PIAppointmentsTable td {
+    padding: 8px;
+    font-size: 1.2em; /* Increase font size for better readability */
+  }
+
+  .PIAppointmentsTableContainer {
+    overflow-x: auto; /* Allow horizontal scrolling for appointments table */
+  }
+
+  .DashContainer {
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+    height: auto;
+    padding: 0;
+  }
+
+  .DashMainContainer {
+    width: 100%;
+  }
+
+  .DashContent {
+    width: 100%;
+    align-items: center;
+  }
+
+  .DashContent h1 {
+    font-size: 1.3em;
+  }
+  .DashContent .button-container{
+    padding: 10px;
+  }
+  .DashContent .button-container button{
+    font-size: 2em;
+    padding: 30px;
+  }
+  .button-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  .DashContent button {
+    margin: 0;
+    padding: 12px;
+  }
+
+  .DashMainContainer {
+    padding: 0;
+  }
+
+  .PITable,
+  .PIAppointmentsTable,
+  .patients-table {
+    font-size: 1em; /* Increase font size for better readability */
+    overflow-x: auto; /* Allow horizontal scrolling for tables */
+    display: block; /* Ensure tables behave as block elements to enable scrolling */
+  }
+
+  .PITable th,
+  .PITable td,
+  .PIAppointmentsTable th,
+  .PIAppointmentsTable td,
+  .patients-table th,
+  .patients-table td {
+    padding: 10px;
+    text-align: left;
+    font-size: 3em; white-space: nowrap; /* Increase font size for better readability */
+  }
+  .PITable td button {
+    padding: 8px 12px;
+    font-size: 1em;
+    max-width: none; /* Remove max-width to prevent text cut-off */
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: visible; /* Allow full display of button text */
+  }
+  .PIContainer h1,
+  .PIContainer p,
+  .PIContainer input{
+    font-size: 2.5em;
+  }
+
+}
+

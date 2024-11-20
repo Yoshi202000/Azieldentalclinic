@@ -1,202 +1,230 @@
-/* Main Container for Signup Page */
+/* Default Styles (Desktop First) */
 .signupMainContainer {
     width: 100%;
-    min-height: 100vh; /* Allow scrolling for vertical space */
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #CDE8E5; /* Consistent background color as before */
+    background-color: #CDE8E5;
     background-image: url('../../assets/clinic.png');
-    margin: 0; /* Remove any margin */
-    padding: 0; /* Remove any padding */
+    margin: 0;
+    padding: 0;
 }
 
-/* Home Button Container */
 .HomeButtonContainer {
     width: 100%;
-    height: 10%;
+    height: auto;
+    display: flex;
+    justify-content: flex-start;
+    padding: 20px;
 }
 
-/* Signup Form Container */
 .signUpForm {
     display: flex;
-    flex-direction: row;
-    height: auto;
-    justify-content: center;
-    align-items: stretch;
-    width: 90%;
-    margin: 0 auto; /* Center the container and remove extra spacing */
-    gap: 0; /* Remove gap between the signupDesignContainer and signup-container */
+    flex-direction: row; /* Default to row for larger screens */
+    width: 80%;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 0;
+    margin-bottom: 12px;
 }
 
-/* Design Section with Image */
-.signupDesignContainer {
-    flex: 1; /* Ensure both sections are equal size */
-    height: auto;
-    background-color: rgba(110, 181, 202, 0.5);
+.signupDesignContainer,
+.signup-container {
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
-    padding: 20px;
+    padding: 40px;
     box-sizing: border-box;
+    text-align: center;
+}
+
+/* Specific styles for the design container */
+.signupDesignContainer {
+    background-color: rgba(110, 181, 202, 0.5);
+    color: white;
     font-size: 24px;
 }
 
-.signupDesignContainer h1, .signupDesignContainer p {
-    color: white;
-    margin-bottom: 15px;
+/* Specific styles for signup container */
+.signup-container {
+    background-color: rgba(236, 236, 236, 0.5);
+    gap: 20px;
+    padding: 40px;
 }
 
-/* Signup Container */
-.signup-container {
-    flex: 1; /* Ensure both sections are equal size */
-    height: auto;
-    padding: 20px;
-    margin: 0; /* Remove margin for better alignment */
-    background-color: rgba(236, 236, 236, 0.5);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    box-sizing: border-box;
+.signupDesignContainer h1 {
+    margin-bottom: 20px;
+    font-size: 32px;
+}
+
+.signupDesignContainer p {
+    margin-bottom: 20px;
+    font-size: 18px;
 }
 
 .signup-title {
-    color: #42C2FF; /* Blue color for the title */
-    margin-bottom: 20px;
-    font-size: 24px;
+    color: #42C2FF;
+    font-size: 32px;
+    margin-bottom: 30px;
 }
 
 .signup-form {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 20px;
 }
 
-/* Form Group */
 .form-group {
-    width: 100%;
     display: flex;
     flex-direction: column;
     text-align: left;
+    gap: 10px;
 }
 
 .form-group label {
-    margin-bottom: 5px;
     font-weight: bold;
     color: #333;
+    font-size: 18px;
 }
 
 .form-group input {
-    padding: 10px;
+    padding: 15px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 16px;
+    font-size: 18px;
 }
 
-/* Signup Button */
 .signup-button {
-    width: 100%;
-    padding: 10px 15px;
-    background-color: #4D869C; /* Consistent button color */
+    padding: 15px;
+    background-color: #4D869C;
     color: white;
     border: none;
     border-radius: 20px;
-    font-size: 16px;
+    font-size: 20px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
 .signup-button:hover {
-    background-color: #7AB2B2; /* Light blue on hover */
+    background-color: #7AB2B2;
 }
 
-/* Error & Success Messages */
 .error-message {
     color: red;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    font-size: 18px;
 }
 
 .success-message {
     color: green;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    font-size: 18px;
 }
 
-/* Responsive Styles */
+/* Responsive Styles */ 
 
-/* For screens less than or equal to 768px */
-@media (max-width: 768px) {
+/* For phones (less than or equal to 768px) */
+/* @media (max-width: 768px)  */
+@media (max-width: 980px) {
+    .signupMainContainer {
+        padding: 60px; /* Further increased padding for additional comfort */
+    }
+
     .signUpForm {
-        flex-direction: column; /* Set the signup form in column layout on small screens */
-        gap: 0;
-        width: 90%;
-        align-items: center;
-        margin-bottom: 20px; /* Add space to allow scrolling */
+        flex-direction: column;
+        width: 100%;
+        margin-bottom: 50px; /* Increased margin to create clear separation between sections */
     }
 
     .signupDesignContainer,
     .signup-container {
         width: 100%;
-        height: auto; /* Adjust height for better fit */
-        padding: 10px;
-        box-sizing: border-box;
+        padding: 60px; /* Increased padding to provide even more comfortable spacing */
     }
 
     .signupDesignContainer {
-        margin-bottom: 10px; /* Add small spacing between containers */
-    }
-
-    .signup-container {
-        margin-bottom: 20px; /* Add spacing to allow vertical scrolling */
-    }
-
-    .signup-form {
-        width: 100%;
-        gap: 15px; /* Adjust gap for better spacing */
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-    }
-
-    .form-group label {
-        width: 100%;
-        font-size: 12px;
-    }
-
-    .form-group input {
-        width: 100%;
-        padding: 8px;
-        font-size: 14px;
-    }
-
-    .signup-button {
-        align-self: stretch;
-        width: 100%;
-        padding: 8px 12px;
-        font-size: 14px;
-    }
-
-    .signup-title {
-        font-size: 20px;
-        margin-bottom: 15px;
+        font-size: 38px; /* Increased font size for much larger text visibility */
     }
 
     .signupDesignContainer h1 {
-        font-size: 22px;
-        margin-bottom: 10px;
+        font-size: 44px; /* Larger heading font size for greater prominence */
     }
 
-    .signupDesignContainer p {
-        font-size: 16px;
-        margin-bottom: 10px;
+    .signup-title {
+        font-size: 44px; /* Increased title font size for high visibility */
+    }
+
+    .form-group label {
+        font-size: 32px; /* Larger label font size for enhanced readability */
+    }
+
+    .form-group input {
+        font-size: 32px; /* Increased input text font size for better legibility */
+        padding: 35px; /* Increased padding for larger, more comfortable input fields */
+    }
+
+    .signup-button {
+        font-size: 34px; /* Larger button font size for maximum visibility */
+        padding: 35px; /* Increased button padding for ease of use, especially on touch devices */
+    }
+
+    .error-message,
+    .success-message {
+        font-size: 28px; /* Increased font size for messages to make them very noticeable */
+    }
+}
+
+
+@media (max-width: 912px) {
+    .signupMainContainer {
+        padding: 60px; /* Further increased padding for additional comfort */
+    }
+
+    .signUpForm {
+        flex-direction: column;
+        width: 100%;
+        margin-bottom: 10px; /* Increased margin to create clear separation between sections */
+    }
+
+    .signupDesignContainer,
+    .signup-container {
+        width: 100%;
+        padding: 60px; /* Increased padding to provide even more comfortable spacing */
+    }
+
+    .signupDesignContainer {
+        font-size: 38px; /* Increased font size for much larger text visibility */
+    }
+
+    .signupDesignContainer h1 {
+        font-size: 44px; /* Larger heading font size for greater prominence */
+    }
+
+    .signup-title {
+        font-size: 35px; /* Increased title font size for high visibility */
+    }
+
+    .form-group label {
+        font-size: 20px; /* Larger label font size for enhanced readability */
+    }
+
+    .form-group input {
+        font-size: 20px; /* Increased input text font size for better legibility */
+        padding: 12px; /* Increased padding for larger, more comfortable input fields */
+    }
+
+    .signup-button {
+        font-size: 20px; /* Larger button font size for maximum visibility */
+        padding: 12px; /* Increased button padding for ease of use, especially on touch devices */
+    }
+
+    .error-message,
+    .success-message {
+        font-size: 28px; /* Increased font size for messages to make them very noticeable */
     }
 }

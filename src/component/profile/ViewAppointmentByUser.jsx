@@ -5,6 +5,7 @@ import AppointmentStepOne from '../appointmentPage/AppointmentStepOne';
 import AppointmentStepTwo from '../appointmentPage/AppointmentStepTwo';
 import { generateAvailableDates } from '../../utils/appDate';
 import '../../pages/Profile/Profile.css'
+import '../../styles/ViewAppointmentByUser.css'
 
 function ViewAppointmentByUser() {
   const [user, setUser] = useState(null);

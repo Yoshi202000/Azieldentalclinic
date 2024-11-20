@@ -88,30 +88,32 @@
 }
 
 /* Responsive Styles */
-@media (max-width: 768px) {
+@media (max-width: 980px) {
     .forgotContainer {
-        width: 100%;
+        width: 80%;
+        max-width: none;
         padding: 20px;
         box-sizing: border-box;
     }
 
     .forgotContainer h1 {
-        font-size: 1.8rem;
+        font-size: 5rem;
     }
 
     .forgotContainer p {
-        font-size: 0.9rem;
+        font-size: 2.5rem;
         margin-bottom: 20px;
     }
 
     .forgotContainer form input {
-        font-size: 0.9rem;
+        font-size: 4rem;
+        border-radius: 15px;
         padding: 10px;
     }
 
     .forgotContainer form button,
     .backToHome button {
-        font-size: 0.9rem;
+        font-size: 3rem;
         padding: 10px;
     }
 }

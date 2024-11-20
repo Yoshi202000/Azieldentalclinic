@@ -298,7 +298,7 @@ function Chat() {
     <>
       {loggedInUser && (
         <div className="chat-icon" onClick={() => setIsChatVisible(!isChatVisible)}>
-          <span role="img" aria-label="message" style={{ fontSize: '24px', marginRight: '8px' }}>💬</span>
+          <span role="img" aria-label="message">💬</span>
           <div className="unread-count">{unreadMessages.length}</div>
         </div>
       )}

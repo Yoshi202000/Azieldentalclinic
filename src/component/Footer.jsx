@@ -48,10 +48,6 @@ const Footer = () => {
                             <li className="list-inline-item"><a href="//google.com"><FontAwesomeIcon className="icon" icon={faGoogle} /></a></li>
                             <li className="list-inline-item "><a href="//instagram.com"><FontAwesomeIcon className="icon" icon={faInstagram} /></a></li>
                         </ul>
-                        <div className='phonecontainer'>
-                            <h6>Call now</h6>
-                            <button className="btn btn-primary">+939457803446</button>
-                        </div>
                     </FooterCol>
                 </div>
                 <div className="copyRight text-center">

@@ -7,6 +7,7 @@ import clean from '../../assets/clean.png';
 import remove from '../../assets/remove.png';
 import clinic from '../../assets/clinic.png'
 import './services.css';
+import '../../styles/Card.css'
 
 // Import your images here
 // import extract from '../../assets/extract.png'; // Example import

@@ -9,6 +9,7 @@ import AccountSettings from '../../component/profile/AccountSettings'
 import AdminSales from '../../component/admin/AdminSales';
 import DrawerComponent from '../../component/Drawers';
 import Footer from '../../component/Footer';
+import Chat from '../../component/chat'
 
 function Dashboard() {
   const [activeComponent, setActiveComponent] = useState('AccountSettings');
@@ -36,6 +37,7 @@ function Dashboard() {
 
   return (
     <>  
+    <Chat/>
       <div className='DashContainer'>
         <div className='DashContent'>
           <h1>Dashboard content</h1>

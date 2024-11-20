@@ -108,7 +108,14 @@ const DrawerComponent = () => {
                 {userRole === 'admin' ? 'Dashboard' : userRole === 'patient' ? 'Profile' : ''}
               </a>
             </li>
-            
+            <li className="navbar-item">
+              <a 
+                href={userRole === 'admin' ? '/' : userRole === 'patient' ? '/feedback' : '#'} 
+                className="navbar-link"
+              >
+                {userRole === 'admin' ? '' : userRole === 'patient' ? 'feedback' : ''}
+              </a>
+            </li>
             {isLoggedIn && (
               <li className="navbar-item">
                 <Notification />
@@ -158,7 +165,14 @@ const DrawerComponent = () => {
                 {userRole === 'admin' ? 'Dashboard' : userRole === 'patient' ? 'Profile' : ''}
               </a>
             </li>
-
+            <li className="drawer-item">
+              <a 
+                href={userRole === 'admin' ? '/' : userRole === 'patient' ? '/feedback' : '#'} 
+                className="drawer-link"
+              >
+                {userRole === 'admin' ? '' : userRole === 'patient' ? 'feedback' : ''}
+              </a>
+            </li>
             {isLoggedIn && (
               <li className="drawer-item">
                 <Notification />

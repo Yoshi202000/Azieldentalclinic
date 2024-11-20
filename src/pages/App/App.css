@@ -29,43 +29,17 @@ html, body, #root {
 }
 
 
-/* Styling for the card element */
-.card-container .card {
-  background-color: #fff;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  transition: transform 0.3s, box-shadow 0.3s;
-  text-align: center;
-  margin: auto; /* Center each card individually */
-}
+
 
 .card-container .card:hover {
   transform: translateY(-10px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* Image inside the card */
-.card-container .card img {
-  width: 100%;
-  max-width: 150px;
-  margin: 0 auto 15px;
-  object-fit: cover;
-}
+
 
 /* Title and description for the card */
-.card-container .card h3 {
-  font-size: 20px;
-  margin: 15px 0 10px;
-  font-weight: bold;
-  color: #333;
-}
 
-.card-container .card p {
-  font-size: 16px;
-  color: #555;
-  margin-bottom: 15px;
-}
 
 .card-container .read-more-button {
   background-color: #007bff;
@@ -101,7 +75,7 @@ html, body, #root {
 }
 
 /* 2 Columns for Medium Screens */
-@media (min-width: 768px) and (max-width: 991px) {
+@media (min-width: 768px) and (max-width: 912px) {
   .card-container {
     grid-template-columns: repeat(2, 1fr);
     gap: 15px; /* Smaller gap for medium screens */
@@ -110,7 +84,7 @@ html, body, #root {
 }
 
 /* 1 Column for Small Screens */
-@media (max-width: 767px) {
+@media (max-width: 980px) {
   .card-container {
     grid-template-columns: 1fr; /* Stack cards vertically on smaller screens */
     width: 90%;
@@ -118,8 +92,4 @@ html, body, #root {
     justify-content: center; /* Center cards for incomplete rows */
   }
 
-  .card-container .card {
-    max-width: 100%;
-    margin: 0 auto; /* Ensure cards are centered */
-  }
 }

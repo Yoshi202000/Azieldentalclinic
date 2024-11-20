@@ -26,10 +26,11 @@
   text-align: left;
   border: 1px solid #ddd;
   font-size: 16px;
+  white-space: nowrap; /* Prevent text from wrapping */
 }
 
 .AdminAppointmentTable th {
-  background-color: #42C2FF;
+  background-color: #339999;
   color: white;
 }
 
@@ -50,6 +51,8 @@
   border: none;
   cursor: pointer;
   transition: background-color 0.3s;
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: visible; /* Allow full display of button text */
 }
 
 .AdminAppointmentButton:hover {
@@ -97,6 +100,8 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: visible; /* Allow full display of button text */
 }
 
 .AdminAppointmentStatusButtons button:hover {
@@ -144,6 +149,8 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: visible; /* Allow full display of button text */
 }
 
 .table-responsive-container{
@@ -174,12 +181,12 @@
   font-size: 1.1rem;
   color: #d9534f;
 }
-
 .sales-summary-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  width: 100%;
   gap: 15px;
   margin-top: 20px;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .sales-summary-card {
@@ -206,67 +213,6 @@
   color: #333;
 }
 
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .AdminAppointmentContainer {
-    flex-direction: column;
-  }
-
-  .AdminAppointmentTable th,
-  .AdminAppointmentTable td {
-    font-size: 14px;
-    padding: 8px;
-  }
-
-  .AdminAppointmentEditButtons,
-  .AdminAppointmentActionButtons,
-  .AdminAppointmentStatusButtons {
-    flex-direction: column;
-  }
-
-  .AdminAppointmentButton,
-  .AdminAppointmentStatusButtons button {
-    font-size: 12px;
-    padding: 6px;
-    margin: 5px 0;
-  }
-
-  .FilterSortSection {
-    flex-direction: column;
-  }
-
-  .FilterSortSection input,
-  .FilterSortSection select {
-    width: 100%;
-    margin-bottom: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .AdminAppointmentContainer {
-    padding: 10px;
-  }
-
-  .AdminAppointmentTable th,
-  .AdminAppointmentTable td {
-    font-size: 12px;
-    padding: 6px;
-  }
-
-  .AdminAppointmentButton,
-  .AdminAppointmentStatusButtons button {
-    font-size: 10px;
-    padding: 5px;
-  }
-
-  .FilterSortSection input,
-  .FilterSortSection select {
-    font-size: 14px;
-    padding: 8px;
-  }
-}
-
 /* Pagination Styles */
 .pagination {
   display: flex;
@@ -285,6 +231,8 @@
   cursor: pointer;
   transition: background-color 0.3s;
   margin: 0 5px;
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: visible; /* Allow full display of button text */
 }
 
 .pagination button:hover {
@@ -296,29 +244,6 @@
   margin: 0 10px;
 }
 
-@media (max-width: 768px) {
-  .pagination button {
-    font-size: 12px;
-    padding: 6px;
-  }
-
-  .pagination span {
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .pagination button {
-    font-size: 10px;
-    padding: 5px;
-  }
-
-  .pagination span {
-    font-size: 10px;
-  }
-}
-
-
 .AdminAppointmentEditButtons,
 .AdminAppointmentActionButtons,
 .AdminAppointmentStatusButtons {
@@ -326,30 +251,6 @@
   flex-wrap: wrap;
 }
 
-@media (max-width: 768px) {
-  .AdminAppointmentEditSection {
-    padding: 15px;
-  }
-
-  .AdminAppointmentEditButtons,
-  .AdminAppointmentActionButtons,
-  .AdminAppointmentStatusButtons {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-  }
-}
-
-@media (max-width: 480px) {
-  .AdminAppointmentEditSection {
-    padding: 10px;
-  }
-
-  .AdminAppointmentButton {
-    padding: 6px;
-    font-size: 10px;
-  }
-}
 /* Container styling for filter buttons */
 .filter-buttons {
   display: flex;
@@ -379,6 +280,8 @@
   color: #333;
   background-color: #e0e0e0;
   transition: background-color 0.3s, transform 0.2s;
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: visible; /* Allow full display of button text */
 }
 
 /* Hover and active state styling */
@@ -397,31 +300,6 @@
   font-weight: 600;
 }
 
-/* Responsive adjustments for smaller screens */
-@media (max-width: 768px) {
-  .filter-buttons {
-    gap: 8px;
-  }
-
-  .filter-buttons button {
-    padding: 8px 12px;
-    font-size: 0.9rem;
-  }
-}
-
-/* Additional adjustments for very small screens */
-@media (max-width: 480px) {
-  .filter-buttons {
-    gap: 5px;
-    justify-content: space-evenly;
-  }
-
-  .filter-buttons button {
-    padding: 6px 10px;
-    font-size: 0.8rem;
-    border-radius: 15px;
-  }
-}
 .sort-button-container {
   text-align: center;
   margin-bottom: 20px;
@@ -437,8 +315,80 @@
   border-radius: 20px;
   cursor: pointer;
   transition: background-color 0.3s;
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: visible; /* Allow full display of button text */
 }
 
 .sort-button:hover {
   background-color: #45a049;
 }
+
+/* Responsive Styles */
+@media (max-width: 980px) {
+  .AdminAppointmentContainer {
+    flex-direction: column;
+  }
+
+  .AdminAppointmentTable th,
+  .AdminAppointmentTable td {
+    font-size: 2.5em;
+    padding: 8px;
+  }
+
+  .AdminAppointmentEditButtons,
+  .AdminAppointmentActionButtons,
+  .AdminAppointmentStatusButtons {
+    flex-direction: column;
+  }
+
+  .AdminAppointmentButton,
+  .AdminAppointmentStatusButtons button {
+    font-size: 1em; /* Increase font size */
+    padding: 6px;
+    margin: 5px 0;
+  }
+.pagination button,
+.pagination span,
+.FilterSortSection input,
+.FilterSortSection select{
+  font-size: 2.5em;
+}
+  .FilterSortSection {
+    flex-direction: column;
+  }
+
+  .FilterSortSection input,
+  .FilterSortSection select {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .filter-buttons button{
+    font-size: 2.5em;
+  }
+
+  .sales-summary-container h1{  
+    font-size: 3em;
+
+  }
+  .filter-buttons h3 {
+    font-size: 2em;
+  }
+  .sales-summary-cards{
+    width: 100%;
+    max-width: none;
+    display: flex;
+    flex-direction: column;
+  }
+  .sales-summary-card{
+    width: 100%;
+
+  }
+  .sales-summary-card h2{
+    font-size: 3em;
+  }
+  .sales-summary-card p{
+    font-size: 2em;
+  }
+}
+

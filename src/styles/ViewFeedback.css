@@ -58,17 +58,6 @@
   line-height: 1.6;
 }
 
-/* Responsive design */
-@media (max-width: 600px) {
-  .feedback-header {
-    flex-direction: column;
-  }
-  
-  .feedback-header span {
-    margin-bottom: 5px;
-  }
-}
-
 /* Loading and error states */
 .loading, .error {
   text-align: center;
@@ -79,4 +68,29 @@
 
 .error {
     color: #d32f2f;
+}
+
+/* Responsive design */
+@media (max-width: 980px) {
+  .feedback-header {
+    flex-direction: column;
+  }
+  .feedback-header span {
+    margin-bottom: 5px;
+  }
+  .feedback-name{
+    font-size: 3em;
+  }
+  .feedback-email{
+    font-size: 2em;
+  }
+  .feedback-date{
+    font-size: 2em;
+  }
+  .feedback-rating{
+    font-size: 1.5em;
+  }
+  .feedback-text{
+    font-size: 1.5em;
+  }
 }

@@ -27,50 +27,31 @@
 }
 
 /* Responsive Styles */
-
-/* Medium Screens (Tablets) */
-@media (max-width: 1024px) {
-  .card {
-    max-width: 220px; /* Reduce width on medium screens */
-    padding: 15px;
-  }
-
-  .card img {
-    max-width: 130px; /* Reduce image size for better fit */
-  }
-
-  .card h3 {
-    font-size: 20px; /* Adjust font size for better readability */
-  }
-
-  .card p {
-    font-size: 16px; /* Adjust font size */
-  }
-}
-
 /* Small Screens (Mobile Devices) */
-@media (max-width: 768px) {
+@media (max-width: 980px) {
+  
   .card {
-    width: 90%;
-    max-width: 100%; /* Full width of the container */
+    width: 700px;
+    max-width: none;
     padding: 10px;
   }
 
   .card img {
-    max-width: 120px; /* Adjust image size for smaller screens */
+    width: 500px; 
+    max-width: none;
   }
 
   .card h3 {
-    font-size: 18px; /* Smaller font size for small screens */
+    font-size: 40px;
   }
 
   .card p {
-    font-size: 14px; /* Smaller font size */
+    font-size: 30px; 
   }
 }
 
-/* Extra Small Screens */
-@media (max-width: 480px) {
+/* phone responsive */
+@media (max-width: 912px) {
   .card {
     padding: 8px;
     max-width: 95%;
@@ -82,10 +63,10 @@
   }
 
   .card h3 {
-    font-size: 16px; /* Adjust font size for very small screens */
+    font-size: 26px; /* Adjust font size for very small screens */
   }
 
   .card p {
-    font-size: 13px; /* Adjust text for readability */
+    font-size: 18px; /* Adjust text for readability */
   }
 }

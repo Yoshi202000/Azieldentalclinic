@@ -210,7 +210,6 @@ const PatientsInformation = () => {
                 <th>Last Name</th>
                 <th>Email</th>
                 <th>Phone Number</th>
-                <th>test</th>
               </tr>
             </thead>
             <tbody>
@@ -220,7 +219,6 @@ const PatientsInformation = () => {
                   <td>{user.lastName}</td>
                   <td>{user.email}</td>
                   <td>{user.phoneNumber}</td>
-                  <td>{user.questionOne === true ? 'Yes' : user.questionOne === false ? 'No' : 'N/A'}</td>
                 </tr>
               ))}
             </tbody>

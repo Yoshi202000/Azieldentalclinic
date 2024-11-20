@@ -106,30 +106,6 @@
 	background-color: #7AB2B2;
 }
 
-/* Responsive Styles */
-
-/* For screens less than or equal to 768px */
-@media (max-width: 768px) {
-	.sign-in-form {
-		flex-direction: column; /* Set the login and signup forms in column layout on small screens */
-		width: 100%;
-	}
-
-	.sign-in-container,
-	.sign-up-container {
-		width: 90%; /* Make containers wider for better display on small screens */
-		height: auto;
-		padding: 20px;
-	}
-}
-
-/* For screens larger than 768px */
-@media (min-width: 769px) {
-	.sign-in-form {
-		flex-direction: row; /* Keep the login and signup forms side by side on larger screens */
-	}
-}
-
 /* Styles for resend verification button */
 .resend-button {
   background-color: #f2b632;
@@ -146,3 +122,94 @@
   background-color: #f5c04e;
 }
 
+/* Responsive Styles */
+/* phone portrait */
+@media (max-width: 980px) {
+	.HomeBtnContainer{
+		height: 15%;
+	}
+	.sign-in-form{
+		flex-direction: column;
+		width: 80%;
+		margin-bottom: 25px;
+	}
+
+	.sign-up-container,
+	.sign-in-container{
+		width: 100%;
+	}
+	.sign-up-container h2 {
+		font-size: 65px;
+	}
+	.sign-up-container p {
+		font-size: 40px;
+	}
+	.sign-up-container
+	button {
+		font-size: 30px;
+		padding:15px;
+	}
+
+	.sign-in-container h2{
+		font-size: 65px;
+	}
+	.sign-in-container input {
+		font-size: 32px;
+		padding: 25px;
+		width: 90%;
+	}
+	.sign-in-container button{
+		font-size: 32px;
+		padding: 15px;
+		width: 90%;
+	}
+	.sign-in-container a {
+		font-size: x-large;
+	}
+}
+
+/* tablet portrait */
+@media (max-width: 912px) {
+	.HomeBtnContainer{
+		height: 15%;
+	}
+	.sign-in-form{
+		flex-direction: column;
+		width: 90%;
+	}
+
+	.sign-up-container,
+	.sign-in-container{
+		width: 100%;
+	}
+	.sign-up-container h2 {
+		font-size: 45px;
+	}
+
+	.sign-up-container p {
+		font-size: 25px;
+	}
+
+	.sign-up-container
+	button {
+		font-size: 15px;
+		padding:10px;
+	}
+
+	.sign-in-container h2{
+		font-size: 45px;
+	}
+	.sign-in-container input {
+		font-size: 20px;
+		padding: 12px;
+		width: 90%;
+	}
+	.sign-in-container button{
+		font-size: 15px;
+		padding:10px;
+		width: 90%;
+	}
+	.forgot-password-container a{
+		font-size: medium;
+	}
+}

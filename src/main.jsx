@@ -31,7 +31,7 @@ createRoot(document.getElementById('root')).render(
         {/* test component */}
         {/* scroll function is not yet done */}
         <Route path="/chat" element={<Chat />} />
-
+        {/*done responsive  */}
         {/* Public Routes */}
         <Route path="/" element={<App />} />
         <Route path="/home" element={<App />} />
@@ -40,7 +40,6 @@ createRoot(document.getElementById('root')).render(
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot" element={<Forgot />} />
         
-
 
         {/* Protected Routes for Patients onlys */}
         {/* not yet done for design*/}
@@ -75,6 +74,7 @@ createRoot(document.getElementById('root')).render(
         } />
 
         {/* appointmentStepThree design */}
+        {/* done responsive */}
         <Route 
           path="/appointment" 
           element={

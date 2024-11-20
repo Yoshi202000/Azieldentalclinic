@@ -113,7 +113,7 @@ function Signup() {
             </div>
             <div className="signUpForm">
                 <div className="signupDesignContainer">
-                    <h1>hello world</h1>
+                    <h1>Welcome to Aziel and arts of millennial Dental Clinic</h1>
                     <p>hello world</p>
                 </div>
                 <div className="signup-container">

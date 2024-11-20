@@ -35,14 +35,6 @@ html, body {
   align-items: center;
 }
 
-@media (max-width: 768px) {
-  .appointment-container {
-    padding: 20px;
-    width: 90%;
-    margin-top: 60px;
-  }
-}
-
 /* Cards Container */
 .app-card-container {
   display: grid;
@@ -115,32 +107,6 @@ html, body {
   background-color: #36727C;
 }
 
-/* Responsive Grid Adjustments */
-/* Large Screens: 3 Columns */
-@media (min-width: 1024px) {
-  .app-card-container {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* Medium Screens: 2 Columns */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .app-card-container {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Small Screens: 1 Column */
-@media (max-width: 767px) {
-  .app-card-container {
-    grid-template-columns: 1fr; /* Stack cards vertically */
-  }
-
-  .app-card {
-    max-width: 100%;
-  }
-}
-
 /* Progress bar */
 .progress-bar {
   display: flex;
@@ -161,27 +127,6 @@ html, body {
 .step.active {
   border-color: #4D869C;
   font-weight: bold;
-}
-
-@media (max-width: 768px) {
-  .progress-bar {
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
-
-  .step {
-    padding: 8px;
-    margin-bottom: 5px;
-    width: 100%;
-    border-bottom: none;
-    border-left: 4px solid #ddd; /* Changing from bottom border to left for better visibility on vertical screens */
-    text-align: left;
-  }
-
-  .step.active {
-    border-color: #4D869C;
-  }
 }
 
 /* Additional Styles for Appointment Steps */
@@ -263,6 +208,12 @@ button {
   cursor: pointer;
 }
 
+@media (max-width: 980px) {
+  button{
+    font-size: 2em;
+    padding: 10px;
+  }
+}
 button.previous-button {
   background-color: #6c757d;
 }
@@ -323,80 +274,6 @@ button.complete-button {
   color: #fff;
 }
 
-@media (max-width: 768px) {
-  .calendar-time-container {
-    display: flex;
-    flex-direction: row; /* Keep them in a row */
-    align-items: flex-start; /* Align items to the start */
-    width: 100%;
-    justify-content: space-between; /* Space between the containers */
-  }
-
-  .calendar-container,
-  .time-slots-container {
-    width: 40%; /* Set width to 45% to fit both in a row */
-  }
-}
-
-/* Responsive adjustments for AppointmentStepTwo */
-@media (max-width: 768px) {
-  .appointment-date {
-    width: 90%; /* Make appointment date full width */
-    margin: 0 auto; /* Center align */
-    padding: 10px; /* Reduce padding */
-  }
-
-  .calendar-time-container {
-    display: flex;
-    flex-direction: row; /* Keep them in a row */
-    justify-content: space-between; /* Space between the containers */
-    width: 100%; /* Full width */
-    flex-wrap: wrap; /* Allow wrapping */
-  }
-
-  .calendar-container,
-  .time-slots-container {
-    width: 50%; /* Set width to 45% to fit both in a row */
-    padding: 10px; /* Add padding for better spacing */
-  }
-
-  .calendar,
-  .time-slots {
-    list-style: none; /* Remove default list styles */
-    padding: 0; /* Remove padding */
-  }
-
-  .calendar li,
-  .time-slots li {
-    padding: 10px; /* Reduce padding for list items */
-    margin-bottom: 5px; /* Reduce margin between items */
-    background-color: #e8f4ff; /* Background color for list items */
-    color: #007bff; /* Text color */
-    border-radius: 5px; /* Rounded corners */
-    text-align: center; /* Center text */
-    cursor: pointer; /* Pointer cursor on hover */
-  }
-
-  .calendar li.selected,
-  .time-slots li.selected {
-    background-color: #007bff; /* Highlight selected items */
-    color: #fff; /* Change text color for selected items */
-  }
-}
-
-/* Responsive adjustments for AppointmentStepOne */
-@media (max-width: 768px) {
-  .app-card-container {
-    flex-direction: row;
-    align-items: center;
-    width: 90%;
-    max-width: 300px;
-  }
-
-  .app-card {
-    width: 100%;
-  }
-}
 
 /* Additional Styles for Appointment Step Three */
 .appointment-details {
@@ -461,39 +338,149 @@ button.complete-button {
   margin: 0 5px; /* Add margin between status buttons */
 }
 
-@media (max-width: 350px) {
 
-  .appointment-container{
-    margin: 0;
-    padding: 0;
-    width: 100%;
-  }
-  .appointment-date{
-    width: 90%;
-    margin: 0;
-    padding: 0;
-  }
+/* Responsive Adjustments for Screens Below 980px */
 
-  .time-slots  li{
-    
-  font-size: xx-small;
+@media (max-width: 980px) {
+  .app-card-container{
+    display: flex;
+    flex-direction: column;
   }
-
+  /* Calendar and Time Slots Container */
   .calendar-time-container {
-    gap: 0;
+      flex-direction: column; /* Stack calendar and time slots vertically */
+      gap: 30px; /* Increased spacing between the containers */
+      align-items: center;
+      width: 100%; /* Use full width for the container */
   }
 
-  .calendar-container,
-  .calendar-time-container h3{
-    font-size: xx-small;
-  }
   .calendar-container,
   .time-slots-container {
-    width: 20%;
+      width: 80%; /* Expanded width to take up more screen space */
+      padding: 25px; /* Extra padding for better spacing */
+      border-radius: 12px;
+      max-height: 600px; /* Increased height to display more content */
+      overflow-y: auto; /* Allow scrolling for overflow */
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Slightly larger shadow for better emphasis */
+      background-color: #fff; /* Ensure containers stand out on any background */
   }
-  .calendar-container,
-.time-slots-container  li{
-  padding: 0;
+  .time-slots-container h3{
+    font-size: 2.5em;
+  }
+
+  /* Calendar Items */
+  .calendar li {
+      font-size: 40px; /* Bigger text for better readability */
+      padding: 25px; /* Extra padding for easier touch interaction */
+      margin-bottom: 20px;
+      border-radius: 12px;
+      text-align: center;
+  }
+
+  .calendar li.selected {
+      background-color: #007bff;
+      color: #fff;
+      font-weight: bold;
+  }
+
+  /* Time Slots Items */
+  .time-slots li {
+      font-size: 35px; /* Bigger text size for time slots */
+      padding: 25px; /* Increased padding for larger touch targets */
+      margin-bottom: 20px;
+      border-radius: 12px;
+      text-align: center;
+  }
+
+  .time-slots li.selected {
+      background-color: #007bff;
+      color: #fff;
+      font-weight: bold;
+  }
+
+  /* Appointment Type Section */
+  .appointment-type h2 {
+      font-size: 50px; /* Larger title for section headers */
+      margin-bottom: 30px;
+      text-align: center;
+  }
+
+  /* Appointment Date Title */
+  .appointment-date h2 {
+      font-size: 3.2em; /* Larger text for date selection title */
+      margin-bottom: 25px;
+  }
+
+  /* Footer Buttons */
+  .footer {
+      flex-direction: column; /* Stack buttons vertically */
+      gap: 25px; /* Add spacing between buttons */
+  }
+
+  .footer button {
+      font-size: 2.5em; /* Larger button text for easy tapping */
+      padding: 20px 35px;
+      border-radius: 12px;
+  }
+
+  /* Step Indicators */
+  .step {
+      font-size: 2.8em; /* Very large step indicators */
+      margin-bottom: 20px;
+  }
+
+  /* Form Fields in Step 3 */
+  .appointment-details h2,
+  .appointment-details label{
+    font-size: 3em;
+  }
+  .appointment-details label {
+    font-size: 3em; /* Increase text size for better readability */
+    display: flex; /* Flexbox to align checkbox and text */
+    align-items: center; /* Align the checkbox with the text */
+    margin: 15px 0; /* Space between labels */
+    cursor: pointer; /* Makes the label clickable */
 }
 
+/* Style for the checkbox inside the label */
+.appointment-details label input[type="checkbox"] {
+    transform: scale(3); /* Increase the size of the checkbox */
+    margin-right: 15px; /* Add spacing between checkbox and label text */
+    cursor: pointer; /* Pointer cursor for better UX */
 }
+
+/* Add focus and hover effects for the checkbox */
+.appointment-details label input[type="checkbox"]:focus {
+    outline: 3px solid #42C2FF; /* Highlight checkbox when focused */
+    border-radius: 4px; /* Optional: Add rounded corners */
+}
+
+.appointment-details label:hover input[type="checkbox"] {
+    background-color: #f0f0f0; /* Optional: Add subtle hover effect */
+}
+
+  .stepthree {
+      width: 100%;
+      max-width: 1000px;
+      padding: 20px;
+      gap: 25px; /* Add spacing between form fields */
+  }
+
+  .stepthree input, 
+  .stepthree select {
+    max-width: none;
+    width: 100%;
+      padding: 20px;
+      font-size: 3em; /* Larger inputs for better usability */
+      border-radius: 10px;
+  }
+
+  .stepthree label {
+      font-size: 2.8em; /* Increased label font size */
+      margin-bottom: 15px;
+  }
+}
+
+
+
+

@@ -45,10 +45,15 @@
   font-style: italic;
 }
 
+
 /* Responsive design for smaller screens */
-@media (max-width: 600px) {
+@media (max-width: 980px) {
   .view-appointment-container {
     padding: 10px;
+  }
+  .ProfileAppointmentFilter label,
+  .ProfileAppointmentFilter select{
+    font-size: 35px;
   }
 
   .appointment-item {

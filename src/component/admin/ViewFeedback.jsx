@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import DrawerComponent from '../Drawers';
 import '../../styles/ViewFeedback.css'; // Create this file for styling
 
 const ViewFeedback = () => {
