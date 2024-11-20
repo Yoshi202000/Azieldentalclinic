@@ -97,7 +97,6 @@
 .notifications-dropdown {
   position: relative;
   display: inline-block;
-  z-index: 1001;
 }
 
 .notifications-icon-btn {
@@ -138,7 +137,6 @@
   min-width: 300px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   border-radius: 4px;
-  z-index: 1000;
   max-height: 400px;
   overflow-y: auto;
 }
@@ -200,7 +198,6 @@
 
 .notification-modal {
   position: fixed;
-  z-index: 1000;
   left: 0;
   top: 0;
   width: 100%;
