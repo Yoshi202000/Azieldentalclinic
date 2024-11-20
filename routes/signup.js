@@ -71,6 +71,7 @@ router.post('/signup', async (req, res) => {
         });
 
         await newUser.save();
+        console.log('User registered successfully:', newUser.email);
 
         // Create a JWT token for email verification
         const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '30d' });
@@ -89,10 +90,9 @@ router.post('/signup', async (req, res) => {
             console.log('Verification email sent to:', newUser.email);
         } catch (emailError) {
             console.error('Failed to send verification email:', emailError);
-            return res.status(500).json({ message: 'Failed to send verification email' });
+            // Do not fail the registration if email sending fails
         }
 
-        console.log('User registered successfully, verification email sent to:', newUser.email);
         res.status(201).json({ message: 'User registered. Please check your email for verification.' });
     } catch (error) {
         console.error('Error registering user:', error);
@@ -100,40 +100,6 @@ router.post('/signup', async (req, res) => {
     }
 });
 
-// Email verification route
-router.get('/verify-email', async (req, res) => {
-    const token = req.query.token;
-    if (!token) {
-        console.error('Token is missing in the request');
-        return res.status(400).json({ message: 'Token is required' });
-    }
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const email = decoded.email;
-        console.log('Decoded email from token:', email); // Log decoded email
-
-        const user = await User.findOne({ email });
-        if (!user) {
-            console.error('Verification error: User not found for email:', email);
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        if (user.emailVerified) {
-            console.error('Verification error: Email already verified');
-            return res.status(400).json({ message: 'Email already verified.' });
-        }
-
-        user.emailVerified = true;
-        await user.save();
-
-        console.log('Email verified successfully for user:', email);
-        res.status(200).json({ message: 'Email verified successfully. You can now log in.' });
-    } catch (error) {
-        console.error('Email verification failed:', error);
-        res.status(400).json({ message: 'Invalid or expired token.' });
-    }
-});
 
 
 // Add this route to handle sending verification code
@@ -143,24 +109,6 @@ router.post('/send-verification', async (req, res) => {
     if (!email) {
         console.error('Validation error: Email is required');
         return res.status(400).json({ message: 'Email is required' });
-    }
-
-    try {
-        const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        const verificationLink = `http://localhost:5000/api/verify-email?token=${token}`;
-
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: 'Email Verification Code',
-            text: `Click this link to verify your email: ${verificationLink}`,
-        });
-
-        console.log('Verification code sent to:', email);
-        res.status(200).json({ message: 'Verification code sent! Check your email.' });
-    } catch (error) {
-        console.error('Failed to send verification email:', error); // Detailed error log
-        res.status(500).json({ message: 'Failed to send verification email', error: error.message });
     }
 });
 

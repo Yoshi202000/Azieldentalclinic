@@ -119,7 +119,7 @@ function Signup() {
                 <div className="signup-container">
                     <h2 className="signup-title">Create an Account</h2>
                     {error && <div className="error-message">{error}</div>} {/* Display error message */}
-                    {successMessage && <div className="success-message">{successMessage} <br /><small>Please check your email for verification code.</small></div>} {/* Display success message */}
+                    {successMessage && <div className="success-message">{successMessage} <br /><small>Please check your email for verification link.</small></div>} {/* Display success message */}
                     <form className="signup-form" onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label htmlFor="firstName">First Name</label>
@@ -151,18 +151,6 @@ function Signup() {
                                 onChange={handleChange}
                             />
                         </div>
-                        {verificationSent && (
-                            <div className="form-group">
-                                <label htmlFor="verifyEmailCode">Verification Code</label>
-                                <input
-                                    type="text"
-                                    id="verifyEmailCode"
-                                    placeholder="Enter verification code"
-                                    value={formData.verifyEmailCode}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                        )}
                         <div className="form-group">
                             <label htmlFor="phoneNumber">Phone Number</label>
                             <input
