@@ -43,7 +43,13 @@ const Login = () => {
       if (response.status === 200) {
         console.log(response);
         setToken(response.data.token); // Store token using auth.js
-        navigate('/home'); // Redirect to home after successful login
+
+        // Redirect based on user role
+        if (response.data.user.role === 'admin') {
+          navigate('/dashboard');
+        } else if (response.data.user.role === 'patient') {
+          navigate('/home');
+        }
       }
     } catch (error) {
       if (error.response && error.response.data) {
