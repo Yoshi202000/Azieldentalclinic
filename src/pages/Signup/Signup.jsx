@@ -25,34 +25,6 @@ function Signup() {
         });
     };
 
-    // Function to send verification link
-    const handleSendVerification = async () => {
-        if (!formData.email) {
-            setError('Please enter a valid email address.');
-            return;
-        }
-
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/send-verification-link`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email: formData.email }),
-            });
-
-            const result = await response.json();
-            if (response.ok) {
-                setSuccessMessage(result.message || 'Verification link sent! Check your email.');
-            } else {
-                setError(result.message || 'Failed to send verification link.');
-            }
-        } catch (error) {
-            console.error('Error sending verification link:', error);
-            setError('An error occurred while sending the verification link.');
-        }
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(''); // Clear any previous error message
@@ -84,6 +56,7 @@ function Signup() {
             if (response.ok) {
                 setSuccessMessage(result.message);
                 alert('Signup successful. Please verify your email by clicking the link sent to your email address.');
+                await handleSendVerification(); // Send verification link after successful signup
                 navigate('/login'); // Redirect to login page on successful registration
             } else {
                 setError(result.message || 'Signup failed');
@@ -91,6 +64,34 @@ function Signup() {
         } catch (error) {
             console.error('Error signing up:', error);
             setError('An error occurred while signing up.');
+        }
+    };
+
+    // Function to send verification link
+    const handleSendVerification = async () => {
+        if (!formData.email) {
+            setError('Please enter a valid email address.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/send-verification-link`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: formData.email }),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                setSuccessMessage(result.message || 'Verification link sent! Check your email.');
+            } else {
+                setError(result.message || 'Failed to send verification link.');
+            }
+        } catch (error) {
+            console.error('Error sending verification link:', error);
+            setError('An error occurred while sending the verification link.');
         }
     };
 
@@ -170,9 +171,6 @@ function Signup() {
                                 onChange={handleChange}
                             />
                         </div>
-                        <button type="button" className="verification-button" onClick={handleSendVerification}>
-                            Send Verification Link
-                        </button>
                         <button type="submit" className="signup-button">
                             Sign Up
                         </button>

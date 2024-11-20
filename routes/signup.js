@@ -99,6 +99,40 @@ router.post('/signup', async (req, res) => {
         res.status(500).json({ message: 'An error occurred while registering the user' });
     }
 });
+// Email verification route
+router.get('/verify-email', async (req, res) => {
+    const token = req.query.token;
+    if (!token) {
+        console.error('Token is missing in the request');
+        return res.status(400).json({ message: 'Token is required' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const email = decoded.email;
+        console.log('Decoded email from token:', email); // Log decoded email
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            console.error('Verification error: User not found for email:', email);
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        if (user.emailVerified) {
+            console.error('Verification error: Email already verified');
+            return res.status(400).json({ message: 'Email already verified.' });
+        }
+
+        user.emailVerified = true;
+        await user.save();
+
+        console.log('Email verified successfully for user:', email);
+        res.status(200).json({ message: 'Email verified successfully. You can now log in.' });
+    } catch (error) {
+        console.error('Email verification failed:', error);
+        res.status(400).json({ message: 'Invalid or expired token.' });
+    }
+});
 
 
 
