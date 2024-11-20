@@ -171,7 +171,7 @@ const AdminSales = () => {
     <div className="sales-summary-container">
       <h1 className="sales-summary-title">Sales by Appointment Summary (Completed Only)</h1>
 
-      {/* Type Filter */}lkj
+      {/* Type Filter */}
 
       <div className="filter-buttons">
         <h3>Filter by Appointment Type:</h3>
