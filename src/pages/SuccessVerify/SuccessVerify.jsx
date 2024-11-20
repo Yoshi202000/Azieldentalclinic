@@ -34,11 +34,9 @@ function SuccessVerify() {
             </div>
             <div className="success-message-box">
                 <h1>{statusMessage}</h1>
-                {statusMessage === 'Email verified successfully! You can now log in.' && (
-                    <button onClick={handleLoginRedirect} className="login-button">
-                        Go to Login
-                    </button>
-                )}
+                <button onClick={handleLoginRedirect} className="login-button">
+                    Go to Login
+                </button>
             </div>
         </div>
     );

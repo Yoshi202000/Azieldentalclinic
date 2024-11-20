@@ -1,49 +1,56 @@
+/* SuccessVerify.css */
 
 .success-verify-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     min-height: 100vh;
-    background-color: #f9f9f9;
-    padding: 20px;
+    background: linear-gradient(to bottom, #f0f0f0, #d9e4f5);
+}
+
+.success-card {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+.success-icon {
+    margin-bottom: 20px;
+}
+
+.success-title {
+    font-size: 24px;
+    color: #4CAF50;
+    margin-bottom: 16px;
+}
+
+.success-text {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+.continue-button {
+    background-color: #4CAF50;
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.continue-button:hover {
+    background-color: #45a049;
 }
 
 .home-button-container {
     position: absolute;
     top: 20px;
     left: 20px;
-}
-
-.success-message-box {
-    background-color: #ffffff;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-.success-message-box h1 {
-    color: #4caf50;
-    margin-bottom: 20px;
-}
-
-.success-message-box p {
-    color: #555;
-    margin-bottom: 30px;
-}
-
-.login-button {
-    background-color: #4caf50;
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.login-button:hover {
-    background-color: #45a049;
 }
