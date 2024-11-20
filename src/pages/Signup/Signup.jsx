@@ -14,10 +14,8 @@ function Signup() {
         confirmPassword: '',
     });
 
-    const [verifyEmailCode, setVerifyEmailCode] = useState(''); // State for verification code
     const [error, setError] = useState(''); // State to hold the error message
     const [successMessage, setSuccessMessage] = useState(''); // State to hold the success message
-    const [verificationSent, setVerificationSent] = useState(false); // Track if verification was sent
     const navigate = useNavigate(); // Initialize useNavigate
 
     const handleChange = (e) => {
@@ -27,11 +25,7 @@ function Signup() {
         });
     };
 
-    const handleVerifyEmailCodeChange = (e) => {
-        setVerifyEmailCode(e.target.value);
-    };
-
-    // Function to send verification code
+    // Function to send verification link
     const handleSendVerification = async () => {
         if (!formData.email) {
             setError('Please enter a valid email address.');
@@ -39,7 +33,7 @@ function Signup() {
         }
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/send-verification`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/send-verification-link`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,14 +43,13 @@ function Signup() {
 
             const result = await response.json();
             if (response.ok) {
-                setSuccessMessage(result.message || 'Verification code sent! Check your email.');
-                setVerificationSent(true);
+                setSuccessMessage(result.message || 'Verification link sent! Check your email.');
             } else {
-                setError(result.message || 'Failed to send verification code.');
+                setError(result.message || 'Failed to send verification link.');
             }
         } catch (error) {
-            console.error('Error sending verification code:', error);
-            setError('An error occurred while sending the verification code.');
+            console.error('Error sending verification link:', error);
+            setError('An error occurred while sending the verification link.');
         }
     };
 
@@ -67,11 +60,6 @@ function Signup() {
 
         if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match');
-            return;
-        }
-
-        if (!verificationSent) {
-            setError('Please send the verification code to your email first.');
             return;
         }
 
@@ -89,14 +77,13 @@ function Signup() {
                     email,
                     phoneNumber,
                     password,
-                    verifyEmailCode, // Send verification code for validation
                 }),
             });
 
             const result = await response.json();
             if (response.ok) {
                 setSuccessMessage(result.message);
-                alert('Signup successful. Please verify your email.');
+                alert('Signup successful. Please verify your email by clicking the link sent to your email address.');
                 navigate('/login'); // Redirect to login page on successful registration
             } else {
                 setError(result.message || 'Signup failed');
@@ -183,23 +170,9 @@ function Signup() {
                                 onChange={handleChange}
                             />
                         </div>
-                        {verificationSent && (
-                            <div className="form-group">
-                                <label htmlFor="verifyEmailCode">Verification Code</label>
-                                <input
-                                    type="text"
-                                    id="verifyEmailCode"
-                                    placeholder="Enter verification code"
-                                    value={verifyEmailCode}
-                                    onChange={handleVerifyEmailCodeChange}
-                                />
-                            </div>
-                        )}
-                        {!verificationSent && (
-                            <button type="button" className="verification-button" onClick={handleSendVerification}>
-                                Send Verification Code
-                            </button>
-                        )}
+                        <button type="button" className="verification-button" onClick={handleSendVerification}>
+                            Send Verification Link
+                        </button>
                         <button type="submit" className="signup-button">
                             Sign Up
                         </button>
