@@ -96,7 +96,7 @@ function Notification() {
 
     const interval = setInterval(() => {
       fetchNotifications(); // Poll every 5 seconds
-    }, 5000);
+    }, 500000);
 
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, [fetchNotifications]);
