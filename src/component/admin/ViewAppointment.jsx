@@ -10,6 +10,7 @@ function ViewAppointment() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const [user, setUser] = useState(null);
   const [editingAppointment, setEditingAppointment] = useState(null);
   const [showTypeChange, setShowTypeChange] = useState(false);
@@ -25,8 +26,10 @@ function ViewAppointment() {
   const [dateSortOrder, setDateSortOrder] = useState('');
   const editSectionRef = useRef(null);
   const navigate = useNavigate();
+
   const [currentPage, setCurrentPage] = useState(1);
   const appointmentsPerPage = 5;
+
   const [editingAppointmentId, setEditingAppointmentId] = useState(null);
 
   useEffect(() => {
@@ -72,13 +75,11 @@ function ViewAppointment() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log('All appointments:', response.data);
       const filteredAppointments = response.data.filter(
         appointment =>
           (appointment.appointmentStatus === 'pending' || appointment.appointmentStatus === 'Rebooked') &&
           appointment.bookedClinic === clinic
       );
-      console.log('Filtered appointments:', filteredAppointments);
       setAppointments(filteredAppointments);
       setBookedAppointments(filteredAppointments);
       setLoading(false);
@@ -92,7 +93,7 @@ function ViewAppointment() {
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment/updateStatus`,
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment/updateStatus`, 
         { appointmentId, newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -184,14 +185,9 @@ function ViewAppointment() {
     updateAppointmentStatus(appointmentId, 'Cancelled');
   };
 
-  // Filtering and Sorting Logic
   const filteredAppointments = appointments.filter(appointment => {
-    // Match based on patient name (case insensitive)
     const nameMatch = `${appointment.patientFirstName} ${appointment.patientLastName}`.toLowerCase().includes(nameFilter.toLowerCase());
-
-    // Match based on appointment type (case insensitive)
     const typeMatch = !typeFilter || appointment.appointmentType.toLowerCase() === typeFilter.toLowerCase();
-
     return nameMatch && typeMatch;
   }).sort((a, b) => {
     if (dateSortOrder === 'asc') {
@@ -218,6 +214,24 @@ function ViewAppointment() {
 
   const displayedAppointments = filteredAppointments
     .slice((currentPage - 1) * appointmentsPerPage, currentPage * appointmentsPerPage);
+
+  const generateTimeSlots = (start, end) => {
+    const timeSlots = [];
+    let current = new Date();
+    current.setHours(start, 0, 0);
+
+    const endTime = new Date();
+    endTime.setHours(end, 0, 0);
+
+    while (current < endTime) {
+      const nextTime = new Date(current.getTime() + 15 * 60000);
+      const formattedTime = `${current.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} → ${nextTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      timeSlots.push(formattedTime);
+      current = nextTime;
+    }
+
+    return timeSlots;
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -319,6 +333,7 @@ function ViewAppointment() {
                                   availableDates={availableDates}
                                   selectedDate={selectedDate}
                                   handleDateSelect={handleDateSelect}
+                                  generateTimeSlots={generateTimeSlots}
                                   selectedTimeFrom={selectedTimeFrom}
                                   handleTimeSelect={handleTimeSelect}
                                   bookedAppointments={bookedAppointments}
