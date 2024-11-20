@@ -33,7 +33,7 @@ height: 100%;
 }
 
 .FBstar {
-  font-size: 24px;
+  font-size: 64px;
   color: #ddd;
   cursor: pointer;
   transition: color 0.2s;
@@ -99,7 +99,7 @@ height: 100%;
     font-size: 3em;
   }
   .FBstar{
-    font-size: 5em;
+    font-size: 7em;
   }
   .FBfeedback input{
     font-size: 3em;
