@@ -1,53 +1,25 @@
 import React from 'react';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFacebook,faGoogle,faInstagram } from "@fortawesome/free-brands-svg-icons";
 import FooterCol from './FooterCol';
 import '../styles/Footer.css';
 
-const noNamed = [
-  {name: "Emergency Dental Care" , link: "/emergency"},
-  {name: "Check Up" , link: "/checkup"},
-  {name: "Treatment of Personal Diseases" , link: "/personal-treatment"},
-  {name: "Tooth Extraction" , link: "/tooth-extract"},
-  {name: "Check Up" , link: "/checkup"},
-]
 const ourAddress = [
-  {name: "Cavite - dasmarinas salitran" , link: "//google.com/map"},
-  {name: "congrassional ave" , link: "//google.com/map"},
+  {name: "Congressional Ave," , link: "//maps.app.goo.gl/7tzpcfthsECPe7n87"},
+  {name: "Dasmariñas, 4115 Cavite" , link: "//maps.app.goo.gl/7tzpcfthsECPe7n87"},
  
 ]
-const oralHealth = [
-  {name: "Emergency Dental Care" , link: "/emergency"},
-  {name: "Check Up" , link: "/checkup"},
-  {name: "Treatment of Personal Diseases" , link: "/personal-treatment"},
-  {name: "Tooth Extraction" , link: "/tooth-extract"},
-  {name: "Check Up" , link: "/checkup"},
-  {name: "Check Up" , link: "/checkup"},
-  {name: "Check Up" , link: "/checkup"}
-]
 const services = [
-  {name: "Emergency Dental Care" , link: "/emergency"},
-  {name: "Check Up" , link: "/checkup"},
-  {name: "Treatment of Personal Diseases" , link: "/personal-treatment"},
-  {name: "Tooth Extraction" , link: "/tooth-extract"},
-  {name: "Check Up" , link: "/checkup"},
-  {name: "Check Up" , link: "/checkup"},
-  {name: "Check Up" , link: "/checkup"}
+  {name: "tooth extraction" , link: "/services"},
+  {name: "Braces & Orthodontics" , link: "/services"},
+  {name: "dental cleaning" , link: "/services"},
+  {name: "Check Up" , link: "/services"}
 ]
 const Footer = () => {
   return (
     <footer className="footer-area clear-both">
             <div className="Footerontainer">
                 <div className="row">
-                    <FooterCol key={1} menuTitle={"Services"} menuItems={noNamed}/>
-                    <FooterCol key={2} menuTitle="Services" menuItems={services}/>
-                    <FooterCol key={3} menuTitle="Oral Health" menuItems={oralHealth}/>
-                    <FooterCol key={4} menuTitle="Our Address" menuItems={ourAddress}> 
-                        <ul className="social-media list-inline" >
-                        <li className="list-inline-item"><a href="//facebook.com"><FontAwesomeIcon className="icon active-icon" icon={faFacebook} /></a></li>
-                            <li className="list-inline-item"><a href="//google.com"><FontAwesomeIcon className="icon" icon={faGoogle} /></a></li>
-                            <li className="list-inline-item "><a href="//instagram.com"><FontAwesomeIcon className="icon" icon={faInstagram} /></a></li>
-                        </ul>
+                    <FooterCol key={1} menuTitle="Services" menuItems={services}/>
+                    <FooterCol key={2} menuTitle="Our Address" menuItems={ourAddress}> 
                     </FooterCol>
                 </div>
                 <div className="copyRight text-center">

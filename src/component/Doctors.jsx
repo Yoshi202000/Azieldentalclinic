@@ -10,7 +10,7 @@ const Doctors = () => {
         <div className="doctor-card">
           <img src={doctor1} alt="Dr. Prachi Deval" className="doctor-image" />
           <div className="doctor-info">
-            <h3 className="doctor-name">Dr. dey ziram</h3>
+            <h3 className="doctor-name">Dr. Aziel</h3>
             <p className="doctor-experience">7 years of experience</p>
             <p className="doctor-specialization">Prosthodontist and Implantologist</p>
             <p className="doctor-description">
@@ -21,7 +21,7 @@ const Doctors = () => {
         <div className="doctor-card">
           <img src={doctor1} alt="Dr. Prachi Deval" className="doctor-image" />
           <div className="doctor-info">
-            <h3 className="doctor-name">Dr. dey ziram</h3>
+            <h3 className="doctor-name">Dr. Aziel</h3>
             <p className="doctor-experience">7 years of experience</p>
             <p className="doctor-specialization">Prosthodontist and Implantologist</p>
             <p className="doctor-description">
@@ -32,7 +32,7 @@ const Doctors = () => {
         <div className="doctor-card">
           <img src={doctor1} alt="Dr. Prachi Deval" className="doctor-image" />
           <div className="doctor-info">
-            <h3 className="doctor-name">Dr. dey ziram</h3>
+            <h3 className="doctor-name">Dr. Aziel</h3>
             <p className="doctor-experience">7 years of experience</p>
             <p className="doctor-specialization">Prosthodontist and Implantologist</p>
             <p className="doctor-description">
@@ -43,7 +43,7 @@ const Doctors = () => {
         <div className="doctor-card">
           <img src={doctor1} alt="Dr. Prachi Deval" className="doctor-image" />
           <div className="doctor-info">
-            <h3 className="doctor-name">Dr. dey ziram</h3>
+            <h3 className="doctor-name">Dr. Aziel</h3>
             <p className="doctor-experience">7 years of experience</p>
             <p className="doctor-specialization">Prosthodontist and Implantologist</p>
             <p className="doctor-description">
