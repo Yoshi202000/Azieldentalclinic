@@ -109,6 +109,7 @@ button.health-record-submit:hover:not(:disabled) {
     .question label {
         font-size: 46px;
         padding: 20px;
+        margin-left: 25px;
     }
     
     .question input[type="radio"] {

@@ -30,11 +30,11 @@ const AppointmentStepOne = ({ selectedCard, handleCardSelect }) => {
         </label>
         <label>
           <Card
-            name="dental cleaning"
+            name="Dental cleaning"
             description="I am a dentist specializing in cleaning"
             image={clean}
-            isSelected={selectedCard === "dental cleaning"}
-            onClick={() => handleCardSelect("dental cleaning")}
+            isSelected={selectedCard === "Dental cleaning"}
+            onClick={() => handleCardSelect("Dental cleaning")}
           />
         </label>
       </div>

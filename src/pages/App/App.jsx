@@ -33,8 +33,8 @@ function App() {
             image={brace}
           />
           <Card
-            name="dental cleaning"
-            description="I am a dentist specializing in dental cleaning"
+            name="Dental cleaning"
+            description="I am a dentist specializing in Dental cleaning"
             image={clean}
           />
         </div>

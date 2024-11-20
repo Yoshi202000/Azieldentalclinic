@@ -169,15 +169,16 @@ const AdminSales = () => {
 
   return (
     <div className="sales-summary-container">
-      <h1 className="sales-summary-title">Appointment Sales Summary (Completed Only)</h1>
+      <h1 className="sales-summary-title">Sales by Appointment Summary (Completed Only)</h1>
 
-      {/* Type Filter */}
+      {/* Type Filter */}lkj
+
       <div className="filter-buttons">
         <h3>Filter by Appointment Type:</h3>
         <button onClick={() => handleTypeFilterChange('All')} className={typeFilter === 'All' ? 'active' : ''}>All</button>
         <button onClick={() => handleTypeFilterChange('Braces & Orthodontics')} className={typeFilter === 'Braces & Orthodontics' ? 'active' : ''}>Braces & Orthodontics</button>
         <button onClick={() => handleTypeFilterChange('Tooth Extractions')} className={typeFilter === 'Tooth Extractions' ? 'active' : ''}>Tooth Extractions</button>
-        <button onClick={() => handleTypeFilterChange('dental cleaning')} className={typeFilter === 'dental cleaning' ? 'active' : ''}>dental cleaning</button>
+        <button onClick={() => handleTypeFilterChange('Dental cleaning')} className={typeFilter === 'Dental cleaning' ? 'active' : ''}>Dental cleaning</button>
       </div>
 
       {/* Date Filter */}

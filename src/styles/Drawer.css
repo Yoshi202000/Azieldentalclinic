@@ -92,6 +92,7 @@ body, html {
 
 .drawer.open {
   right: 0; /* Slide in the drawer */
+  overflow: visible;
 }
 
 .close-btn {
@@ -111,8 +112,7 @@ body, html {
 
 .drawer-content {
   flex: 1;
-  overflow-y: auto;
-}
+  overflow: visible;}
 
 .drawer-content ul {
   list-style-type: none;

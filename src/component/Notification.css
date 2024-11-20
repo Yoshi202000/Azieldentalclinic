@@ -97,6 +97,7 @@
 .notifications-dropdown {
   position: relative;
   display: inline-block;
+  z-index: 1001;
 }
 
 .notifications-icon-btn {
@@ -244,4 +245,33 @@
 
 .notification-modal-content button:hover {
   background-color: #0056b3;
+}
+
+@media (max-width: 9980px) {
+  .notification-header{
+    max-width: none;
+    max-height: none;
+    height: 700px;
+    width: 500px;
+
+  }
+  .notification-header,
+  .notification-date,
+  .notification-type{
+    font-size: 3em;
+  }
+
+  .notification-message{
+    font-size: 1.5em;
+  }
+  .notification-modal-content{
+    max-width: 900px;
+
+  }
+  .notification-modal-content h2{
+    font-size: 3em;
+  }
+  .notification-modal-content p{
+    font-size: 1.5em;
+  }
 }

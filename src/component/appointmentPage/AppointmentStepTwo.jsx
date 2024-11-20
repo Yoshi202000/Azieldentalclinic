@@ -35,7 +35,7 @@ const AppointmentStepTwo = ({
         </div>
         {selectedDate && (
           <div className="time-slots-container">
-            <h3>Available Times on {selectedDate}</h3>
+            <h3>Available Time on {selectedDate}</h3>
             <ul className="time-slots">
               {generateTimeSlots(9, 18).map((time, index) => {
                 const isBooked = isTimeSlotBooked(selectedDate, time);

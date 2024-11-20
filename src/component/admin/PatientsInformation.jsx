@@ -309,7 +309,7 @@ const PatientsInformation = () => {
                                       <button className="PIButton" onClick={handleUpdateAppointment}>
                                         Update Appointment
                                       </button>
-                                      <button className="PIButton" onClick={() => handleCancelAppointment(editingAppointment._id)}>
+                                      <button className="PIButtonCancel" onClick={() => handleCancelAppointment(editingAppointment._id)}>
                                         Cancel Appointment
                                       </button>
                                       <button className="PIButton" onClick={() => {

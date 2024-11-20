@@ -43,7 +43,7 @@ const Services = () => {
             image={brace}  
           />
           <Card 
-            name="dental cleaning" 
+            name="Dental cleaning" 
             description="Restore damaged teeth with quality fillings" 
             image={clean} 
           />

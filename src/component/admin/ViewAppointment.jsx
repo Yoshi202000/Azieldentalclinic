@@ -217,10 +217,14 @@ function ViewAppointment() {
     }
   };
 
+  
+
   // Function to filter and sort appointments based on user input
   const filteredAppointments = appointments.filter(appointment => {
     const nameMatch = `${appointment.patientFirstName} ${appointment.patientLastName}`.toLowerCase().includes(nameFilter.toLowerCase());
-    const typeMatch = !typeFilter || appointment.appointmentType.toLowerCase().includes(typeFilter.toLowerCase());
+
+    !typeFilter || 
+      appointment.appointmentType.toLowerCase() === typeFilter.toLowerCase()
     return nameMatch && typeMatch;
   }).sort((a, b) => {
     if (dateSortOrder === 'asc') {
@@ -285,12 +289,15 @@ function ViewAppointment() {
           value={nameFilter}
           onChange={(e) => setNameFilter(e.target.value)}
         />
-        <input
-          type="text"
-          placeholder="Filter by appointment type"
-          value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value)}
-        />
+         <select
+        value={typeFilter}
+        onChange={(e) => setTypeFilter(e.target.value)}
+      >
+        <option value="">All Appointment Types</option>
+        <option value="Braces & Orthodontics">Braces & Orthodontics</option>
+        <option value="Tooth Extractions">Tooth Extractions</option>
+        <option value="Dental cleaning">Dental cleaning</option>
+      </select>
         <select
           value={dateSortOrder}
           onChange={(e) => setDateSortOrder(e.target.value)}
@@ -376,19 +383,8 @@ function ViewAppointment() {
                               />
                             )}
                           </div>
-
-                          <div className="AdminAppointmentActionButtons">
-                            <button className="AdminAppointmentButton UpdateButton" onClick={handleUpdateAppointment}>
-                              Update Appointment
-                            </button>
-                            <button className="AdminAppointmentButton CancelButton" onClick={() => handleCancelAppointment(editingAppointmentId)}>
-                              Cancel Appointment
-                            </button>
-                            
-                          </div>
-
                           <div className="AdminAppointmentStatusButtons">
-                            {['Cancelled', 'Completed', 'Not Showed'].map(status => (
+                            {['Cancelled', 'Completed', 'Not Show'].map(status => (
                               <button
                                 key={status}
                                 className="AdminAppointmentStatusButton"
@@ -397,6 +393,11 @@ function ViewAppointment() {
                                 {status}
                               </button>
                             ))}
+                          </div>
+                          <div className="AdminAppointmentActionButtons">
+                            <button className="AdminAppointmentButton UpdateButton" onClick={handleUpdateAppointment}>
+                              Update Appointment
+                            </button>         
                           </div>
                         </div>
                       </td>

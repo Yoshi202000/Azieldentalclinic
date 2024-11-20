@@ -193,6 +193,17 @@ html, body {
   transition: background-color 0.3s, transform 0.2s;
   text-align: center;
 }
+.PIEditButtons .PIButtonCancel {
+  flex: 1 1 calc(50% - 20px);
+  padding: 15px;
+  background-color: #fb6868;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  text-align: center;
+}
 
 .PIEditButtons .PIButton:hover {
   background-color: #45a049;

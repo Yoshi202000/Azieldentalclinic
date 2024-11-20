@@ -10,7 +10,7 @@ const ourAddress = [
 const services = [
   {name: "tooth extraction" , link: "/services"},
   {name: "Braces & Orthodontics" , link: "/services"},
-  {name: "dental cleaning" , link: "/services"},
+  {name: "Dental cleaning" , link: "/services"},
   {name: "Check Up" , link: "/services"}
 ]
 const Footer = () => {
