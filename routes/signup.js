@@ -77,7 +77,7 @@ router.post('/signup', async (req, res) => {
         const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
         // Verification email content
-        const verificationLink = `http://213.190.4.136:5000/verify-email?token=${token}`;
+        const verificationLink = `http://213.190.4.136:5173/verify-email?token=${token}`;
 
         // Send verification email
         try {
