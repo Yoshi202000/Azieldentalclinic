@@ -101,7 +101,7 @@
 }
 
 /* Extra Small Screens - Stack Cards in Column */
-@media (max-width: 767px) {
+@media (max-width: 980px) {
   .doctors-grid {
     grid-template-columns: 1fr;
   }
@@ -117,5 +117,15 @@
 
   .doctor-info {
     text-align: center; /* Center align text for extra small screens */
+  }
+  .doctor-name{
+    font-size: 3em;
+  }
+  .doctor-experience,
+  .doctor-specialization{
+    font-size: 2em;
+  }
+  .doctor-description{
+    font-size: 1.5em;
   }
 }

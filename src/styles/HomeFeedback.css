@@ -59,8 +59,19 @@
   font-style: italic;
 }
 
+/* Loading and error states */
+.home-feedback-container > div {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2em;
+  color: #666;
+}
+
+.home-feedback-container > div:last-child {
+  color: #d32f2f;
+}
 /* Responsive design */
-@media (max-width: 600px) {
+@media (max-width: 980px) {
   .home-feedback-container {
     padding: 20px;
   }
@@ -73,17 +84,9 @@
   .home-feedback-name,
   .home-feedback-rating {
     margin-bottom: 5px;
+    font-size: 2em;
   }
-}
-
-/* Loading and error states */
-.home-feedback-container > div {
-  text-align: center;
-  padding: 20px;
-  font-size: 1.2em;
-  color: #666;
-}
-
-.home-feedback-container > div:last-child {
-  color: #d32f2f;
+  .home-feedback-text {
+    font-size: 1.5em;
+  }
 }
