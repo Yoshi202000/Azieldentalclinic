@@ -247,7 +247,7 @@
   background-color: #0056b3;
 }
 
-@media (max-width: 9980px) {
+@media (max-width: 980px) {
   .notification-header{
     max-width: none;
     max-height: none;
