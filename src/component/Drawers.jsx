@@ -88,18 +88,22 @@ const DrawerComponent = () => {
       <nav className="navcontainer">
         <nav className="navbar">
           <div className="logo-container">
-            <img src="src/assets/azieldental.png" alt="Logo" className="logo" />
+            <img src="src/assets/aziel.png" alt="Logo" className="logo" />
           </div>
           <ul className="navbar-menu">
-            <li className="navbar-item">
-              <a href="/home" className="navbar-link">Home</a>
-            </li>
-            <li className="navbar-item">
-              <a href="/services" className="navbar-link">Services</a>
-            </li>
-            <li className="navbar-item">
-              <a href={isLoggedIn ? "/appointment" : "#"} className="navbar-link" onClick={handleAppointmentClick}>Appointment</a>
-            </li>
+            {userRole !== 'admin' && (
+              <>
+                <li className="navbar-item">
+                  <a href="/home" className="navbar-link">Home</a>
+                </li>
+                <li className="navbar-item">
+                  <a href="/services" className="navbar-link">Services</a>
+                </li>
+                <li className="navbar-item">
+                  <a href={isLoggedIn ? "/appointment" : "#"} className="navbar-link" onClick={handleAppointmentClick}>Appointment</a>
+                </li>
+              </>
+            )}
             <li className="navbar-item">
               <a 
                 href={userRole === 'admin' ? '/dashboard' : userRole === 'patient' ? '/profile' : '#'} 
@@ -113,7 +117,7 @@ const DrawerComponent = () => {
                 href={userRole === 'admin' ? '/' : userRole === 'patient' ? '/feedback' : '#'} 
                 className="navbar-link"
               >
-                {userRole === 'admin' ? '' : userRole === 'patient' ? 'feedback' : ''}
+                {userRole === 'admin' ? '' : userRole === 'patient' ? 'Feedback' : ''}
               </a>
             </li>
             {isLoggedIn && (
@@ -148,15 +152,19 @@ const DrawerComponent = () => {
         </button>
         <div className="drawer-content">
           <ul>
-            <li className="drawer-item">
-              <a href="/home" className="drawer-link">Home</a>
-            </li>
-            <li className="drawer-item">
-              <a href="/services" className="drawer-link">Services</a>
-            </li>
-            <li className="drawer-item">
-              <a href="/appointment" className="drawer-link">Appointment</a>
-            </li>
+            {userRole !== 'admin' && (
+              <>
+                <li className="drawer-item">
+                  <a href="/home" className="drawer-link">Home</a>
+                </li>
+                <li className="drawer-item">
+                  <a href="/services" className="drawer-link">Services</a>
+                </li>
+                <li className="drawer-item">
+                  <a href="/appointment" className="drawer-link">Appointment</a>
+                </li>
+              </>
+            )}
             <li className="drawer-item">
               <a 
                 href={userRole === 'admin' ? '/dashboard' : userRole === 'patient' ? '/profile' : '#'} 
@@ -170,7 +178,7 @@ const DrawerComponent = () => {
                 href={userRole === 'admin' ? '/' : userRole === 'patient' ? '/feedback' : '#'} 
                 className="drawer-link"
               >
-                {userRole === 'admin' ? '' : userRole === 'patient' ? 'feedback' : ''}
+                {userRole === 'admin' ? '' : userRole === 'patient' ? 'Feedback' : ''}
               </a>
             </li>
             {isLoggedIn && (

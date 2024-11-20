@@ -111,6 +111,12 @@
     text-align: center; /* Center align text */
   }
 
+  .section-title {
+    font-size: 5em;
+    font-weight: bold;
+    margin-bottom: 40px;
+  }
+
   .doctor-image {
     margin: 0 auto 20px; /* Center image and add bottom margin */
   }

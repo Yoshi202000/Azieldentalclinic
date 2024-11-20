@@ -35,7 +35,7 @@ const First = () => {
           <h2>Book Appointment.</h2>
           <p>Book Services and Doctors.</p>
           <button className="search-button" onClick={handleAppointmentClick}>
-            <span className="icon">📅</span> Book Appointment
+            <span className="icon">📅</span> Book an Appointment
           </button>
         </div>
         <div className="image-section">
