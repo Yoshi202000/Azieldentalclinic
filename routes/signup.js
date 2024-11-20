@@ -77,7 +77,7 @@ router.post('/signup', async (req, res) => {
         const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
         // Verification email content
-        const verificationLink = `http://213.190.4.136:5173/verify-email?token=${token}`;
+        const verificationLink = `http://213.190.4.136:5000/api/verify-email?token=${token}`;
 
         // Send verification email
         try {
@@ -104,35 +104,42 @@ router.get('/verify-email', async (req, res) => {
     const token = req.query.token;
     if (!token) {
         console.error('Token is missing in the request');
-        return res.status(400).json({ message: 'Token is required' });
+        return res.status(400).send('<h1>Token is required</h1>');
     }
 
     try {
+        // Verify the token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const email = decoded.email;
         console.log('Decoded email from token:', email); // Log decoded email
 
+        // Find the user with the decoded email
         const user = await User.findOne({ email });
         if (!user) {
             console.error('Verification error: User not found for email:', email);
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).send('<h1>User not found</h1>');
         }
 
+        // Check if email is already verified
         if (user.emailVerified) {
             console.error('Verification error: Email already verified');
-            return res.status(400).json({ message: 'Email already verified.' });
+            return res.redirect('http://213.190.4.136:5173/verify-email?status=already-verified');
         }
 
+        // Mark the user's email as verified
         user.emailVerified = true;
         await user.save();
 
         console.log('Email verified successfully for user:', email);
-        res.status(200).json({ message: 'Email verified successfully. You can now log in.' });
+        // Redirect to the success page in the frontend with a success status
+        res.redirect('http://213.190.4.136:5173/verify-email?status=success');
     } catch (error) {
         console.error('Email verification failed:', error);
-        res.status(400).json({ message: 'Invalid or expired token.' });
+        // Redirect to the frontend with an error status
+        res.redirect('http://213.190.4.136:5173/verify-email?status=invalid-token');
     }
 });
+
 
 
 

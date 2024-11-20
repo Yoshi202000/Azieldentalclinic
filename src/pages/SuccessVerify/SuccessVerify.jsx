@@ -1,10 +1,27 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './SuccessVerify.css';
 import HomeButton from '../../component/HomeButton';
 
 function SuccessVerify() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const [statusMessage, setStatusMessage] = useState('');
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const status = queryParams.get('status');
+
+        if (status === 'success') {
+            setStatusMessage('Email verified successfully! You can now log in.');
+        } else if (status === 'already-verified') {
+            setStatusMessage('Your email has already been verified.');
+        } else if (status === 'invalid-token') {
+            setStatusMessage('Invalid or expired token. Please try again.');
+        } else {
+            setStatusMessage('An unknown error occurred.');
+        }
+    }, [location]);
 
     const handleLoginRedirect = () => {
         navigate('/login'); // Redirect user to login page
@@ -16,11 +33,12 @@ function SuccessVerify() {
                 <HomeButton />
             </div>
             <div className="success-message-box">
-                <h1>Email Verified Successfully!</h1>
-                <p>You can now log in to your account.</p>
-                <button onClick={handleLoginRedirect} className="login-button">
-                    Go to Login
-                </button>
+                <h1>{statusMessage}</h1>
+                {statusMessage === 'Email verified successfully! You can now log in.' && (
+                    <button onClick={handleLoginRedirect} className="login-button">
+                        Go to Login
+                    </button>
+                )}
             </div>
         </div>
     );
