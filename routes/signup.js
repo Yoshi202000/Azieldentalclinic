@@ -77,7 +77,7 @@ router.post('/signup', async (req, res) => {
         const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
         // Verification email content
-        const verificationLink = `http://213.190.4.136:5000/api/verify-email?token=${token}`;
+        const verificationLink = `https://azieldentalclinic.xyz/api/verify-email?token=${token}`;
 
         // Send verification email
         try {
@@ -123,7 +123,7 @@ router.get('/verify-email', async (req, res) => {
         // Check if email is already verified
         if (user.emailVerified) {
             console.error('Verification error: Email already verified');
-            return res.redirect('http://213.190.4.136:5173/verify-email?status=already-verified');
+            return res.redirect('https://azieldentalclinic.xyz/login?status=already-verified');
         }
 
         // Mark the user's email as verified
@@ -132,11 +132,11 @@ router.get('/verify-email', async (req, res) => {
 
         console.log('Email verified successfully for user:', email);
         // Redirect to the success page in the frontend with a success status
-        res.redirect('http://213.190.4.136:5173/login?status=success');
+        res.redirect('https://azieldentalclinic.xyz/login?status=success');
     } catch (error) {
         console.error('Email verification failed:', error);
         // Redirect to the frontend with an error status
-        res.redirect('http://213.190.4.136:5173/home?status=invalid-token');
+        res.redirect('https://azieldentalclinic.xyz/login?status=invalid-token');
     }
 });
 
