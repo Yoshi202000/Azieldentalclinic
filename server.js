@@ -7,7 +7,6 @@ import fs from 'fs'; // Import file system to read SSL certificate files
 import https from 'https'; // Import HTTPS module
 import { WebSocketServer } from 'ws'; // Import WebSocket server
 
-
 // Import routes    
 import signupRoutes from './routes/signup.js';
 import loginRoutes from './routes/login.js';
@@ -27,14 +26,12 @@ import updateUserRoutes from './routes/updateUserRole.js'
 import unreadRoutes from './routes/unread.js';
 import healthRecordRoutes from './routes/healthRecord.js';
 
-
 const app = express();
 dotenv.config();
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(cookieParser()); // Use cookie-parser middleware
 
 // CORS configuration
@@ -45,29 +42,6 @@ const allowedOrigins = [
     'http://213.190.4.136:5174', // Allow requests from alternate frontend ports (if used)
     // 'http://localhost:5000', // Allow requests from local test backend
 ];
-
-const wss = new WebSocketServer({ server });
-
-
-// Handle WebSocket connections
-wss.on('connection', (ws) => {
-    console.log('New client connected');
-
-    ws.on('message', (message) => {
-        console.log(`Received: ${message}`);
-    });
-
-    ws.on('close', () => {
-        console.log('Client disconnected');
-    });
-});
-
-// Load SSL certificates for HTTPS
-const server = https.createServer({
-    key: fs.readFileSync(process.env.SSL_KEY_PATH),
-    cert: fs.readFileSync(process.env.SSL_CERT_PATH)
-}, app);
-
 
 app.use(cors({
     origin: function (origin, callback) {
@@ -88,7 +62,6 @@ mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('Connected to MongoDB server'))
     .catch(err => console.error('Error connecting to MongoDB', err));
 
-    // app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 app.use('/api', signupRoutes);
 app.use(loginRoutes);
@@ -108,6 +81,27 @@ app.use('/api', updateUserRoutes);
 app.use('/api', unreadRoutes);
 app.use('/api', healthRecordRoutes);
 
+// Load SSL certificates for HTTPS
+const server = https.createServer({
+    key: fs.readFileSync(process.env.SSL_KEY_PATH),
+    cert: fs.readFileSync(process.env.SSL_CERT_PATH)
+}, app);
+
+// Create the WebSocket server AFTER the HTTPS server has been initialized
+const wss = new WebSocketServer({ server });
+
+// Handle WebSocket connections
+wss.on('connection', (ws) => {
+    console.log('New client connected');
+
+    ws.on('message', (message) => {
+        console.log(`Received: ${message}`);
+    });
+
+    ws.on('close', () => {
+        console.log('Client disconnected');
+    });
+});
 
 // Start HTTPS server
 const PORT = process.env.PORT || 443;
