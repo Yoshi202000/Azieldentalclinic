@@ -13,7 +13,7 @@ const authenticateToken = (req, res, next) => {
   }
 
   const tokenValue = token.startsWith("Bearer ") ? token.slice(7) : token;
-  jwt.verify(tokenValue, 'your_jwt_secret', (err, user) => {
+jwt.verify(tokenValue, process.env.JWT_SECRET, (err, user) => {
     if (err) {
       console.log("Token verification failed:", err.message);
       return res.status(403).json({ message: 'Invalid token' });

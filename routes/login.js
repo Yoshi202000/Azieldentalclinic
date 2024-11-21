@@ -17,7 +17,7 @@ const generateToken = (user) => {
       role: user.role,
       clinic: user.clinic
     },
-    process.env.JWT_SECRET || 'your_jwt_secret',
+    process.env.JWT_SECRET,
     { expiresIn: '30d' }
   );
 };
