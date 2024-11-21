@@ -103,8 +103,9 @@ wss.on('connection', (ws) => {
     });
 });
 
-// Start HTTPS server
-const PORT = process.env.PORT || 443;
+
+const PORT = process.env.PORT || 5000; // Change from 443 to 5000
 server.listen(PORT, () => {
-    console.log(`Server is running securely on port ${PORT}`);
+  console.log(`Server is running securely on port ${PORT}`);
 });
+
