@@ -341,7 +341,7 @@ function ViewAppointment() {
                               )}
                             </div>
                             <div className="AdminAppointmentStatusButtons">
-                              {['Cancelled', 'Completed', 'Not Show'].map(status => (
+                              {['Cancelled', 'Completed', 'No Show'].map(status => (
                                 <button
                                   key={status}
                                   className="AdminAppointmentStatusButton"

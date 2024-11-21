@@ -98,6 +98,11 @@
 
 
 @media (max-width: 980px) {
+  .Services-section-title {
+  font-size: 5rem;
+  margin: 20px;
+  margin-top: 60px;
+  }
   .Services-container{
     margin-top: 5px;
   }
@@ -111,9 +116,12 @@
   }
   .Services-text-container h2 {
     font-size: 60px;
+  margin: 20px;
   }
+
   .Services-text-container p{
     font-size: 40px;
+
   }
 
   .Services-image-container {

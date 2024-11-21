@@ -56,10 +56,10 @@ const CompletedAppointment = () => {
         },
       });
 
-      // Filter appointments to include only those that belong to the user's clinic and have status 'Completed', 'Not Show', 'Cancelled'
+      // Filter appointments to include only those that belong to the user's clinic and have status 'Completed', 'No Show', 'Cancelled'
       const relevantAppointments = response.data.filter(
         (app) => 
-          ['Completed', 'Not Show', 'Cancelled'].includes(app.appointmentStatus) &&
+          ['Completed', 'No Show', 'Cancelled'].includes(app.appointmentStatus) &&
           app.bookedClinic === clinic // Match logged-in user's clinic
       );
 
@@ -84,11 +84,11 @@ const CompletedAppointment = () => {
 
   return (
     <div className="completed-appointments-container">
-      <h1>Completed, Not Show, and Cancelled Appointments</h1>
+      <h1>Completed, No Show, and Cancelled Appointments</h1>
       <div className="filter-buttons">
         <button onClick={() => handleFilterChange('All')} className={filter === 'All' ? 'active' : ''}>All</button>
         <button onClick={() => handleFilterChange('Completed')} className={filter === 'Completed' ? 'active' : ''}>Completed</button>
-        <button onClick={() => handleFilterChange('Not Show')} className={filter === 'Not Show' ? 'active' : ''}>Not Show</button>
+        <button onClick={() => handleFilterChange('No Show')} className={filter === 'No Show' ? 'active' : ''}>No Show</button>
         <button onClick={() => handleFilterChange('Cancelled')} className={filter === 'Cancelled' ? 'active' : ''}>Cancelled</button>
       </div>
       {error ? (

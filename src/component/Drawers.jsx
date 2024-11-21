@@ -193,9 +193,6 @@ const DrawerComponent = () => {
                 <li className="drawer-item">
                   <a href="/login" className="drawer-link">Login</a>
                 </li>
-                <li className="drawer-item">
-                  <a href="/admin" className="drawer-link">Admin</a>
-                </li>
               </>
             ) : (
               <li className="drawer-item">
