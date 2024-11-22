@@ -37,9 +37,9 @@ app.use(cookieParser()); // Use cookie-parser middleware
 // CORS configuration
 const allowedOrigins = [
     'https://azieldentalclinic.xyz',
+    'https://www.azieldentalclinic.xyz',
     'http://localhost:5173',
-    'http://213.190.4.136:5173', // Allow requests from the frontend (production)
-    'http://213.190.4.136:5174', // Allow requests from alternate frontend ports (if used)
+    'http://213.190.4.136:5173',
     // 'http://localhost:5000', // Allow requests from local test backend
 ];
 
