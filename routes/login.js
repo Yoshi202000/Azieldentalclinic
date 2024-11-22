@@ -7,6 +7,8 @@ const router = express.Router();
 
 // Generate token function  
 const generateToken = (user) => {
+    console.log('Generated JWT token:', token);
+
   return jwt.sign(
     {
       userId: user._id, 

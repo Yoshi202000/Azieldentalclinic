@@ -38,8 +38,8 @@ app.use(cookieParser()); // Use cookie-parser middleware
 const allowedOrigins = [
     'https://azieldentalclinic.xyz',
     'https://www.azieldentalclinic.xyz',
-    'http://localhost:5173',
-    'http://213.190.4.136:5173',
+    'https://localhost:5173',
+    'https://213.190.4.136:5173',
     // 'http://localhost:5000', // Allow requests from local test backend
 ];
 
