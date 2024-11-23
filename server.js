@@ -104,7 +104,7 @@ wss.on('connection', (ws) => {
 });
 
 
-const PORT = process.env.PORT || 5001; // Change from 443 to 5000
+const PORT = process.env.PORT || 5000; // Change from 443 to 5000
 server.listen(PORT, () => {
   console.log(`Server is running securely on port ${PORT}`);
 });
