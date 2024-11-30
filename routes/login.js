@@ -2,27 +2,31 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import dotenv from 'dotenv';
+
+dotenv.config(); // Make sure this is at the top of your file.
 
 const router = express.Router();
 
 // Generate token function  
 const generateToken = (user) => {
+    const token = jwt.sign(
+      {
+        userId: user._id, 
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phoneNumber: user.phoneNumber,
+        role: user.role,
+        clinic: user.clinic
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '30d' }
+    );
     console.log('Generated JWT token:', token);
-
-  return jwt.sign(
-    {
-      userId: user._id, 
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      phoneNumber: user.phoneNumber,
-      role: user.role,
-      clinic: user.clinic
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: '30d' }
-  );
-};
+    return token;
+  };
+  
 
 // Handle login
 router.post('/login', async (req, res) => {
@@ -57,7 +61,7 @@ router.post('/login', async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'Strict',
-            maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days in milliseconds
+            maxAge: 1 * 24 * 60 * 60 * 1000 // 1 days in milliseconds
         });
 
         // Send the token in the response for storing in localStorage

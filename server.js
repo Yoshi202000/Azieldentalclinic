@@ -31,7 +31,7 @@ dotenv.config();
 
 // Middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser()); // Use cookie-parser middleware
 
 // CORS configuration
@@ -40,7 +40,9 @@ const allowedOrigins = [
     'https://www.azieldentalclinic.xyz',
     'https://localhost:5173',
     'https://213.190.4.136:5173',
-    // 'http://localhost:5000', // Allow requests from local test backend
+
+    'http://localhost:5173',
+    'http://localhost:5000', // Allow requests from local test backend
 ];
 
 app.use(cors({
@@ -64,7 +66,7 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Routes
 app.use('/api', signupRoutes);
-app.use('/api',loginRoutes);
+app.use('/api', loginRoutes);
 app.use('/', verifyTokenRoutes);
 app.use(appointmentRoutes);
 app.use(logoutRoutes); // Add logout route
@@ -106,6 +108,8 @@ wss.on('connection', (ws) => {
 
 const PORT = process.env.PORT || 5000; // Change from 443 to 5000
 server.listen(PORT, () => {
+    // app.listen(PORT, () => {
+
   console.log(`Server is running securely on port ${PORT}`);
 });
 
