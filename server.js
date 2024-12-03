@@ -26,6 +26,9 @@ import updateUserRoutes from './routes/updateUserRole.js'
 import unreadRoutes from './routes/unread.js';
 import healthRecordRoutes from './routes/healthRecord.js';
 
+import clinicRoutes from './routes/clinicRoutes.js';
+
+
 const app = express();
 dotenv.config();
 
@@ -83,32 +86,38 @@ app.use('/api', updateUserRoutes);
 app.use('/api', unreadRoutes);
 app.use('/api', healthRecordRoutes);
 
+// test routes for clinicRoute.js
+app.use('/', clinicRoutes);
+
+
 // Load SSL certificates for HTTPS
-const server = https.createServer({
-    key: fs.readFileSync(process.env.SSL_KEY_PATH),
-    cert: fs.readFileSync(process.env.SSL_CERT_PATH)
-}, app);
+// const server = https.createServer({
+//     key: fs.readFileSync(process.env.SSL_KEY_PATH),
+//     cert: fs.readFileSync(process.env.SSL_CERT_PATH)
+// }, app);
 
 // Create the WebSocket server AFTER the HTTPS server has been initialized
-const wss = new WebSocketServer({ server });
+// const wss = new WebSocketServer({ server });
+
 
 // Handle WebSocket connections
-wss.on('connection', (ws) => {
-    console.log('New client connected');
 
-    ws.on('message', (message) => {
-        console.log(`Received: ${message}`);
-    });
+// wss.on('connection', (ws) => {
+//     console.log('New client connected');
 
-    ws.on('close', () => {
-        console.log('Client disconnected');
-    });
-});
+//     ws.on('message', (message) => {
+//         console.log(`Received: ${message}`);
+//     });
+
+//     ws.on('close', () => {
+//         console.log('Client disconnected');
+//     });
+// });
 
 
 const PORT = process.env.PORT || 5000; // Change from 443 to 5000
-server.listen(PORT, () => {
-    // app.listen(PORT, () => {
+// server.listen(PORT, () => {
+    app.listen(PORT, () => {
 
   console.log(`Server is running securely on port ${PORT}`);
 });

@@ -61,16 +61,7 @@ router.post('/appointments', authenticateToken, async (req, res) => {
     bookedClinic 
   } = req.body;
 
-  let fee;
-  if (appointmentType === 'Tooth Extractions') {
-    fee = '1000';
-  } else if (appointmentType === 'Dental cleaning') {
-    fee = '1500';
-  } else if (appointmentType === 'Braces & Orthodontics') {
-    fee = '2000';
-  } else {
-    fee = '0';
-  }
+  
 
   try {
     const newAppointment = new Appointment({
@@ -86,7 +77,7 @@ router.post('/appointments', authenticateToken, async (req, res) => {
       userId: req.user.userId,
       userEmail: req.user.email,
       appointmentStatus: 'pending',
-      fee,
+      fee: null,
     });
 
     const savedAppointment = await newAppointment.save();

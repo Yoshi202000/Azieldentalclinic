@@ -92,15 +92,7 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
 
       <div className="stepthree">
         <label>Choose your clinic</label>
-        <select 
-          name='bookedClinic' 
-          value={formData.bookedClinic} 
-          onChange={handleInputChange}
-        >
-          <option value="" disabled>Choose your clinic</option>
-          <option value="Aziel Dental Clinic">Aziel Dental Clinic</option>
-          <option value="Arts of Millennials Dental Clinic">Arts of Millennials Dental Clinic</option>
-        </select>
+        
 
         <label>Date of Birth</label>
         <input

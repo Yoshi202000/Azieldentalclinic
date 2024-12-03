@@ -95,16 +95,8 @@ const Appointment = () => {
       return;
     }
 
-    let fee;
-  if (selectedCard === 'Tooth Extractions') {
-    fee = '1000';
-  } else if (selectedCard === 'Dental cleaning') {
-    fee = '1500';
-  } else if (selectedCard === 'Braces & Orthodontics') {
-    fee = '2000';
-  } else {
-    fee = '0'; // Default fee or handle cases where the appointmentType is not one of the specified ones
-  }
+    let fee = 0;
+  
 
     const appointmentDetails = {
       patientFirstName: formData.firstName,
@@ -116,7 +108,7 @@ const Appointment = () => {
       appointmentDate: selectedDate,
       appointmentTimeFrom: selectedTimeFrom,
       appointmentType: selectedCard,
-      fee,
+      fee: null,
     };
     console.log('Appointment Details:', appointmentDetails);
 
@@ -153,7 +145,10 @@ const Appointment = () => {
           <div className={`step ${step === 3 ? 'active' : ''}`}>Complete Booking</div>
         </div>
 
-        {step === 1 && <AppointmentStepOne selectedCard={selectedCard} handleCardSelect={handleCardSelect} />}
+        {step === 1 && <AppointmentStepOne 
+        formData={formData}
+        handleInputChange={handleInputChange}
+        selectedCard={selectedCard} handleCardSelect={handleCardSelect} />}
         {step === 2 && (
           <AppointmentStepTwo
             availableDates={availableDates}

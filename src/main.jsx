@@ -23,7 +23,8 @@ import SuccessVerify from './pages/SuccessVerify/SuccessVerify.jsx';
 // import pages not yet done section
 // Test components (for testing purposes)
 import Chat from './component/chat.jsx'
-
+import EditContent from './component/admin/EditContent.jsx';
+import TestPreview from './test/TestPreview.jsx';
 
 const ProtectedVerificationRoute = ({ children }) => {
   const location = useLocation(); // Use useLocation to get the current URL
@@ -47,6 +48,10 @@ createRoot(document.getElementById('root')).render(
         {/* test component */}
         {/* scroll function is not yet done */}
         <Route path="/chat" element={<Chat />} />
+        {/* editContent by super admin */}
+        <Route path="/editContent" element={<EditContent />} />
+        <Route path="/testPreview" element={<TestPreview />} />
+
         {/* <Route path="/verify-email" element={<SuccessVerify />} /> */}
         {/*done responsive  */}
         {/* Public Routes */}

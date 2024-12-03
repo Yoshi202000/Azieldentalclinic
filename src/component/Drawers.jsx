@@ -132,9 +132,6 @@ const DrawerComponent = () => {
                 <li className="navbar-item">
                   <a href="/login" className="navbar-link">Login</a>
                 </li>
-                <li className="navbar-item">
-                  <a href="/admin" className="navbar-link">Admin</a>
-                </li>
               </>
             ) : (
               <li className="navbar-item">

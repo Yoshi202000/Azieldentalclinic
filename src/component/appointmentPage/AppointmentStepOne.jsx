@@ -1,13 +1,27 @@
-// AppointmentStepOne.jsx
 import React from 'react';
 import Card from '../Card';
 import brace from '../../assets/brace.png';
 import clean from '../../assets/clean.png';
 import remove from '../../assets/remove.png';
 
-const AppointmentStepOne = ({ selectedCard, handleCardSelect }) => {
+const AppointmentStepOne = ({ 
+  selectedCard, 
+  handleCardSelect, 
+  formData, 
+  handleInputChange 
+}) => {
   return (
     <div className="appointment-type">
+      <select 
+        name="bookedClinic" 
+        value={formData.bookedClinic} 
+        onChange={handleInputChange}
+        required
+      >
+        <option value="" disabled>Choose your clinic</option>
+        <option value="Aziel Dental Clinic">Aziel Dental Clinic</option>
+        <option value="Arts of Millennials Dental Clinic">Arts of Millennials Dental Clinic</option>
+      </select>
       <h2>Schedule Your Appointment</h2>
       <div className="app-card-container">
         <label>
