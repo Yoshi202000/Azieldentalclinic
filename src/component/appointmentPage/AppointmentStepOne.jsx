@@ -1,14 +1,12 @@
 import React from 'react';
 import Card from '../Card';
-import brace from '../../assets/brace.png';
-import clean from '../../assets/clean.png';
-import remove from '../../assets/remove.png';
 
 const AppointmentStepOne = ({ 
   selectedCard, 
   handleCardSelect, 
   formData, 
-  handleInputChange 
+  handleInputChange,
+  services // Services passed from Appointment component
 }) => {
   return (
     <div className="appointment-type">
@@ -24,33 +22,17 @@ const AppointmentStepOne = ({
       </select>
       <h2>Schedule Your Appointment</h2>
       <div className="app-card-container">
-        <label>
-          <Card
-            name="Tooth Extractions"
-            description="I am a dentist from Aziel Dental Clinic"
-            image={remove}
-            isSelected={selectedCard === "Tooth Extractions"}
-            onClick={() => handleCardSelect("Tooth Extractions")}
-          />
-        </label>
-        <label>
-          <Card
-            name="Braces & Orthodontics"
-            description="I am a dentist specializing in orthodontics"
-            image={brace}
-            isSelected={selectedCard === "Braces & Orthodontics"}
-            onClick={() => handleCardSelect("Braces & Orthodontics")}
-          />
-        </label>
-        <label>
-          <Card
-            name="Dental cleaning"
-            description="I am a dentist specializing in cleaning"
-            image={clean}
-            isSelected={selectedCard === "Dental cleaning"}
-            onClick={() => handleCardSelect("Dental cleaning")}
-          />
-        </label>
+        {services.map((service, index) => (
+          <label key={index}>
+            <Card
+              name={service.name}
+              description={service.description}
+              image={service.image ? `data:image/png;base64,${service.image}` : null}
+              isSelected={selectedCard === service.name}
+              onClick={() => handleCardSelect(service.name)}
+            />
+          </label>
+        ))}
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 import cookieParser from 'cookie-parser'; // Import cookie-parser
 import fs from 'fs'; // Import file system to read SSL certificate files
 import https from 'https'; // Import HTTPS module
@@ -22,15 +23,25 @@ import feedbackRoutes from './routes/feedback.js'; // Add this line
 import viewFeedbackRoutes from './routes/viewFeedback.js';
 import notificationRoutes from './routes/notificationRoutes.js'; // Add this line
 import messageRoutes from './routes/message.js';  // Add this line
-import updateUserRoutes from './routes/updateUserRole.js'
+import updateUserRoutes from './routes/updateUserRole.js';
 import unreadRoutes from './routes/unread.js';
 import healthRecordRoutes from './routes/healthRecord.js';
+import updateDoctorInformation from './routes/doctorsDescription.js';
+import doctorSchedule from './routes/manageSchedule.js';
 
 import clinicRoutes from './routes/clinicRoutes.js';
 
 
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 dotenv.config();
+
+app.use('/uploads', express.static(path.resolve(__dirname, '../src/uploads')));
+
 
 // Middleware
 app.use(express.json());
@@ -43,7 +54,6 @@ const allowedOrigins = [
     'https://www.azieldentalclinic.xyz',
     'https://localhost:5173',
     'https://213.190.4.136:5173',
-
     'http://localhost:5173',
     'http://localhost:5000', // Allow requests from local test backend
 ];
@@ -58,7 +68,7 @@ app.use(cors({
             callback(new Error('Not allowed by CORS'));
         }
     },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT','PATCH', 'DELETE', 'OPTIONS'],
     credentials: true // Allow credentials (e.g., cookies) to be passed
 }));
 
@@ -85,6 +95,8 @@ app.use('/api', messageRoutes);  // Add this line
 app.use('/api', updateUserRoutes);
 app.use('/api', unreadRoutes);
 app.use('/api', healthRecordRoutes);
+app.use('/api', updateDoctorInformation);
+app.use('/api', doctorSchedule);
 
 // test routes for clinicRoute.js
 app.use('/', clinicRoutes);

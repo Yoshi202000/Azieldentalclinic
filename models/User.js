@@ -9,11 +9,11 @@ const userSchema = new mongoose.Schema({
     dob: { type: Date },
     password: { type: String, required: true },
     emailVerified: { type: Boolean, default: false },
-    role: { type: String, default: 'patient' }, // Add role field with default value
-    clinic: {type: String, default: 'both'},
+    role: { type: String, default: 'patient' },
+    clinic: { type: String, default: 'both' },
 
-    // user health record commonly ask before dental operation
-   questionOne: { type: Boolean, default: null },
+    // User health record commonly asked before dental operation
+    questionOne: { type: Boolean, default: null },
     questionTwo: { type: Boolean, default: null },
     questionThree: { type: Boolean, default: null },
     questionFour: { type: Boolean, default: null },
@@ -23,6 +23,17 @@ const userSchema = new mongoose.Schema({
     questionEight: { type: Boolean, default: null },
     questionNine: { type: Boolean, default: null },
     questionTen: { type: Boolean, default: null },
+
+    // Doctors' greetings and descriptions
+    doctorGreeting: { type: String, default: '' },
+    doctorDescription: { type: String, default: '' },
+
+    // Array of services
+    services: [
+        {
+            name: { type: String, default: '' },
+        },
+    ],
 }, { timestamps: true });
 
 // Create a model for the 'UserInformation' collection

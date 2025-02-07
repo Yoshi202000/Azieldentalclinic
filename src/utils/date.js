@@ -5,7 +5,7 @@ export function getNext30Days() {
   const days = [];
   const today = new Date();
 
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 60; i++) {
     const nextDate = new Date();
     nextDate.setDate(today.getDate() + i);
     

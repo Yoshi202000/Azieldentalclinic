@@ -1,0 +1,235 @@
+/* Default Styles (Desktop First) */
+.adduserMainContainer {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #CDE8E5;
+    background-image: url('../../assets/clinic.png');
+    margin: 0;
+    padding: 0;
+}
+
+.adduserHomeButtonContainer {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: flex-start;
+    padding: 20px;
+}
+
+.adduserForm {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns for larger screens */
+    width: 80%;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 20px; /* Add gap between columns */
+    margin-bottom: 12px;
+}
+
+.adduserDesignContainer,
+.adduserFormContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* Specific styles for the design container */
+.adduserDesignContainer {
+    background-color: rgba(110, 181, 202, 0.5);
+    color: white;
+    font-size: 24px;
+}
+
+/* Specific styles for form container */
+.adduserFormContainer {
+    background-color: rgba(236, 236, 236, 0.5);
+    gap: 20px;
+    padding: 40px;
+}
+
+.adduserDesignContainer h1 {
+    margin-bottom: 20px;
+    font-size: 32px;
+}
+
+.adduserDesignContainer p {
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+.adduserTitle {
+    color: #42C2FF;
+    font-size: 32px;
+    margin-bottom: 30px;
+}
+
+.adduserFormElement {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.adduserFormGroup {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 10px;
+}
+
+.adduserFormGroup label {
+    font-weight: bold;
+    color: #333;
+    font-size: 18px;
+}
+
+.adduserFormGroup input,
+.adduserFormGroup select {
+    padding: 9px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 18px;
+}
+
+.adduserButton {
+    padding: 15px;
+    background-color: #4D869C;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.adduserButton:hover {
+    background-color: #7AB2B2;
+}
+
+.adduserErrorMessage {
+    color: red;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.adduserSuccessMessage {
+    color: green;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+/* Responsive Styles */ 
+
+/* For phones (less than or equal to 768px) */
+@media (max-width: 980px) {
+    .adduserMainContainer {
+        padding: 19px; /* Further increased padding for additional comfort */
+    }
+    .adduserSignUpForm {
+        flex-direction: column;
+        width: 100%;
+        margin-bottom: 50px; /* Increased margin to create clear separation between sections */
+    }
+
+    .adduserForm {
+        grid-template-columns: 1fr; /* Single column for smaller screens */
+        width: 100%;
+        margin-bottom: 50px; /* Increased margin to create clear separation between sections */
+    }
+
+    .adduserDesignContainer,
+    .adduserFormContainer {
+        width: 100%;
+        padding: 60px; /* Increased padding to provide even more comfortable spacing */
+    }
+
+    .adduserDesignContainer {
+        font-size: 38px; /* Increased font size for much larger text visibility */
+    }
+
+    .adduserDesignContainer h1 {
+        font-size: 44px; /* Larger heading font size for greater prominence */
+    }
+
+    .adduserTitle {
+        font-size: 44px; /* Increased title font size for high visibility */
+    }
+
+    .adduserFormGroup label {
+        font-size: 32px; /* Larger label font size for enhanced readability */
+    }
+
+    .adduserFormGroup input,
+    .adduserFormGroup select {
+        font-size: 32px; /* Increased input text font size for better legibility */
+        padding: 35px; /* Increased padding for larger, more comfortable input fields */
+    }
+
+    .adduserButton {
+        font-size: 34px; /* Larger button font size for maximum visibility */
+        padding: 35px; /* Increased button padding for ease of use, especially on touch devices */
+    }
+
+    .adduserErrorMessage,
+    .adduserSuccessMessage {
+        font-size: 28px; /* Increased font size for messages to make them very noticeable */
+    }
+}
+
+@media (max-width: 912px) {
+    .adduserMainContainer {
+        padding: 60px; /* Further increased padding for additional comfort */
+    }
+
+    .adduserForm {
+        grid-template-columns: 1fr; /* Single column for smaller screens */
+        width: 100%;
+        margin-bottom: 10px; /* Increased margin to create clear separation between sections */
+    }
+
+    .adduserDesignContainer,
+    .adduserFormContainer {
+        width: 100%;
+        padding: 60px; /* Increased padding to provide even more comfortable spacing */
+    }
+
+    .adduserDesignContainer {
+        font-size: 38px; /* Increased font size for much larger text visibility */
+    }
+
+    .adduserDesignContainer h1 {
+        font-size: 44px; /* Larger heading font size for greater prominence */
+    }
+
+    .adduserTitle {
+        font-size: 35px; /* Increased title font size for high visibility */
+    }
+
+    .adduserFormGroup label {
+        font-size: 20px; /* Larger label font size for enhanced readability */
+    }
+
+    .adduserFormGroup input,
+    .adduserFormGroup select {
+        font-size: 20px; /* Increased input text font size for better legibility */
+        padding: 12px; /* Increased padding for larger, more comfortable input fields */
+    }
+
+    .adduserButton {
+        font-size: 20px; /* Larger button font size for maximum visibility */
+        padding: 12px; /* Increased button padding for ease of use, especially on touch devices */
+    }
+
+    .adduserErrorMessage,
+    .adduserSuccessMessage {
+        font-size: 28px; /* Increased font size for messages to make them very noticeable */
+    }
+}

@@ -18,9 +18,8 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-// Handle signup
 router.post('/signup', async (req, res) => {
-    const { firstName, lastName, email, phoneNumber, password } = req.body;
+    const { firstName, lastName, email, phoneNumber, password, clinic = 'both', role = 'patient', services = [] } = req.body;
 
     // Basic validation
     if (!firstName || !lastName || !email || !phoneNumber || !password) {
@@ -58,7 +57,7 @@ router.post('/signup', async (req, res) => {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        // Create new user (email is not verified yet)
+        // Create new user
         const newUser = new User({
             firstName,
             lastName,
@@ -66,18 +65,19 @@ router.post('/signup', async (req, res) => {
             phoneNumber,
             password: hashedPassword,
             emailVerified: false,
-            role: 'patient', // Set the role to 'patient' for new signups
-            clinic: 'both',
+            role,
+            clinic,
+            services,
         });
 
         await newUser.save();
         console.log('User registered successfully:', newUser.email);
 
         // Create a JWT token for email verification
-        const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '30d' });
+        const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
         // Verification email content
-        const verificationLink = `https://azieldentalclinic.xyz/api/verify-email?token=${token}`;
+        const verificationLink = `${process.env.FRONTEND_URL}/api/verify-email?token=${token}`;
 
         // Send verification email
         try {
@@ -90,7 +90,6 @@ router.post('/signup', async (req, res) => {
             console.log('Verification email sent to:', newUser.email);
         } catch (emailError) {
             console.error('Failed to send verification email:', emailError);
-            // Do not fail the registration if email sending fails
         }
 
         res.status(201).json({ message: 'User registered. Please check your email for verification.' });
@@ -99,6 +98,7 @@ router.post('/signup', async (req, res) => {
         res.status(500).json({ message: 'An error occurred while registering the user' });
     }
 });
+
 // Email verification route
 router.get('/verify-email', async (req, res) => {
     const token = req.query.token;
@@ -152,6 +152,7 @@ router.post('/send-verification', async (req, res) => {
         return res.status(400).json({ message: 'Email is required' });
     }
 });
+
 
 
 export default router;

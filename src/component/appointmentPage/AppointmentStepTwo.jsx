@@ -15,7 +15,6 @@ const AppointmentStepTwo = ({
       appointment.appointmentDate === date && appointment.appointmentTimeFrom === time
     );
   };
-
   return (
     <div className="appointment-date">
       <h2>Select an Appointment</h2>
@@ -59,5 +58,4 @@ const AppointmentStepTwo = ({
     </div>
   );
 };
-
 export default AppointmentStepTwo;

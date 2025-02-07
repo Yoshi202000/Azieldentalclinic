@@ -2,10 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/First.css';
 import dentist from '../assets/dentist.png';
+import axios from 'axios';
+
 
 const First = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+
+  const [welcomeMessage, setWelcomeMessage] = useState('');
+
 
   useEffect(() => {
     // Check if the user is logged in by checking for a token in localStorage
@@ -15,6 +20,21 @@ const First = () => {
     } else {
       setIsLoggedIn(false);
     }
+
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`)
+    .then(response => {
+      if (response.data) {
+        const {
+          welcomeMessage,
+        } = response.data;
+        console.log('Clinic data received:', response.data); 
+        setWelcomeMessage(welcomeMessage);
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching clinic data:', error);
+    });
+
   }, []);
 
   const handleAppointmentClick = () => {
@@ -31,7 +51,7 @@ const First = () => {
 
       <div className="content">
         <div className="text-section">
-          <h1>Welcome to Aziel and arts of millennials Dental Clinic</h1>
+          <h1>{welcomeMessage}</h1>
           <h2>Book Appointment.</h2>
           <p>Book Services and Doctors.</p>
           <button className="search-button" onClick={handleAppointmentClick}>

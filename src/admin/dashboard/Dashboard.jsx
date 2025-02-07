@@ -10,6 +10,8 @@ import AdminSales from '../../component/admin/AdminSales';
 import DrawerComponent from '../../component/Drawers';
 import Footer from '../../component/Footer';
 import Chat from '../../component/chat'
+import DoctorSignup from '../../component/admin/AddUser';
+import ViewAdminDoctor from '../../component/admin/ViewAdminDoctor';
 
 function Dashboard() {
   const [activeComponent, setActiveComponent] = useState('AccountSettings');
@@ -30,6 +32,10 @@ function Dashboard() {
         return <ApproveToAdmin/>
         case 'AdminSales':
           return <AdminSales/>
+      case 'DoctorSignup':
+        return <DoctorSignup/>
+        case 'ViewAdminDoctor':
+        return <ViewAdminDoctor/>
       default:
         return <h2>Select an option</h2>;
     }
@@ -67,17 +73,33 @@ function Dashboard() {
             Completed Appointments
           </button>
           <button
+            className={activeComponent === 'DoctorSignup' ? 'active' : ''}
+            onClick={() => setActiveComponent('DoctorSignup')}
+          >
+            Add User
+          </button>
+          <button
+            className={activeComponent === 'ViewAdminDoctor' ? 'active' : ''}
+            onClick={() => setActiveComponent('ViewAdminDoctor')}
+          >
+            View Admin Doctor
+          </button>
+          <button>
+            edit schedule
+          </button>
+          
+          {/* <button
             className={activeComponent === 'AdminSales' ? 'active' : ''}
             onClick={() => setActiveComponent('AdminSales')}
           >
             Total Sales
-          </button>
-          <button
+          </button> */}
+          {/* <button
             className={activeComponent === 'ToAdmin' ? 'active' : ''}
             onClick={() => setActiveComponent('ToAdmin')}
           >
             Approve User to Admin
-          </button>
+          </button> */}
           <button
             className={activeComponent === 'ViewFeedback' ? 'active' : ''}
             onClick={() => setActiveComponent('ViewFeedback')}

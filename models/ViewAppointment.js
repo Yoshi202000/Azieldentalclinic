@@ -11,18 +11,18 @@ const appointmentSchema = new mongoose.Schema({
     required: true
   },
   appointmentDate: {
-    type: String, // Could be Date if you prefer
+    type: String,
     required: true
   },
   appointmentTime: {
-    type: String, // Could be Date for precise time
+    type: String, 
     required: true
   },
   appointmentTimeFrom: {
-    type: String, // Optional field for start time
+    type: String,
   },
   appointmentTimeTo: {
-    type: String, // Optional field for end time
+    type: String,
   },
   patientFirstName: {
     type: String,
@@ -41,7 +41,7 @@ const appointmentSchema = new mongoose.Schema({
     required: true
   },
   patientDOB: {
-    type: String, // Could be Date for DOB if needed
+    type: String,
     required: true
   },
   createdAt: {
@@ -56,7 +56,12 @@ const appointmentSchema = new mongoose.Schema({
     type: String,
     default: 'pending',
     enum: ['pending', 'Cancelled', 'Completed', 'No Show', 'Rebooked']
-  }
+  },
+  bookedDoctor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Doctor',
+    required: true
+  },
 });
 
 // Model creation or retrieval

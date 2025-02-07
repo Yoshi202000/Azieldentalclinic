@@ -186,6 +186,7 @@ const PatientsInformation = () => {
 
   // Filter users to show only those with the role of "patient"
   const filteredPatients = users.filter(user => user.role === 'patient' && 
+    (user.emailVerified === true) &&
     `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 

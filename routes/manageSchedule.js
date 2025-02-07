@@ -1,0 +1,291 @@
+import express from "express";
+import { authenticateUser } from "./middleware/authMiddleware.js";
+import Schedule from "../models/ManageSchedule.js";
+
+const router = express.Router();
+
+// Generate and add daily slots for a doctor
+router.post('/schedule/generate', authenticateUser, async (req, res) => {
+  try {
+    const { doctor, date } = req.body;
+
+    if (!doctor || !doctor.firstName || !doctor.lastName || !doctor.email || !doctor.clinic || !doctor.services) {
+      return res.status(400).json({
+        message: 'Doctor details are required and must include firstName, lastName, email, clinic, and services.',
+      });
+    }
+
+    if (!date) {
+      return res.status(400).json({ message: 'Date is required to generate slots.' });
+    }
+
+    // Generate and save slots
+    await generateDailySlots(doctor, date);
+    res.status(201).json({ message: 'Slots for the day have been successfully generated and saved.' });
+  } catch (error) {
+    console.error('Error generating slots:', error);
+    res.status(500).json({ message: 'Error generating slots.', error });
+  }
+});
+
+// Get all schedules
+router.get('/schedules', authenticateUser, async (req, res) => {
+  try {
+    const userEmail = req.user.email; // Get the email from the verified token
+    const schedules = await Schedule.find({ email: userEmail }); // Filter schedules by email
+    res.status(200).json(schedules);
+  } catch (error) {
+    console.error('Error fetching schedules:', error);
+    res.status(500).json({ message: 'Error fetching schedules.', error: error.message });
+  }
+});
+
+// Update a specific slot's status
+router.put('/schedule/:id/slot', async (req, res) => {
+  try {
+    const { timeFrom, timeTo, status } = req.body;
+
+    if (!timeFrom || !timeTo || !status) {
+      return res.status(400).json({ message: 'timeFrom, timeTo, and status are required for updating a slot.' });
+    }
+
+    const schedule = await Schedule.findById(req.params.id);
+    if (!schedule) {
+      return res.status(404).json({ message: 'Schedule not found.' });
+    }
+
+    const slot = schedule.slots.find((s) => s.timeFrom === timeFrom && s.timeTo === timeTo);
+    if (!slot) {
+      return res.status(404).json({ message: 'Slot not found.' });
+    }
+
+    slot.status = status;
+    await schedule.save();
+
+    res.status(200).json({ message: 'Slot status updated successfully.', schedule });
+  } catch (error) {
+    console.error('Error updating slot:', error);
+    res.status(500).json({ message: 'Error updating slot.', error });
+  }
+});
+
+// Delete a schedule (entire day)
+router.delete('/schedule/:id', async (req, res) => {
+  try {
+    const deletedSchedule = await Schedule.findByIdAndDelete(req.params.id);
+
+    if (!deletedSchedule) {
+      return res.status(404).json({ message: 'Schedule not found.' });
+    }
+
+    res.status(200).json({ message: 'Schedule deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting schedule:', error);
+    res.status(500).json({ message: 'Error deleting schedule.', error });
+  }
+});
+
+// Create a new schedule (POST route)
+router.post('/schedule', authenticateUser, async (req, res) => {
+  try {
+    const { firstName, lastName, email, clinic, services, date, slots } = req.body;
+
+    // Validate the request body
+    if (!firstName || !lastName || !email || !clinic || !Array.isArray(services) || !date || !Array.isArray(slots)) {
+      return res.status(400).json({ message: 'All fields are required and slots must be an array.' });
+    }
+
+    // Create a new schedule
+    const newSchedule = new Schedule({
+      firstName,
+      lastName,
+      email,
+      clinic,
+      services,
+      date,
+      slots,
+    });
+
+    await newSchedule.save();
+    res.status(201).json({ message: 'Schedule saved successfully.', schedule: newSchedule });
+  } catch (error) {
+    console.error('Error saving schedule:', error);
+    res.status(500).json({ message: 'Failed to save schedule.', error: error.message });
+  }
+});
+
+// Fetch slots for a specific date
+router.get('/schedule/:date', async (req, res) => {
+  try {
+    const { date } = req.params;
+    const schedule = await Schedule.findOne({ date });
+
+    if (!schedule) {
+      return res.status(404).json({ message: 'No schedule found for this date.' });
+    }
+
+    res.status(200).json(schedule.slots);
+  } catch (error) {
+    console.error('Error fetching slots:', error);
+    res.status(500).json({ message: 'Failed to fetch slots.' });
+  }
+});
+
+// Fetch all taken slots
+router.get('/slots/taken', async (req, res) => {
+  try {
+    const schedules = await Schedule.find();
+    const takenSlots = [];
+
+    schedules.forEach(schedule => {
+      schedule.slots.forEach(slot => {
+        if (slot.status === 'Unavailable') { // Assuming 'Unavailable' means the slot is taken
+          takenSlots.push({
+            date: schedule.date,
+            timeFrom: slot.timeFrom,
+            timeTo: slot.timeTo,
+            doctor: `${schedule.firstName} ${schedule.lastName}`,
+            clinic: schedule.clinic,
+          });
+        }
+      });
+    });
+
+    res.status(200).json(takenSlots);
+  } catch (error) {
+    console.error('Error fetching taken slots:', error);
+    res.status(500).json({ message: 'Failed to fetch taken slots.' });
+  }
+});
+
+// Bulk generate slots for multiple days
+router.post('/schedule/bulk-generate', authenticateUser, async (req, res) => {
+  console.log('Received schedule data:', req.body); // Log the incoming data
+  try {
+    const { schedule } = req.body; // Expecting an array of schedules
+
+    if (!Array.isArray(schedule) || schedule.length === 0) {
+      return res.status(400).json({ message: 'Valid schedule data is required.' });
+    }
+
+    // Iterate over the schedules and save each one
+    for (const daySchedule of schedule) {
+      const { date, slots } = daySchedule;
+
+      // Validate the date and slots
+      if (!date || !Array.isArray(slots)) {
+        return res.status(400).json({ message: 'Each schedule must have a date and slots array.' });
+      }
+
+      // Create a new schedule with required fields
+      const newSchedule = new Schedule({
+        date,
+        slots,
+        clinic: req.user.clinic, // Assuming you want to use the authenticated user's clinic
+        email: req.user.email, // Assuming you want to use the authenticated user's email
+        firstName: req.user.firstName, // Assuming you want to use the authenticated user's first name
+        lastName: req.user.lastName, // Assuming you want to use the authenticated user's last name
+        // Add other necessary fields if required
+      });
+
+      await newSchedule.save();
+    }
+
+    res.status(201).json({ message: 'Schedules saved successfully for the next 60 days.' });
+  } catch (error) {
+    console.error('Error saving schedules:', error);
+    res.status(500).json({ message: 'Failed to save schedules.', error: error.message });
+  }
+});
+
+// Update schedule endpoint
+router.put('/schedule/update', async (req, res) => {
+  try {
+    const { schedule } = req.body;
+    if (!schedule || !Array.isArray(schedule)) {
+      return res.status(400).json({ error: 'Valid schedule data is required' });
+    }
+
+    // Iterate over the schedule array and update each day's slots
+    for (const day of schedule) {
+      const { date, slots } = day;
+      if (!date || !Array.isArray(slots)) {
+        return res.status(400).json({ error: 'Each day must have a date and slots array' });
+      }
+
+      // Find the existing schedule for the date
+      let existingSchedule = await Schedule.findOne({ date });
+
+      if (existingSchedule) {
+        // Update the slots for the existing schedule
+        existingSchedule.slots = slots;
+        await existingSchedule.save();
+      } else {
+        // If no existing schedule, create a new one
+        const newSchedule = new Schedule({ date, slots });
+        await newSchedule.save();
+      }
+    }
+
+    res.status(200).json({ message: 'Schedule updated successfully' });
+  } catch (error) {
+    console.error('Error updating schedule:', error);
+    res.status(500).json({ error: 'Failed to update schedule' });
+  }
+});
+
+// Add this route to routes/manageSchedule.js
+router.get('/user/schedules', authenticateUser, async (req, res) => {
+  try {
+    console.log('Authenticated user:', req.user); // Log user info
+    const userEmail = req.user.email; // Assuming you have the user's email in the request object after authentication
+    const schedules = await Schedule.find({ email: userEmail }); // Fetch schedules for the authenticated user
+    res.status(200).json(schedules);
+  } catch (error) {
+    console.error('Error fetching user schedules:', error);
+    res.status(500).json({ message: 'Error fetching user schedules.', error: error.message });
+  }
+});
+
+router.patch('/schedule/:id', authenticateUser, async (req, res) => {
+  const { id } = req.params;
+  const { slots } = req.body; // Expecting only the slots to be updated
+
+  try {
+    // Find the schedule by ID
+    const schedule = await Schedule.findById(id);
+    if (!schedule) {
+      return res.status(404).json({ message: 'Schedule not found.' });
+    }
+
+    // Update only the slots if provided
+    if (slots) {
+      // Update the existing slots based on the provided data
+      slots.forEach(updatedSlot => {
+        const existingSlot = schedule.slots.find(slot => slot.timeFrom === updatedSlot.timeFrom && slot.timeTo === updatedSlot.timeTo);
+        if (existingSlot) {
+          existingSlot.status = updatedSlot.status; // Update the status of the existing slot
+        }
+      });
+    }
+
+    await schedule.save(); // Save the updated schedule
+    res.status(200).json({ message: 'Schedule updated successfully.', schedule });
+  } catch (error) {
+    console.error('Error updating schedule:', error);
+    res.status(500).json({ message: 'Failed to update schedule.', error: error.message });
+  }
+});
+
+// Fetch all schedules
+router.get('/all-schedules', async (req, res) => {
+  try {
+    const schedules = await Schedule.find(); // Fetch all schedules from the database
+    res.status(200).json(schedules); // Respond with the schedules
+  } catch (error) {
+    console.error('Error fetching schedules:', error);
+    res.status(500).json({ message: 'Failed to fetch schedules', error: error.message });
+  }
+});
+
+export default router;

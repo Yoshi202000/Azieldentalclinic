@@ -1,17 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import DrawerComponent from '../../component/Drawers';
 import Footer from '../../component/Footer';
 import First from '../../component/First';
 import Card from '../../component/Card';
-import extract from '../../assets/remove.png'
-import clean from '../../assets/clean.png'
-import brace from '../../assets/brace.png'
 import './App.css';
 import Doctors from '../../component/Doctors';
 import Chat from '../../component/chat';
 import HomeFeedback from '../../component/homeFeedback';
 
 function App() {
+  const [services, setServices] = useState([]);
+
+  useEffect(() => {
+    // Fetch the services data from the backend when the component mounts
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`)
+      .then(response => {
+        if (response.data && response.data.services) {
+          console.log('Fetched Services:', response.data.services);
+          setServices(response.data.services);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching services data:', error);
+      });
+  }, []);
+
   return (
     <>
       <Chat />
@@ -22,21 +36,14 @@ function App() {
       <div className="main-content">
         <First />
         <div className="card-container">
-          <Card
-            name="Tooth Extractions"
-            description="I am a dentist from Aziel Dental Clinic"
-            image={extract}
-          />
-          <Card
-            name="Braces & Orthodontics"
-            description="I am a dentist specializing in braces and orthodontics"
-            image={brace}
-          />
-          <Card
-            name="Dental cleaning"
-            description="I am a dentist specializing in Dental cleaning"
-            image={clean}
-          />
+          {services.map((service, index) => (
+            <Card
+              key={index}
+              name={service.name}
+              description={service.description}
+              image={service.image ? `data:image/jpeg;base64,${service.image}` : null}
+            />
+          ))}
         </div>
 
         {/* Doctors component */}

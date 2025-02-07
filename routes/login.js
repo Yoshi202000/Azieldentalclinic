@@ -10,6 +10,9 @@ const router = express.Router();
 
 // Generate token function  
 const generateToken = (user) => {
+    const expiresIn = '1d'; // Set the token expiration time
+    const expirationTime = Date.now() + (24 * 60 * 60 * 1000); // Expiration time in milliseconds (1 day)
+
     const token = jwt.sign(
       {
         userId: user._id, 
@@ -18,15 +21,18 @@ const generateToken = (user) => {
         lastName: user.lastName,
         phoneNumber: user.phoneNumber,
         role: user.role,
-        clinic: user.clinic
+        clinic: user.clinic,
+        doctorGreeting: user.doctorGreeting, // Updated here
+        doctorDescription: user.doctorDescription, // Updated here
+        services: user.services, 
       },
       process.env.JWT_SECRET,
-      { expiresIn: '30d' }
+      { expiresIn }
     );
+
     console.log('Generated JWT token:', token);
-    return token;
-  };
-  
+    return { token, expirationTime };
+};
 
 // Handle login
 router.post('/login', async (req, res) => {
@@ -54,31 +60,36 @@ router.post('/login', async (req, res) => {
         }
 
         // Use the generateToken function to create JWT
-        const token = generateToken(user);
+        const { token, expirationTime } = generateToken(user);
         
         // Set the token as an HTTP-only cookie
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'Strict',
-            maxAge: 1 * 24 * 60 * 60 * 1000 // 1 days in milliseconds
+            maxAge: 1 * 24 * 60 * 60 * 1000 // 1 day in milliseconds
         });
 
-        // Send the token in the response for storing in localStorage
+        // Send the token and expiration time in the response
         res.status(200).json({ 
             message: 'Login successful', 
             user: { 
                 role: user.role,
                 clinic: user.clinic,
                 firstName: user.firstName,
-                lastName: user.lastName
+                lastName: user.lastName,
+                services: user.services,
+                doctorGreeting: user.doctorGreeting, 
+                doctorDescription: user.doctorDescription,
             },
-            token: token // Include the token in the response
-        });
+            token: token, // Include the token in the response
+            expirationTime: expirationTime // Include expiration time
+        });        
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ message: 'An error occurred during login' });
     }
 });
+
 
 export default router;

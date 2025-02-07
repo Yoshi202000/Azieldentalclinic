@@ -16,6 +16,7 @@ const Appointment = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedCard, setSelectedCard] = useState(null);
   const [availableDates, setAvailableDates] = useState({});
+  const [services, setServices] = useState([]); // State to hold services data
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: '',
@@ -49,7 +50,21 @@ const Appointment = () => {
     const dates = generateAvailableDates();
     setAvailableDates(dates);
     fetchBookedAppointments();
+    fetchServicesData(); // Fetch services when component mounts
   }, []);
+
+  const fetchServicesData = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
+      if (response.data && response.data.services) {
+        setServices(response.data.services);
+      } else {
+        console.error('Failed to fetch services data');
+      }
+    } catch (error) {
+      console.error('Error fetching services data:', error);
+    }
+  };
 
   const fetchBookedAppointments = async () => {
     try {
@@ -76,6 +91,7 @@ const Appointment = () => {
   const handleTimeSelect = (type, time) => {
     if (type === 'from') setSelectedTimeFrom(time);
   };
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({
@@ -83,6 +99,7 @@ const Appointment = () => {
       [name]: value,
     }));
   };
+
   const handleAppointmentSubmit = async () => {
     if (!selectedCard || !formData.dob || !formData.lastName || !formData.firstName || !selectedDate || !selectedTimeFrom) {
       alert('Please fill in all required fields.');
@@ -94,9 +111,6 @@ const Appointment = () => {
       alert('Please log in.');
       return;
     }
-
-    let fee = 0;
-  
 
     const appointmentDetails = {
       patientFirstName: formData.firstName,
@@ -145,10 +159,15 @@ const Appointment = () => {
           <div className={`step ${step === 3 ? 'active' : ''}`}>Complete Booking</div>
         </div>
 
-        {step === 1 && <AppointmentStepOne 
-        formData={formData}
-        handleInputChange={handleInputChange}
-        selectedCard={selectedCard} handleCardSelect={handleCardSelect} />}
+        {step === 1 && (
+          <AppointmentStepOne 
+            formData={formData}
+            handleInputChange={handleInputChange}
+            selectedCard={selectedCard} 
+            handleCardSelect={handleCardSelect}
+            services={services} // Pass services to AppointmentStepOne
+          />
+        )}
         {step === 2 && (
           <AppointmentStepTwo
             availableDates={availableDates}
@@ -169,7 +188,7 @@ const Appointment = () => {
 
         <div className="footer">
           {step > 1 && <button className="previous-button" onClick={prevStep}>Previous</button>}
-          {step < 3 && <button onClick={nextStep}>Next: Your Info</button>}
+          {step < 3 && <button onClick={nextStep}>Next</button>}
           {step === 3 && <button className="complete-button" 
             onClick={handleAppointmentSubmit}>
             Complete Booking

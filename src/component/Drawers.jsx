@@ -88,7 +88,7 @@ const DrawerComponent = () => {
       <nav className="navcontainer">
         <nav className="navbar">
           <div className="logo-container">
-            <img src="src/assets/aziel.png" alt="Logo" className="logo" />
+            <img src="src/uploads/clinicLogo.png" alt="Logo" className="logo" />
           </div>
           <ul className="navbar-menu">
             {userRole !== 'admin' && (

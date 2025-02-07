@@ -25,6 +25,11 @@ import SuccessVerify from './pages/SuccessVerify/SuccessVerify.jsx';
 import Chat from './component/chat.jsx'
 import EditContent from './component/admin/EditContent.jsx';
 import TestPreview from './test/TestPreview.jsx';
+import DoctorSignup from './component/admin/AddUser.jsx';
+import ManageSchedule from './component/profile/manageSchedule.jsx'
+import FirstImage from './component/FirstImage.jsx';
+import TestSchedule from './test/TestSchedule.jsx';
+import TeststepTwo from './test/TestStepTwo.jsx'
 
 const ProtectedVerificationRoute = ({ children }) => {
   const location = useLocation(); // Use useLocation to get the current URL
@@ -48,9 +53,18 @@ createRoot(document.getElementById('root')).render(
         {/* test component */}
         {/* scroll function is not yet done */}
         <Route path="/chat" element={<Chat />} />
+        <Route path='/addUser' element={<DoctorSignup/>} />
+        <Route path='/image' element={<FirstImage/>} />
+        <Route path='/schedule' element={<ManageSchedule/>}/>
+        <Route path='/testSched' element={<TestSchedule/>}/>
+        <Route path='/steptwo' element={<TeststepTwo/>}/>
+
+
         {/* editContent by super admin */}
         <Route path="/editContent" element={<EditContent />} />
         <Route path="/testPreview" element={<TestPreview />} />
+
+
 
         {/* <Route path="/verify-email" element={<SuccessVerify />} /> */}
         {/*done responsive  */}
