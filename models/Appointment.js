@@ -15,6 +15,7 @@ const appointmentSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     userEmail: { type: String, required: true },
     fee: { type: String, required: false },
+    doctor: { type: String, required:true },
 }, { timestamps: true });   
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);

@@ -307,7 +307,7 @@ const ManageSchedule = () => {
   }
 
   return (
-    <div className="container">
+    <div className="manage-container">
   <h1>Manage Doctor Availability</h1>
   <div className="info-section">
     <h2>Doctor Information</h2>

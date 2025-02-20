@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../pages/Appointment/Appointment.css';
 
-const TestStepTwo = () => {
+const TestStepTwo = ({ selectedDoctor, onScheduleSelect }) => {
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filterEmail, setFilterEmail] = useState('');
+  const [filterEmail, setFilterEmail] = useState(selectedDoctor || '');
   const [selectedSchedule, setSelectedSchedule] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
 
@@ -45,6 +45,16 @@ const TestStepTwo = () => {
 
   const handleSlotSelect = (slot) => {
     setSelectedSlot(slot);
+    if (selectedSchedule) {
+      onScheduleSelect({
+        date: selectedSchedule.date,
+        timeFrom: slot.timeFrom,
+        timeTo: slot.timeTo,
+        doctorEmail: selectedSchedule.email,
+        doctorFirstName: selectedSchedule.firstName,
+        doctorLastName: selectedSchedule.lastName
+      });
+    }
   };
 
   const saveEditedSchedule = async () => {
@@ -106,7 +116,7 @@ const TestStepTwo = () => {
                 .filter(slot => slot.status === 'Available') // Only show available slots
                 .map((slot, index) => (
                   <li key={index} onClick={() => handleSlotSelect(slot)} style={{ cursor: 'pointer' }}>
-                    {slot.timeFrom} - {slot.timeTo} - {slot.status}
+                    {slot.timeFrom} - {slot.timeTo} 
                   </li>
                 ))}
             </ul>
@@ -118,7 +128,7 @@ const TestStepTwo = () => {
                 <h4>Selected Slot:</h4>
                 <p>
                   Date: {new Date(selectedSchedule.date).toLocaleDateString()}<br />
-                  Time: {selectedSlot.timeFrom} - {selectedSlot.timeTo} - {selectedSlot.status}
+                  Time: {selectedSlot.timeFrom} - {selectedSlot.timeTo}
                 </p>
                 <button onClick={saveEditedSchedule} className="mark-unavailable-button">Mark as Unavailable</button>
               </div>

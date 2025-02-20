@@ -4,9 +4,7 @@ import Appointment from '../models/Appointment.js'; // Assuming your Appointment
 import AdminNotification from '../models/AdminNotification.js';
 import PatientNotification from '../models/PatientNotification.js';
 import nodemailer from 'nodemailer';
-
-
-
+import User from '../models/User.js'; // Assuming your User model is in the models folder
 
 const router = express.Router();
 
@@ -45,7 +43,17 @@ router.get('/appointments', authenticateToken, async (req, res) => {
       res.status(500).json({ message: 'Error fetching appointments' });
     }
   });
-  
+
+// fetch user information with a role of doctor from mongodb 
+router.get('/doctor-info', async (req, res) => {
+  try {
+    const doctors = await User.find({ role: 'doctor' }, 'firstName lastName email');
+    res.status(200).json({ doctors });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching doctor information' });
+  }
+});
+
 
 // Appointment booking route
 router.post('/appointments', authenticateToken, async (req, res) => {
@@ -58,7 +66,8 @@ router.post('/appointments', authenticateToken, async (req, res) => {
     appointmentDate, 
     appointmentTimeFrom, 
     appointmentType, 
-    bookedClinic 
+    bookedClinic,
+    doctor,
   } = req.body;
 
   
@@ -78,6 +87,7 @@ router.post('/appointments', authenticateToken, async (req, res) => {
       userEmail: req.user.email,
       appointmentStatus: 'pending',
       fee: null,
+      doctor,
     });
 
     const savedAppointment = await newAppointment.save();

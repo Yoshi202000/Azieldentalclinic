@@ -97,7 +97,7 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
         <label>Date of Birth</label>
         <input
           type="date"
-          name="dob"
+          name="dob" 
           value={formData.dob}
           onChange={handleInputChange}
         />

@@ -6,13 +6,15 @@ import './Appointment.css';
 import DrawerComponent from '../../component/Drawers';
 import Footer from '../../component/Footer';
 import AppointmentStepOne from '../../component/appointmentPage/AppointmentStepOne';
-import AppointmentStepTwo from '../../component/appointmentPage/AppointmentStepTwo';
+// import AppointmentStepTwo from '../../component/appointmentPage/AppointmentStepTwo';
+import TestStepTwo from '../../test/TestStepTwo';
 import AppointmentStepThree from '../../component/appointmentPage/AppointmentStepThree'; // Direct import
 import { generateAvailableDates } from '../../utils/appDate';
 
 const Appointment = () => {
   const [step, setStep] = useState(1);
   const [selectedTimeFrom, setSelectedTimeFrom] = useState(null);
+  const [selectedTimeTo, setSelectedTimeTo] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedCard, setSelectedCard] = useState(null);
   const [availableDates, setAvailableDates] = useState({});
@@ -25,8 +27,14 @@ const Appointment = () => {
     phoneNumber: '',
     bookedClinic: '',
     email: '',
+    selectedDoctor: '',
+    doctorEmail: '',
+    doctorFirstName: '',
+    doctorLastName: ''
   });
+  
   const [bookedAppointments, setBookedAppointments] = useState([]);
+  const [doctors, setDoctors] = useState([]);
 
   const generateTimeSlots = (start, end) => {
     const timeSlots = [];
@@ -50,7 +58,8 @@ const Appointment = () => {
     const dates = generateAvailableDates();
     setAvailableDates(dates);
     fetchBookedAppointments();
-    fetchServicesData(); // Fetch services when component mounts
+    fetchServicesData();
+    fetchDoctors();
   }, []);
 
   const fetchServicesData = async () => {
@@ -79,6 +88,19 @@ const Appointment = () => {
     }
   };
 
+  const fetchDoctors = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/doctor-info`);
+      if (response.status === 200) {
+        setDoctors(response.data.doctors);
+      } else {
+        console.error('Failed to fetch doctors');
+      }
+    } catch (error) {
+      console.error('Error fetching doctors:', error);
+    }
+  };
+
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
 
@@ -100,6 +122,18 @@ const Appointment = () => {
     }));
   };
 
+  const handleScheduleSelect = (scheduleInfo) => {
+    setSelectedTimeFrom(scheduleInfo.timeFrom);
+    setSelectedTimeTo(scheduleInfo.timeTo);
+    setSelectedDate(scheduleInfo.date);
+    setFormData(prev => ({
+      ...prev,
+      doctorEmail: scheduleInfo.doctorEmail,
+      doctorFirstName: scheduleInfo.doctorFirstName,
+      doctorLastName: scheduleInfo.doctorLastName
+    }));
+  };
+
   const handleAppointmentSubmit = async () => {
     if (!selectedCard || !formData.dob || !formData.lastName || !formData.firstName || !selectedDate || !selectedTimeFrom) {
       alert('Please fill in all required fields.');
@@ -118,11 +152,12 @@ const Appointment = () => {
       patientEmail: formData.email,
       patientPhone: formData.phoneNumber,
       patientDOB: formData.dob,
-      bookedClinic: formData.bookedClinic, 
+      bookedClinic: formData.bookedClinic,
       appointmentDate: selectedDate,
-      appointmentTimeFrom: selectedTimeFrom,
+      appointmentTimeFrom: `${selectedTimeFrom} → ${selectedTimeTo}`,
       appointmentType: selectedCard,
-      fee: null,
+      fee: null, 
+      doctor: formData.doctorEmail
     };
     console.log('Appointment Details:', appointmentDetails);
 
@@ -165,18 +200,14 @@ const Appointment = () => {
             handleInputChange={handleInputChange}
             selectedCard={selectedCard} 
             handleCardSelect={handleCardSelect}
-            services={services} // Pass services to AppointmentStepOne
+            services={services}
+            doctors={doctors}
           />
         )}
         {step === 2 && (
-          <AppointmentStepTwo
-            availableDates={availableDates}
-            selectedDate={selectedDate}
-            handleDateSelect={handleDateSelect}
-            generateTimeSlots={generateTimeSlots}
-            selectedTimeFrom={selectedTimeFrom}
-            handleTimeSelect={handleTimeSelect}
-            bookedAppointments={bookedAppointments}
+          <TestStepTwo
+            selectedDoctor={formData.selectedDoctor}
+            onScheduleSelect={handleScheduleSelect}
           />
         )}
         {step === 3 && (

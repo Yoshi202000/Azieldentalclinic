@@ -234,7 +234,6 @@ router.put('/schedule/update', async (req, res) => {
   }
 });
 
-// Add this route to routes/manageSchedule.js
 router.get('/user/schedules', authenticateUser, async (req, res) => {
   try {
     console.log('Authenticated user:', req.user); // Log user info
@@ -285,6 +284,45 @@ router.get('/all-schedules', async (req, res) => {
   } catch (error) {
     console.error('Error fetching schedules:', error);
     res.status(500).json({ message: 'Failed to fetch schedules', error: error.message });
+  }
+});
+
+// Update a specific slot for a schedule
+router.patch('/schedule/:id/slot', async (req, res) => {
+  try {
+    const { timeFrom, timeTo, date, email } = req.body;
+    console.log('Received request:', { timeFrom, timeTo, date, email });
+
+    const schedule = await Schedule.findOne({ email: email });
+    console.log('Found schedule:', schedule);
+    
+    if (!schedule) {
+      return res.status(404).json({ message: 'Schedule not found' });
+    }
+
+    // Find the schedule entry for the given date
+    const scheduleEntry = schedule.schedule.find(s => s.date === date);
+    if (!scheduleEntry) {
+      return res.status(404).json({ message: 'Date not found in schedule' });
+    }
+
+    // Find and update the specific time slot
+    const slot = scheduleEntry.timeSlots.find(
+      s => s.timeFrom === timeFrom && s.timeTo === timeTo
+    );
+
+    if (!slot) {
+      return res.status(404).json({ message: 'Time slot not found' });
+    }
+
+    // Update the slot status
+    slot.status = 'Unavailable';
+    await schedule.save();
+
+    return res.status(200).json({ message: 'Slot updated successfully' });
+  } catch (error) {
+    console.error('Error updating slot:', error);
+    res.status(500).json({ message: error.message || 'Error updating slot' });
   }
 });
 

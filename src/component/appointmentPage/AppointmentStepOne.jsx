@@ -6,10 +6,15 @@ const AppointmentStepOne = ({
   handleCardSelect, 
   formData, 
   handleInputChange,
-  services // Services passed from Appointment component
+  services, // Services passed from Appointment component
+  doctors
 }) => {
   return (
     <div className="appointment-type">
+      <h2>Schedule Your Appointment</h2>
+      
+      {/* Clinic Selection */}
+      <h2>Choose Your Clinic</h2>
       <select 
         name="bookedClinic" 
         value={formData.bookedClinic} 
@@ -20,7 +25,25 @@ const AppointmentStepOne = ({
         <option value="Aziel Dental Clinic">Aziel Dental Clinic</option>
         <option value="Arts of Millennials Dental Clinic">Arts of Millennials Dental Clinic</option>
       </select>
-      <h2>Schedule Your Appointment</h2>
+
+      {/* Doctor Selection */}
+      <h2>Choose Your Doctor</h2>
+      <select
+        name="selectedDoctor"
+        value={formData.selectedDoctor || ''}
+        onChange={handleInputChange}
+        required
+      >
+        <option value="" disabled>Select a doctor</option>
+        {doctors && doctors.map((doctor) => (
+          <option key={doctor._id} value={doctor.email}>
+            Dr. {doctor.firstName} {doctor.lastName}
+          </option>
+        ))}
+      </select>
+
+      {/* Services Selection */}
+      <h2>Choose Your Service</h2>
       <div className="app-card-container">
         {services.map((service, index) => (
           <label key={index}>
