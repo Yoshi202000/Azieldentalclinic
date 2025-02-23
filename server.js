@@ -28,6 +28,7 @@ import unreadRoutes from './routes/unread.js';
 import healthRecordRoutes from './routes/healthRecord.js';
 import updateDoctorInformation from './routes/doctorsDescription.js';
 import doctorSchedule from './routes/manageSchedule.js';
+import appointmentFee from './routes/appointmentFee.js';
 
 import clinicRoutes from './routes/clinicRoutes.js';
 
@@ -100,6 +101,7 @@ app.use('/api', doctorSchedule);
 
 // test routes for clinicRoute.js
 app.use('/', clinicRoutes);
+app.use('/appointmentFee', appointmentFee);
 
 
 // Load SSL certificates for HTTPS

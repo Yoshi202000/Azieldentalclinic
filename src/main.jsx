@@ -30,6 +30,7 @@ import ManageSchedule from './component/profile/manageSchedule.jsx'
 import FirstImage from './component/FirstImage.jsx';
 import TestSchedule from './test/TestSchedule.jsx';
 import TeststepTwo from './test/TestStepTwo.jsx'
+import UpdateFee from './test/UpdateFee.jsx';
 
 const ProtectedVerificationRoute = ({ children }) => {
   const location = useLocation(); // Use useLocation to get the current URL
@@ -58,6 +59,7 @@ createRoot(document.getElementById('root')).render(
         <Route path='/schedule' element={<ManageSchedule/>}/>
         <Route path='/testSched' element={<TestSchedule/>}/>
         <Route path='/steptwo' element={<TeststepTwo/>}/>
+        <Route path='/fee' element={<UpdateFee/>}/>
 
 
         {/* editContent by super admin */}
