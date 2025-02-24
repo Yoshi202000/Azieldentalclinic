@@ -62,7 +62,7 @@ const UpdateFee = () => {
 
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/appointmentFee/update-fee/${selectedAppointment._id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/update-fee/${selectedAppointment._id}`,
         { fee: parseFloat(fee) },
         { 
           headers: { 

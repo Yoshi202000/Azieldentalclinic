@@ -101,7 +101,7 @@ app.use('/api', doctorSchedule);
 
 // test routes for clinicRoute.js
 app.use('/', clinicRoutes);
-app.use('/appointmentFee', appointmentFee);
+app.use('/', appointmentFee);
 
 
 // Load SSL certificates for HTTPS
