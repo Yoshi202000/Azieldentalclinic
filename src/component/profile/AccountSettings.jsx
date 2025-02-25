@@ -127,8 +127,7 @@ const AccountSettings = () => {
     const token = localStorage.getItem('token');
 
     try {
-      // Clear existing services before updating
-      const clearResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/clear-doctor-services`, {
+      const clearResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/clear-doctor-services`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -137,10 +136,10 @@ const AccountSettings = () => {
       });
 
       if (!clearResponse.ok) {
-        throw new Error('Failed to clear existing services.');
+        const errorData = await clearResponse.json();
+        throw new Error(errorData.message || 'Failed to clear existing services.');
       }
 
-      // Update with new services
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/update-doctor-information`, {
         method: 'PUT',
         headers: {
@@ -151,7 +150,7 @@ const AccountSettings = () => {
           doctorInformation: {
             doctorGreeting: formData.greetings,
             doctorDescription: formData.description,
-            services: formData.services, // Send the updated services list
+            services: formData.services,
           },
         }),
       });
@@ -197,6 +196,9 @@ const AccountSettings = () => {
     }
   };
 
+  // Only show doctor-specific fields if user is a doctor
+  const isDoctorRole = formData.role === 'doctor';
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -207,59 +209,68 @@ const AccountSettings = () => {
       {message && <p className={isError ? 'error-message' : 'success-message'}>{message}</p>}
 
       <label htmlFor="firstName">First Name:</label>
-      <input type="text" name="firstName" value={formData.firstName || ''} onChange={handleInputChange} />
+      <input type="text" name="firstName" value={formData.firstName || ''} onChange={handleInputChange}   readOnly
+ />
 
       <label htmlFor="lastName">Last Name:</label>
-      <input type="text" name="lastName" value={formData.lastName || ''} onChange={handleInputChange} />
+      <input type="text" name="lastName" value={formData.lastName || ''} onChange={handleInputChange}  readOnly
+ />
 
       <label htmlFor="email">Email:</label>
-      <input type="email" name="email" value={formData.email || ''} onChange={handleInputChange} />
+      <input type="email" name="email" value={formData.email || ''} onChange={handleInputChange}  readOnly
+ />
 
-      <label htmlFor="role">Role:</label>
-      <input type="text" name="role" value={formData.role || ''} onChange={handleInputChange} />
+      {isDoctorRole && (
+        <>
+          <label htmlFor="role">Role:</label>
+          <input type="text" name="role" value={formData.role || ''} onChange={handleInputChange}   readOnly
+          />
 
-      <label htmlFor="clinic">Clinic:</label>
-      <input type="text" name="clinic" value={formData.clinic || ''} onChange={handleInputChange} />
+          <label htmlFor="clinic">Clinic:</label>
+          <input type="text" name="clinic" value={formData.clinic || ''} onChange={handleInputChange}   readOnly
+          />
 
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="greetings">Greetings:</label>
-        <input
-          type="text"
-          name="greetings"
-          value={formData.greetings || ''}
-          onChange={(e) => setFormData({ ...formData, greetings: e.target.value })}
-        />
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="greetings">Greetings:</label>
+            <input
+              type="text"
+              name="greetings"
+              value={formData.greetings || ''}
+              onChange={(e) => setFormData({ ...formData, greetings: e.target.value })}
+            />
 
-        <label htmlFor="description">Description:</label>
-        <input
-          type="text"
-          name="description"
-          value={formData.description || ''}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-        />
+            <label htmlFor="description">Description:</label>
+            <input
+              type="text"
+              name="description"
+              value={formData.description || ''}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            />
 
-        <div className="services-container">
-          <h3>Select Services</h3>
-          {availableServices && availableServices.length > 0 ? (
-            availableServices.map((service, index) => (
-              <div key={index}>
-                <input
-                  type="checkbox"
-                  checked={formData.services.includes(service.name)}
-                  onChange={() => handleServiceSelect(service.name)}
-                />
-                <label>{service.name}</label>
-              </div>
-            ))
-          ) : (
-            <p>No services available</p>
-          )}
-        </div>
+            <div className="services-container">
+              <h3>Select Services</h3>
+              {availableServices && availableServices.length > 0 ? (
+                availableServices.map((service, index) => (
+                  <div key={index}>
+                    <input
+                      type="checkbox"
+                      checked={formData.services.includes(service.name)}
+                      onChange={() => handleServiceSelect(service.name)}
+                    />
+                    <label>{service.name}</label>
+                  </div>
+                ))
+              ) : (
+                <p>No services available</p>
+              )}
+            </div>
 
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Submitting...' : 'Submit'}
-        </button>
-      </form>
+            <button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Submitting...' : 'Submit'}
+            </button>
+          </form>
+        </>
+      )}
     </div>
   );
 };

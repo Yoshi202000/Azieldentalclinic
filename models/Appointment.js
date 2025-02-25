@@ -14,7 +14,7 @@ const appointmentSchema = new mongoose.Schema({
     appointmentStatus: { type: String, default: 'pending' },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     userEmail: { type: String, required: true },
-    fee: { type: String, required: false },
+    fee: { type: Number, required: false },
     doctor: { type: String, required:true },
 }, { timestamps: true });   
 

@@ -47,7 +47,10 @@ router.get('/appointments', authenticateToken, async (req, res) => {
 // fetch user information with a role of doctor from mongodb 
 router.get('/doctor-info', async (req, res) => {
   try {
-    const doctors = await User.find({ role: 'doctor' }, 'firstName lastName email');
+    const doctors = await User.find(
+      { role: 'doctor' }, 
+      'firstName lastName email services clinic doctorGreeting doctorDescription'
+    );
     res.status(200).json({ doctors });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching doctor information' });

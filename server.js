@@ -96,12 +96,12 @@ app.use('/api', messageRoutes);  // Add this line
 app.use('/api', updateUserRoutes);
 app.use('/api', unreadRoutes);
 app.use('/api', healthRecordRoutes);
-app.use('/api', updateDoctorInformation);
+app.use('/', updateDoctorInformation);
 app.use('/api', doctorSchedule);
 
 // test routes for clinicRoute.js
 app.use('/', clinicRoutes);
-app.use('/', appointmentFee);
+app.use('/appointmentFee', appointmentFee);
 
 
 // Load SSL certificates for HTTPS

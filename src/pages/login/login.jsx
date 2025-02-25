@@ -83,10 +83,17 @@ const Login = () => {
         document.cookie = `token=${token}; path=/; max-age=${24 * 60 * 60}`; // Cookie expires in 1 day
 
         // Redirect based on user role
-        if (response.data.user.role === 'admin') {
+        if (response.data.user.role = 'superadmin') {
+          navigate('/superadminDashboard');
+        } 
+        else if (response.data.user.role === 'admin') {
           navigate('/dashboard');
-        } else if (response.data.user.role === 'patient') {
+        }
+        else if (response.data.user.role === 'patient') {
           navigate('/home');
+        }
+        else if (response.data.user.role === 'doctor') {
+          navigate('/doctorDashboard');
         }
       }
     } catch (error) {

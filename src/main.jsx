@@ -31,7 +31,7 @@ import FirstImage from './component/FirstImage.jsx';
 import TestSchedule from './test/TestSchedule.jsx';
 import TeststepTwo from './test/TestStepTwo.jsx'
 import UpdateFee from './test/UpdateFee.jsx';
-
+import DoctorDashboard from './doctor/DoctorDashboard/DoctorDashboard.jsx';
 const ProtectedVerificationRoute = ({ children }) => {
   const location = useLocation(); // Use useLocation to get the current URL
   const queryParams = new URLSearchParams(location.search);
@@ -65,7 +65,6 @@ createRoot(document.getElementById('root')).render(
         {/* editContent by super admin */}
         <Route path="/editContent" element={<EditContent />} />
         <Route path="/testPreview" element={<TestPreview />} />
-
 
 
         {/* <Route path="/verify-email" element={<SuccessVerify />} /> */}
@@ -134,7 +133,7 @@ createRoot(document.getElementById('root')).render(
         <Route 
           path="/profile" 
           element={
-            <ProtectedRoute allowedRoles={["patient"]}>
+            <ProtectedRoute allowedRoles={["patient", "admin", "doctor" ]}>
               <Profile />
             </ProtectedRoute>
           } 
@@ -148,6 +147,15 @@ createRoot(document.getElementById('root')).render(
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
               <Dashboard />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/doctorDashboard" 
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <DoctorDashboard />
             </ProtectedRoute>
           } 
         />

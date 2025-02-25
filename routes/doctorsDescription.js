@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 const router = express.Router();
 
 // Clear doctor services
-router.put('/clear-doctor-services', authenticateUser, async (req, res) => {
+router.put('/clear-doctor-services', authenticateUser, async (req, res) => { 
     const userId = req.userId;
 
     try {
