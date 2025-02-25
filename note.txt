@@ -1,0 +1,14 @@
+doctor account settings have error messages of 404 not found
+
+I have to create an admin, doctor, superadmin dashboard
+
+dental health record for every appointmetn
+
+notification via email and navigation bar
+
+more convenient manage scheduling for doctor
+
+appointmentStepTwo date and time from today
+
+apply the fee function to doctor, and admin dashboard
+

@@ -26,12 +26,13 @@ import messageRoutes from './routes/message.js';  // Add this line
 import updateUserRoutes from './routes/updateUserRole.js';
 import unreadRoutes from './routes/unread.js';
 import healthRecordRoutes from './routes/healthRecord.js';
-import updateDoctorInformation from './routes/doctorsDescription.js';
+import updateDoctorInformationRoutes from './routes/doctorsDescription.js';
 import doctorSchedule from './routes/manageSchedule.js';
 import appointmentFee from './routes/appointmentFee.js';
 
 import clinicRoutes from './routes/clinicRoutes.js';
 
+import doctorsDescriptionRoutes from './routes/doctorsDescription.js';
 
 import { fileURLToPath } from 'url';
 
@@ -96,13 +97,10 @@ app.use('/api', messageRoutes);  // Add this line
 app.use('/api', updateUserRoutes);
 app.use('/api', unreadRoutes);
 app.use('/api', healthRecordRoutes);
-app.use('/', updateDoctorInformation);
 app.use('/api', doctorSchedule);
-
-// test routes for clinicRoute.js
-app.use('/', clinicRoutes);
+app.use('/', doctorsDescriptionRoutes);  // Mount at root level
 app.use('/appointmentFee', appointmentFee);
-
+app.use('/', clinicRoutes);
 
 // Load SSL certificates for HTTPS
 // const server = https.createServer({

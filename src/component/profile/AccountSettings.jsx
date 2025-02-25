@@ -125,71 +125,48 @@ const AccountSettings = () => {
     setIsError(false);
 
     const token = localStorage.getItem('token');
+    console.log('Token:', token); // Debug log
 
     try {
-      const clearResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/clear-doctor-services`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/update-doctor-information`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!clearResponse.ok) {
-        const errorData = await clearResponse.json();
-        throw new Error(errorData.message || 'Failed to clear existing services.');
-      }
-
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/update-doctor-information`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           doctorInformation: {
             doctorGreeting: formData.greetings,
             doctorDescription: formData.description,
-            services: formData.services,
-          },
-        }),
+            services: formData.services
+          }
+        })
       });
 
-      const data = await response.json();
+      console.log('Response status:', response.status); // Debug log
 
       if (!response.ok) {
-        const errorMessage = data.message || 'Failed to update information.';
-        setMessage(errorMessage);
-        setIsError(true);
-        setIsSubmitting(false);
-        return;
+        const errorData = await response.json();
+        console.log('Error data:', errorData); // Debug log
+        throw new Error(errorData.message || 'Failed to update information');
       }
+
+      const data = await response.json();
+      console.log('Success data:', data); // Debug log
 
       if (data.user) {
-        setFormData({
-          ...formData,
+        setFormData(prev => ({
+          ...prev,
           greetings: data.user.doctorGreeting,
           description: data.user.doctorDescription,
-          services: data.user.services.map((service) => service.name),
-        });
-      } else {
-        console.warn('No user data returned in response.');
+          services: data.user.services.map(service => service.name)
+        }));
       }
 
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-      }
-
-      console.log('Payload sent to backend:', {
-        doctorGreeting: formData.greetings,
-        doctorDescription: formData.description,
-        services: formData.services,
-      });
-
-      setMessage('Information updated successfully.');
+      setMessage('Information updated successfully');
     } catch (error) {
       console.error('Error updating doctor information:', error);
-      setMessage(error.message || 'An error occurred while updating information.');
+      setMessage(error.message || 'An error occurred while updating information');
       setIsError(true);
     } finally {
       setIsSubmitting(false);
