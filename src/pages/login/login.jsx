@@ -83,9 +83,9 @@ const Login = () => {
         document.cookie = `token=${token}; path=/; max-age=${24 * 60 * 60}`; // Cookie expires in 1 day
 
         // Redirect based on user role
-        if (response.data.user.role = 'superadmin') {
-          navigate('/superadminDashboard');
-        } 
+        if (response.data.user.role === 'superAdmin') {
+          navigate('/dashboard');
+        }
         else if (response.data.user.role === 'admin') {
           navigate('/dashboard');
         }

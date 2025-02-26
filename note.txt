@@ -1,6 +1,12 @@
-doctor account settings have error messages of 404 not found
+doctor account settings have error messages of 404 not found FIXED but the services is not deleting first before updating 
 
 I have to create an admin, doctor, superadmin dashboard
+- superadmin dashboard
+    - 
+- admin dashboard
+    - 
+- doctor dashboard
+    -
 
 dental health record for every appointmetn
 

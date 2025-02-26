@@ -35,7 +35,7 @@ function DoctorDashboard() {
     <Chat/>
       <div className='DashContainer'>
         <div className='DashContent'>
-          <h1>Dashboard content</h1>
+          <h1>Doctors Dashboard content</h1>
           <div className="button-container">
           <button
             className={activeComponent === 'AccountSettings' ? 'active' : ''}
