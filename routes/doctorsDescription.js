@@ -1,46 +1,45 @@
 import express from "express";
-import User from '../models/User.js';
+import User from "../models/User.js";
 import { authenticateUser } from "./middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Update the route path
+// Make sure express can handle JSON
+router.use(express.json());
 router.put('/update-doctor-information', authenticateUser, async (req, res) => {
-    console.log('Route hit!'); // Debug log
-    console.log('Request body:', req.body); // Debug log
-    console.log('User ID from token:', req.userId); // Debug log
-    
     const { doctorInformation } = req.body;
     const userId = req.userId;
-
+  
     try {
-        // Update doctor information including the new services
-        const updateUser = await User.findByIdAndUpdate(
-            userId,
-            {
-                $set: {
-                    doctorGreeting: doctorInformation.doctorGreeting,
-                    doctorDescription: doctorInformation.doctorDescription,
-                    services: doctorInformation.services.map(service => ({ name: service }))
-                }
-            },
-            { new: true } // Return the updated document
-        );
-
-        console.log('Updated user:', updateUser); // Debug log
-
-        if (!updateUser) {
-            return res.status(404).json({ message: 'User not found or failed to update.' });
-        }
-
-        res.status(200).json({
-            message: 'Doctor Information Updated successfully',
-            user: updateUser
-        });
+      // 1. Ensure user exists and is a doctor
+      const user = await User.findById(userId);
+      if (!user) return res.status(404).json({ message: 'User not found' });
+      if (user.role !== 'doctor') {
+        return res.status(403).json({ message: 'Only doctors can update this information' });
+      }
+  
+      // 2. Clear all existing services
+      user.services = [];
+      await user.save();  // Now the user doc in MongoDB has zero services
+  
+      // 3. Add the new services + greeting/description
+      user.doctorGreeting = doctorInformation.doctorGreeting;
+      user.doctorDescription = doctorInformation.doctorDescription;
+      user.services = doctorInformation.services.map(s => ({ name: s }));
+  
+      // 4. Save again with new data
+      const updatedUser = await user.save();
+  
+      return res.status(200).json({
+        message: 'Doctor information updated successfully',
+        user: updatedUser
+      });
     } catch (error) {
-        console.error('Error updating doctor information:', error);
-        res.status(500).json({ message: 'An error occurred while updating the doctor information.' });
+      console.error('Error updating doctor information:', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
-});
+  });
+  
+  
 
 export default router;

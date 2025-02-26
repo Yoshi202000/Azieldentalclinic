@@ -125,7 +125,17 @@ const AccountSettings = () => {
     setIsError(false);
 
     const token = localStorage.getItem('token');
-    console.log('Token:', token); // Debug log
+    console.log('Submitting with token:', token); // Debug log
+
+    const requestData = {
+      doctorInformation: {
+        doctorGreeting: formData.greetings,
+        doctorDescription: formData.description,
+        services: formData.services
+      }
+    };
+
+    console.log('Sending request with data:', requestData); // Debug log
 
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/update-doctor-information`, {
@@ -134,25 +144,17 @@ const AccountSettings = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          doctorInformation: {
-            doctorGreeting: formData.greetings,
-            doctorDescription: formData.description,
-            services: formData.services
-          }
-        })
+        body: JSON.stringify(requestData)
       });
 
       console.log('Response status:', response.status); // Debug log
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.log('Error data:', errorData); // Debug log
-        throw new Error(errorData.message || 'Failed to update information');
-      }
-
       const data = await response.json();
-      console.log('Success data:', data); // Debug log
+      console.log('Response data:', data); // Debug log
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to update information');
+      }
 
       if (data.user) {
         setFormData(prev => ({
