@@ -114,7 +114,7 @@ createRoot(document.getElementById('root')).render(
         <Route 
         path="/message" 
         element={
-          <ProtectedRoute allowedRoles={["patient", "admin"]}>
+          <ProtectedRoute allowedRoles={["patient", "doctor"]}>
         <MessagePage />
         </ProtectedRoute>
         } />

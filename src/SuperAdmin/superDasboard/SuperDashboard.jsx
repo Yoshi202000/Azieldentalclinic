@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import '../../admin/dashboard/Dashboard.css';
-import DoctorPatientsInformation from '../DoctorComponent/DoctorPatientsInformation';
-import DoctorCompletedAppointment from '../DoctorComponent/DoctorCompletedAppointment';
-import DoctorViewAppointment from '../DoctorComponent/DoctorViewAppointment'
-import ViewFeedback from '../../component/admin/ViewFeedback';
-import AccountSettings from '../../component/profile/AccountSettings'
+import SuperPatientsInformation from '../superComponent/SuperPatientsInformation';
+import SuperViewAppointment from '../superComponent/SuperViewAppointment';
+import SuperCompletedAppointment from '../superComponent/superComponent/SuperCompletedAppointment';
+import SuperViewFeedback from '../superComponent/SuperViewFeedback';
+import SuperApproveToAdmin from '../superComponent/SuperApproveToAdmin';
+import AccountSettings from '../superComponent/SuperAccountSettings';
+import SuperAdminSales from '../../superComponent/SuperAdminSales';
 import DrawerComponent from '../../component/Drawers';
 import Footer from '../../component/Footer';
 import Chat from '../../component/chat';
+import SuperDoctorSignup from '../superComponent/SuperAddUser';
+import SuperViewAdminDoctor from '../../component/admin/ViewAdminDoctor';
+import SuperEditContent from '../superComponent/SuperEditContent'
 
-
-function DoctorDashboard() {
+function SuperDashboard() {
   const [activeComponent, setActiveComponent] = useState('AccountSettings');
 
   const renderComponent = () => {
@@ -18,13 +22,21 @@ function DoctorDashboard() {
       case 'AccountSettings':
         return <AccountSettings />;
       case 'PatientsInformation':
-        return <DoctorPatientsInformation />;
+        return <SuperPatientsInformation />;
       case 'ViewAppointment':
-        return <DoctorViewAppointment />;
+        return <SuperViewAppointment />;
       case 'CompletedAppointment':
-        return <DoctorCompletedAppointment />;
+        return <SuperCompletedAppointment />;
       case 'ViewFeedback':
-        return <ViewFeedback />;
+        return <SuperViewFeedback />;
+      case 'ToAdmin':
+        return <SuperApproveToAdmin/>
+        case 'AdminSales':
+          return <SuperAdminSales/>
+      case 'DoctorSignup':
+        return <SuperDoctorSignup/>
+        case 'ViewAdminDoctor':
+        return <SuperViewAdminDoctor/>
       default:
         return <h2>Select an option</h2>;
     }
@@ -35,7 +47,7 @@ function DoctorDashboard() {
     <Chat/>
       <div className='DashContainer'>
         <div className='DashContent'>
-          <h1>Doctors Dashboard content</h1>
+          <h1>SuperAdmin Dashboard content</h1>
           <div className="button-container">
           <button
             className={activeComponent === 'AccountSettings' ? 'active' : ''}
@@ -61,11 +73,34 @@ function DoctorDashboard() {
           >
             Completed Appointments
           </button>
-
+          <button
+            className={activeComponent === 'DoctorSignup' ? 'active' : ''}
+            onClick={() => setActiveComponent('DoctorSignup')}
+          >
+            Add User
+          </button>
+          <button
+            className={activeComponent === 'ViewAdminDoctor' ? 'active' : ''}
+            onClick={() => setActiveComponent('ViewAdminDoctor')}
+          >
+            View Admin Doctor
+          </button>
           <button>
             edit schedule
           </button>
-
+          
+          {/* <button
+            className={activeComponent === 'AdminSales' ? 'active' : ''}
+            onClick={() => setActiveComponent('AdminSales')}
+          >
+            Total Sales
+          </button> */}
+          {/* <button
+            className={activeComponent === 'ToAdmin' ? 'active' : ''}
+            onClick={() => setActiveComponent('ToAdmin')}
+          >
+            Approve User to Admin
+          </button> */}
           <button
             className={activeComponent === 'ViewFeedback' ? 'active' : ''}
             onClick={() => setActiveComponent('ViewFeedback')}
@@ -84,4 +119,4 @@ function DoctorDashboard() {
   );
 }
 
-export default DoctorDashboard;
+export default SuperDashboard;

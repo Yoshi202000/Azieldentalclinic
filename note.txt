@@ -1,16 +1,40 @@
 doctor account settings have error messages of 404 not found FIXED but the services is not deleting first before updating 
 
 I have to create an admin, doctor, superadmin dashboard
+
 - superadmin dashboard
-    - 
-- admin dashboard
-    - 
+    - view profile
+    - view/edit appointment 
+    - view statistic
+    - view patient information
+    - no edit schedule
+    - add/remove admin/doctor for both clinic
+    - can edit content of the clinic
+    - View FeedBack 
+
+- admin dashboard per clinic
+    - - view profile
+    - view/edit appointment for own clinic
+    - add an fee
+    - view statistic for own clinic
+    - view patient information for both clinic
+    - no edit schedule  
+    - add/remove admin/doctor own clinic
+    - View FeedBack 
+
 - doctor dashboard
-    -
+    - viewAppointment filter by own clinic 
+    - view profile
+    - view/edit appointment for own appointment 
+    - add an fee per appointment
+    - view patient information for both clinic
+    - edit schedule  
+    - edit schedule is not yet inputted
+    - View FeedBack 
+    
+dental health record for every appointment
 
-dental health record for every appointmetn
-
-notification via email and navigation bar
+notification via email and navigation bar navigation bar is done
 
 more convenient manage scheduling for doctor
 

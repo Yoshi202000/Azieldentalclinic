@@ -6,7 +6,7 @@ import TestStepTwo from '../../test/TestStepTwo';
 import { generateAvailableDates } from '../../utils/appDate';
 import '../../pages/Appointment/Appointment.css';
 
-function DoctorViewAppointment() {
+function SuperViewAppointment() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,7 +68,7 @@ function DoctorViewAppointment() {
     }
   };
 
-  const fetchAppointments = async (token, clinic, email) => {
+  const fetchAppointments = async (token, clinic) => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment`, {
         headers: {
@@ -78,7 +78,7 @@ function DoctorViewAppointment() {
       const filteredAppointments = response.data.filter(
         appointment =>
           (appointment.appointmentStatus === 'pending' || appointment.appointmentStatus === 'Rebooked') &&
-          appointment.bookedClinic === clinic && appointment.bookedDoctor === email && appointment.clinic === clinic 
+          appointment.bookedClinic === clinic
       );
       setAppointments(filteredAppointments);
       setBookedAppointments(filteredAppointments);
@@ -278,7 +278,6 @@ function DoctorViewAppointment() {
                   <th>Type</th>
                   <th>Clinic</th>
                   <th>Status</th>
-                  <th>doctor</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -292,7 +291,6 @@ function DoctorViewAppointment() {
                       <td>{appointment.appointmentType}</td>
                       <td>{appointment.bookedClinic}</td>
                       <td>{appointment.appointmentStatus}</td>
-                      <td>{appointment.doctor}</td>
                       <td>
                         <button className="AdminAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}
@@ -378,4 +376,4 @@ function DoctorViewAppointment() {
   );
 }
 
-export default DoctorViewAppointment;
+export default SuperViewAppointment;
