@@ -1,7 +1,16 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import nodemailer from 'nodemailer';
 
 const router = express.Router();
+
+const transporter = nodemailer.createTransport({
+  service: 'Gmail', // You can use other services like SendGrid, Mailgun, etc.
+  auth: {
+      user: process.env.EMAIL_USER, // Use env vars for email and pass
+      pass: process.env.EMAIL_PASS,// Your Gmail password or app-specific password
+  },
+});
 
 // Define the schemas
 const AdminNotificationSchema = new mongoose.Schema({

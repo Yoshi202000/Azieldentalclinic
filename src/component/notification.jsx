@@ -43,6 +43,7 @@ function Notification() {
       if (userData.user.role.toLowerCase() === 'admin') {
         notificationsResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin-notifications`, {          headers: { Authorization: `Bearer ${token}` }
         });
+        
       } else {
         notificationsResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/patient-notifications`, {
           headers: { Authorization: `Bearer ${token}` }

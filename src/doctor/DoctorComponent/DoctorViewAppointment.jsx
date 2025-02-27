@@ -5,6 +5,7 @@ import AppointmentStepOne from '../../component/appointmentPage/AppointmentStepO
 import TestStepTwo from '../../test/TestStepTwo';
 import { generateAvailableDates } from '../../utils/appDate';
 import '../../pages/Appointment/Appointment.css';
+import UpdateFee from '../../test/UpdateFee.jsx';
 
 function DoctorViewAppointment() {
   const [appointments, setAppointments] = useState([]);
@@ -31,6 +32,8 @@ function DoctorViewAppointment() {
   const appointmentsPerPage = 5;
 
   const [editingAppointmentId, setEditingAppointmentId] = useState(null);
+  const [showUpdateFee, setShowUpdateFee] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -78,7 +81,7 @@ function DoctorViewAppointment() {
       const filteredAppointments = response.data.filter(
         appointment =>
           (appointment.appointmentStatus === 'pending' || appointment.appointmentStatus === 'Rebooked') &&
-          appointment.bookedClinic === clinic && appointment.bookedDoctor === email && appointment.clinic === clinic 
+          appointment.bookedClinic === clinic && appointment.bookedDoctor === email 
       );
       setAppointments(filteredAppointments);
       setBookedAppointments(filteredAppointments);
@@ -98,11 +101,18 @@ function DoctorViewAppointment() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      const updatedAppointment = response.data;
+
       setAppointments(prevAppointments =>
         prevAppointments.map(app =>
-          app._id === response.data._id ? { ...app, appointmentStatus: response.data.appointmentStatus } : app
+          app._id === updatedAppointment._id ? { ...app, appointmentStatus: updatedAppointment.appointmentStatus } : app
         )
       );
+
+      if (newStatus === 'Completed') {
+        setSelectedAppointment(updatedAppointment);
+        setShowUpdateFee(true);
+      }
     } catch (err) {
       console.error('Error updating appointment status:', err);
       setError('Failed to update appointment status');
@@ -280,6 +290,7 @@ function DoctorViewAppointment() {
                   <th>Status</th>
                   <th>doctor</th>
                   <th>Actions</th>
+                  <th>Fee</th>
                 </tr>
               </thead>
               <tbody>
@@ -293,6 +304,7 @@ function DoctorViewAppointment() {
                       <td>{appointment.bookedClinic}</td>
                       <td>{appointment.appointmentStatus}</td>
                       <td>{appointment.doctor}</td>
+                      <td>{appointment.fee}</td>
                       <td>
                         <button className="AdminAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}
@@ -374,6 +386,7 @@ function DoctorViewAppointment() {
         <span>Page {currentPage} of {totalPages}</span>
         <button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
       </div>
+      {showUpdateFee && <UpdateFee selectedAppointment={selectedAppointment} onClose={() => setShowUpdateFee(false)} />}
     </div>
   );
 }

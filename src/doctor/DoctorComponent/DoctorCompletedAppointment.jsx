@@ -107,6 +107,7 @@ const DoctorCompletedAppointment = () => {
                   <th>Appointment Time</th>
                   <th>Clinic</th>
                   <th>Status</th>
+                  <th>fee</th>
                 </tr>
               </thead>
               <tbody>
@@ -118,6 +119,7 @@ const DoctorCompletedAppointment = () => {
                     <td>{appointment.appointmentTimeFrom}</td>
                     <td>{appointment.bookedClinic}</td>
                     <td>{appointment.appointmentStatus}</td>
+                    <td>₱{appointment.fee}</td>
                   </tr>
                 ))}
               </tbody>

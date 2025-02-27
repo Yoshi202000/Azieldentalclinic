@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, TextField, Button, Typography, Paper, Grid } from '@mui/material';
+import { Box, TextField, Button, Typography, Paper, Grid, Dialog } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-const UpdateFee = () => {
+const UpdateFee = ({ selectedAppointment, onClose }) => {
   const [appointments, setAppointments] = useState([]);
-  const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [fee, setFee] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -43,12 +42,6 @@ const UpdateFee = () => {
         navigate('/login');
       }
     }
-  };
-
-  // Handle appointment selection
-  const handleAppointmentClick = (appointment) => {
-    setSelectedAppointment(appointment);
-    setFee(appointment.fee || '');
   };
 
   // Handle fee update
@@ -96,114 +89,143 @@ const UpdateFee = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Update Appointment Fee
-      </Typography>
-
-      {message && (
-        <Typography 
-          color={message.includes('Error') ? 'error' : 'success'} 
-          mb={2}
-          sx={{ backgroundColor: message.includes('Error') ? '#ffebee' : '#e8f5e9', 
-               padding: 2, 
-               borderRadius: 1 }}
-        >
-          {message}
+    <Dialog open={true} onClose={onClose} maxWidth="md" fullWidth>
+      <Box sx={{ p: 3 }}>
+        <Typography variant="h4" gutterBottom>
+          Update Appointment Fee
         </Typography>
-      )}
 
-      <Grid container spacing={3}>
-        {/* Appointments List */}
-        <Grid item xs={12} md={8}>
-          <Typography variant="h6" gutterBottom>
-            Appointments
+        {message && (
+          <Typography 
+            color={message.includes('Error') ? 'error' : 'success'} 
+            mb={2}
+            sx={{ backgroundColor: message.includes('Error') ? '#ffebee' : '#e8f5e9', 
+                 padding: 2, 
+                 borderRadius: 1 }}
+          >
+            {message}
           </Typography>
-          {appointments.length === 0 ? (
-            <Typography>No appointments found.</Typography>
-          ) : (
-            appointments.map((appointment) => (
-              <Paper
-                key={appointment._id}
-                sx={{
-                  p: 2,
-                  mb: 2,
-                  cursor: 'pointer',
-                  bgcolor: selectedAppointment?._id === appointment._id ? '#f0f0f0' : 'white',
-                  '&:hover': {
-                    bgcolor: '#f5f5f5'
-                  }
-                }}
-                onClick={() => handleAppointmentClick(appointment)}
-              >
-                <Typography>
-                  Patient: {appointment.patientFirstName} {appointment.patientLastName}
-                </Typography>
-                <Typography>
-                  Date: {new Date(appointment.appointmentDate).toLocaleDateString()}
-                </Typography>
-                <Typography>
-                  Time: {appointment.appointmentTimeFrom}
-                </Typography>
-                <Typography>
-                  Type: {appointment.appointmentType}
-                </Typography>
-                <Typography>
-                  Status: {appointment.appointmentStatus}
-                </Typography>
-                <Typography>
-                  Current Fee: ${appointment.fee || 'Not set'}
-                </Typography>
-              </Paper>
-            ))
-          )}
-        </Grid>
+        )}
 
-        {/* Fee Update Form */}
-        <Grid item xs={12} md={4}>
-          {selectedAppointment && (
-            <Paper sx={{ p: 2 }}>
-              <Typography variant="h6" gutterBottom>
-                Selected Appointment
-              </Typography>
-              <Typography>
-                Patient: {selectedAppointment.patientFirstName} {selectedAppointment.patientLastName}
-              </Typography>
-              <Typography mb={2}>
-                Date: {new Date(selectedAppointment.appointmentDate).toLocaleDateString()}
-              </Typography>
-              
-              <TextField
-                fullWidth
-                label="Fee Amount"
-                type="number"
-                value={fee}
-                onChange={(e) => setFee(e.target.value)}
-                sx={{ mb: 2 }}
-                InputProps={{
-                  startAdornment: <Typography>$</Typography>
-                }}
-              />
-              
-              <Button
-                variant="contained"
-                onClick={handleUpdateFee}
-                disabled={!fee}
-                fullWidth
-                sx={{
-                  bgcolor: 'primary.main',
-                  '&:hover': {
-                    bgcolor: 'primary.dark',
-                  }
-                }}
-              >
-                Update Fee
-              </Button>
-            </Paper>
-          )}
+        {/* Display selected appointment details */}
+        {selectedAppointment && (
+          <div>
+            <Typography variant="h6" gutterBottom>
+              Selected Appointment
+            </Typography>
+            <Typography>
+              Patient: {selectedAppointment.patientFirstName} {selectedAppointment.patientLastName}
+            </Typography>
+            <Typography>
+              Date: {new Date(selectedAppointment.appointmentDate).toLocaleDateString()}
+            </Typography>
+            <Typography>
+              Time: {selectedAppointment.appointmentTimeFrom}
+            </Typography>
+            <Typography>
+              Type: {selectedAppointment.appointmentType}
+            </Typography>
+            <Typography>
+              Status: {selectedAppointment.appointmentStatus}
+            </Typography>
+            <Typography>
+              Current Fee: ₱{selectedAppointment.fee || 'Not set'}
+            </Typography>
+          </div>
+        )}
+
+        <Grid container spacing={3}>
+          {/* Appointments List */}
+          <Grid item xs={12} md={8}>
+            <Typography variant="h6" gutterBottom>
+              Appointments
+            </Typography>
+            {appointments.length === 0 ? (
+              <Typography>No appointments found.</Typography>
+            ) : (
+              appointments
+                .filter(appointment => appointment._id === selectedAppointment?._id) // Only show the selected appointment
+                .map((appointment) => (
+                  <Paper
+                    key={appointment._id}
+                    sx={{
+                      p: 2,
+                      mb: 2,
+                      bgcolor: selectedAppointment?._id === appointment._id ? '#f0f0f0' : 'white',
+                      '&:hover': {
+                        bgcolor: '#f5f5f5'
+                      }
+                    }}
+                  >
+                    <Typography>
+                      Patient: {appointment.patientFirstName} {appointment.patientLastName}
+                    </Typography>
+                    <Typography>
+                      Date: {new Date(appointment.appointmentDate).toLocaleDateString()}
+                    </Typography>
+                    <Typography>
+                      Time: {appointment.appointmentTimeFrom}
+                    </Typography>
+                    <Typography>
+                      Type: {appointment.appointmentType}
+                    </Typography>
+                    <Typography>
+                      Status: {appointment.appointmentStatus}
+                    </Typography>
+                    <Typography>
+                      Current Fee: ₱{appointment.fee || 'Not set'}
+                    </Typography>
+                  </Paper>
+                ))
+            )}
+          </Grid>
+
+          {/* Fee Update Form */}
+          <Grid item xs={12} md={4}>
+            {selectedAppointment && (
+              <Paper sx={{ p: 2 }}>
+                <Typography variant="h6" gutterBottom>
+                  Selected Appointment
+                </Typography>
+                <Typography>
+                  Patient: {selectedAppointment.patientFirstName} {selectedAppointment.patientLastName}
+                </Typography>
+                <Typography mb={2}>
+                  Date: {new Date(selectedAppointment.appointmentDate).toLocaleDateString()}
+                </Typography>
+                
+                <TextField
+                  fullWidth
+                  label="Fee Amount"
+                  type="number"
+                  value={fee}
+                  onChange={(e) => setFee(e.target.value)}
+                  sx={{ mb: 2 }}
+                  InputProps={{
+                    startAdornment: <Typography>₱</Typography>
+                  }}
+                />
+                
+                <Button
+                  variant="contained"
+                  onClick={handleUpdateFee}
+                  disabled={!fee}
+                  fullWidth
+                  sx={{
+                    bgcolor: 'primary.main',
+                    '&:hover': {
+                      bgcolor: 'primary.dark',
+                    }
+                  }}
+                >
+                  Update Fee
+                </Button>
+              </Paper>
+            )}
+          </Grid>
         </Grid>
-      </Grid>
-    </Box>
+      </Box>
+    </Dialog>
   );
 };
 

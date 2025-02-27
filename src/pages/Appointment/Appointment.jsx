@@ -30,11 +30,14 @@ const Appointment = () => {
     selectedDoctor: '',
     doctorEmail: '',
     doctorFirstName: '',
-    doctorLastName: ''
+    doctorLastName: '',
+    appointmentTimeFrom: '',
   });
   
   const [bookedAppointments, setBookedAppointments] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [selectedSchedule, setSelectedSchedule] = useState(null);
+  const [selectedSlot, setSelectedSlot] = useState(null);
 
   const generateTimeSlots = (start, end) => {
     const timeSlots = [];
@@ -123,14 +126,18 @@ const Appointment = () => {
   };
 
   const handleScheduleSelect = (scheduleInfo) => {
+    setSelectedSchedule(scheduleInfo);
     setSelectedTimeFrom(scheduleInfo.timeFrom);
     setSelectedTimeTo(scheduleInfo.timeTo);
     setSelectedDate(scheduleInfo.date);
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
       doctorEmail: scheduleInfo.doctorEmail,
       doctorFirstName: scheduleInfo.doctorFirstName,
-      doctorLastName: scheduleInfo.doctorLastName
+      doctorLastName: scheduleInfo.doctorLastName,
+      appointmentTimeFrom: scheduleInfo.appointmentTimeFrom,
+      bookedClinic: scheduleInfo.bookedClinic,
     }));
   };
 
@@ -154,11 +161,12 @@ const Appointment = () => {
       patientDOB: formData.dob,
       bookedClinic: formData.bookedClinic,
       appointmentDate: selectedDate,
-      appointmentTimeFrom: `${selectedTimeFrom} → ${selectedTimeTo}`,
+      appointmentTimeFrom: formData.appointmentTimeFrom,
       appointmentType: selectedCard,
       fee: null, 
-      doctor: formData.doctorEmail
+      doctor: formData.doctorEmail,
     };
+
     console.log('Appointment Details:', appointmentDetails);
 
     try {
@@ -172,8 +180,13 @@ const Appointment = () => {
       });
 
       const result = await response.json();
+
       if (response.ok) {
         alert('Appointment booked successfully!');
+
+        // Update slot status to "Unavailable"
+        await updateSlotStatus();
+
         navigate('/healthRecord');
       } else {
         alert(`Error: ${result.message}`);
@@ -181,6 +194,27 @@ const Appointment = () => {
     } catch (error) {
       console.error('Error booking appointment:', error);
       alert('An error occurred while booking the appointment.');
+    }
+  };
+
+  const updateSlotStatus = async () => {
+    try {
+      const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/update-slot-status`, {
+        scheduleId: selectedSchedule._id, // Ensure this is set correctly
+        slotId: selectedSlot._id // Ensure this is set correctly
+      }, {
+        headers: {
+          Authorization: `${localStorage.getItem('token')}`,
+        }
+      });
+  
+      if (response.status === 200) {
+        console.log("Slot status updated successfully:", response.data);
+      } else {
+        console.error("Failed to update slot status:", response.data);
+      }
+    } catch (error) {
+      console.error("Error updating slot status:", error);
     }
   };
 

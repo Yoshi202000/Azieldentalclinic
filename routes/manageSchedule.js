@@ -279,8 +279,22 @@ router.patch('/schedule/:id', authenticateUser, async (req, res) => {
 // Fetch all schedules
 router.get('/all-schedules', async (req, res) => {
   try {
-    const schedules = await Schedule.find(); // Fetch all schedules from the database
-    res.status(200).json(schedules); // Respond with the schedules
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const startOfTomorrow = new Date(
+      tomorrow.getFullYear(),
+      tomorrow.getMonth(),
+      tomorrow.getDate()
+    );
+
+    const schedules = await Schedule.find({
+      date: { $gte: startOfTomorrow },
+      slots: { $elemMatch: { status: "Available" } }
+    });
+
+    res.status(200).json(schedules);
   } catch (error) {
     console.error('Error fetching schedules:', error);
     res.status(500).json({ message: 'Failed to fetch schedules', error: error.message });
@@ -323,6 +337,41 @@ router.patch('/schedule/:id/slot', async (req, res) => {
   } catch (error) {
     console.error('Error updating slot:', error);
     res.status(500).json({ message: error.message || 'Error updating slot' });
+  }
+});
+
+// Update slot status
+router.put('/update-slot-status', authenticateUser, async (req, res) => {
+  const { scheduleId, slotId } = req.body;
+  
+  if (!scheduleId || !slotId) {
+    return res.status(400).json({ message: 'scheduleId and slotId are required.' });
+  }
+
+  try {
+    // Use arrayFilters to find the slot with the given slotId that is currently "Available"
+    const updatedSchedule = await Schedule.findOneAndUpdate(
+      { _id: scheduleId },
+      { $set: { "slots.$[elem].status": "Unavailable" } },
+      {
+        new: true,
+        arrayFilters: [
+          { "elem._id": slotId, "elem.status": "Available" }
+        ]
+      }
+    );
+
+    if (!updatedSchedule) {
+      return res.status(404).json({ message: 'Schedule or slot not found, or slot is already Unavailable.' });
+    }
+
+    res.status(200).json({
+      message: 'Slot status updated successfully.',
+      schedule: updatedSchedule
+    });
+  } catch (error) {
+    console.error('Error updating slot status:', error);
+    res.status(500).json({ message: 'Failed to update slot status', error: error.message });
   }
 });
 

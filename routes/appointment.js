@@ -57,6 +57,22 @@ router.get('/doctor-info', async (req, res) => {
   }
 });
 
+// Function to send email notification
+const sendEmailNotification = async (patientEmail, patientFirstName, patientLastName, appointmentDate, appointmentTimeFrom, bookedClinic, appointmentType) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USER, // Sender email
+    to: patientEmail, // Recipient email
+    subject: 'Appointment Confirmation',
+    text: `Dear ${patientFirstName} ${patientLastName},\n\nYour appointment for ${appointmentType} on ${appointmentDate} at ${appointmentTimeFrom} at ${bookedClinic} has been booked successfully.\n\nThank you!`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully to:', patientEmail);
+  } catch (error) {
+    console.error('Error sending email:', error);
+  }
+};
 
 // Appointment booking route
 router.post('/appointments', authenticateToken, async (req, res) => {
@@ -110,21 +126,10 @@ router.post('/appointments', authenticateToken, async (req, res) => {
     });
     await patientNotification.save();
 
-    // if (appointmentType === 'Braces & Orthodontics') {
-    //   const emailDetails = {
-    //     to: patientEmail,
-    //     subject: 'Appointment Confirmation: Braces & Orthodontics',
-    //     text: `Dear ${patientFirstName} ${patientLastName}, your appointment for Braces & Orthodontics on ${appointmentDate} at ${appointmentTimeFrom} has been booked successfully.`,
-    //   };
+    // Send email notification to the user
+    await sendEmailNotification(patientEmail, patientFirstName, patientLastName, appointmentDate, appointmentTimeFrom, bookedClinic, appointmentType);
 
-    //   // Schedule the email to be sent in 5 minutes (300,000 ms)
-    //   const fiveMinuteDelay = 5 * 60 * 1000; // 5 minutes in milliseconds
-    //   await emailQueue.add(emailDetails, { delay: fiveMinuteDelay });
-
-    //   console.log('Email scheduled for:', patientEmail);
-    // }
-
-    res.status(201).json({ message: 'Appointment booked and email scheduled successfully!' });
+    res.status(201).json({ message: 'Appointment booked and email notification sent successfully!' });
   } catch (error) {
     res.status(500).json({ message: 'Error booking appointment: ' + error.message });
   }
