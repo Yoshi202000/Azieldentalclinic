@@ -13,6 +13,7 @@ const SuperAdminSales = () => {
   const [dateFilter, setDateFilter] = useState('Daily');
   const [salesData, setSalesData] = useState([]);
   const [isAscending, setIsAscending] = useState(true); // New state for sorting order
+  const [clinicServices, setClinicServices] = useState([]); // State for clinic services
   const navigate = useNavigate();
 
   // Effect to fetch user info and appointments
@@ -25,6 +26,7 @@ const SuperAdminSales = () => {
     }
 
     fetchUserInfo(token);
+    fetchClinicServices(token); // Fetch clinic services
   }, [navigate]);
 
   // Function to fetch user information
@@ -50,6 +52,24 @@ const SuperAdminSales = () => {
     }
   };
 
+  // Function to fetch clinic services
+  const fetchClinicServices = async (token) => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data && response.data.services) {
+        setClinicServices(response.data.services); // Set clinic services
+      } else {
+        console.error('Failed to fetch clinic services');
+      }
+    } catch (error) {
+      console.error('Error fetching clinic services:', error);
+    }
+  };
+
   // Fetch appointments from the backend and filter by user's clinic
   const fetchAppointments = async (token, clinic) => {
     try {
@@ -61,7 +81,7 @@ const SuperAdminSales = () => {
 
       // Filter appointments by clinic and only include appointments with status 'Completed'
       const filteredByClinicAndStatus = response.data.filter(
-        (app) => app.bookedClinic === clinic && app.appointmentStatus === 'Completed'
+        (app) => app.appointmentStatus === 'Completed'
       );
 
       setAppointments(filteredByClinicAndStatus);
@@ -172,13 +192,14 @@ const SuperAdminSales = () => {
       <h1 className="sales-summary-title">Sales by Appointment Summary (Completed Only)</h1>
 
       {/* Type Filter */}
-
       <div className="filter-buttons">
         <h3>Filter by Appointment Type:</h3>
         <button onClick={() => handleTypeFilterChange('All')} className={typeFilter === 'All' ? 'active' : ''}>All</button>
-        <button onClick={() => handleTypeFilterChange('Braces & Orthodontics')} className={typeFilter === 'Braces & Orthodontics' ? 'active' : ''}>Braces & Orthodontics</button>
-        <button onClick={() => handleTypeFilterChange('Tooth Extractions')} className={typeFilter === 'Tooth Extractions' ? 'active' : ''}>Tooth Extractions</button>
-        <button onClick={() => handleTypeFilterChange('Dental cleaning')} className={typeFilter === 'Dental cleaning' ? 'active' : ''}>Dental cleaning</button>
+        {clinicServices.map((service) => (
+          <button key={service._id} onClick={() => handleTypeFilterChange(service.name)} className={typeFilter === service.name ? 'active' : ''}>
+            {service.name}
+          </button>
+        ))}
       </div>
 
       {/* Date Filter */}

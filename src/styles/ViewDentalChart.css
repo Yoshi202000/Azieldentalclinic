@@ -1,0 +1,76 @@
+.view-dental-chart {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+    text-align: center;
+}
+
+input {
+    padding: 8px;
+    width: 70%;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 8px 12px;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+button:disabled {
+    background: #aaa;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+}
+
+.patient-info {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+}
+
+.date-list {
+    margin-top: 10px;
+}
+
+.date-button {
+    padding: 8px 12px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+    background: #28a745;
+    color: white;
+    border-radius: 4px;
+}
+
+.date-button.active {
+    background: #218838;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}

@@ -32,6 +32,11 @@ import TestSchedule from './test/TestSchedule.jsx';
 import TeststepTwo from './test/TestStepTwo.jsx'
 import UpdateFee from './test/UpdateFee.jsx';
 import DoctorDashboard from './doctor/DoctorDashboard/DoctorDashboard.jsx';
+import DentalChartForm from './component/DentalChart.jsx';
+import ViewDentalChart from './component/ViewDentalChart.jsx';
+
+
+
 const ProtectedVerificationRoute = ({ children }) => {
   const location = useLocation(); // Use useLocation to get the current URL
   const queryParams = new URLSearchParams(location.search);
@@ -60,6 +65,10 @@ createRoot(document.getElementById('root')).render(
         <Route path='/testSched' element={<TestSchedule/>}/>
         <Route path='/steptwo' element={<TeststepTwo/>}/>
         <Route path='/fee' element={<UpdateFee/>}/>
+        <Route path='/dentalchart' element={<DentalChartForm/>}/>
+        <Route path='/viewdental' element={<ViewDentalChart/>}/>
+
+
 
 
         {/* editContent by super admin */}

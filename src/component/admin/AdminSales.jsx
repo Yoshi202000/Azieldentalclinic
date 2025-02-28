@@ -13,6 +13,7 @@ const AdminSales = () => {
   const [dateFilter, setDateFilter] = useState('Daily');
   const [salesData, setSalesData] = useState([]);
   const [isAscending, setIsAscending] = useState(true); // New state for sorting order
+  const [clinicServices, setClinicServices] = useState([]); // State for clinic services
   const navigate = useNavigate();
 
   // Effect to fetch user info and appointments
@@ -25,6 +26,7 @@ const AdminSales = () => {
     }
 
     fetchUserInfo(token);
+    fetchClinicServices(token); // Fetch clinic services
   }, [navigate]);
 
   // Function to fetch user information
@@ -47,6 +49,24 @@ const AdminSales = () => {
         alert('Session expired or invalid. Please log in again.');
         navigate('/login');
       }
+    }
+  };
+
+  // Function to fetch clinic services
+  const fetchClinicServices = async (token) => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data && response.data.services) {
+        setClinicServices(response.data.services); // Set clinic services
+      } else {
+        console.error('Failed to fetch clinic services');
+      }
+    } catch (error) {
+      console.error('Error fetching clinic services:', error);
     }
   };
 
@@ -172,13 +192,14 @@ const AdminSales = () => {
       <h1 className="sales-summary-title">Sales by Appointment Summary (Completed Only)</h1>
 
       {/* Type Filter */}
-
       <div className="filter-buttons">
         <h3>Filter by Appointment Type:</h3>
         <button onClick={() => handleTypeFilterChange('All')} className={typeFilter === 'All' ? 'active' : ''}>All</button>
-        <button onClick={() => handleTypeFilterChange('Braces & Orthodontics')} className={typeFilter === 'Braces & Orthodontics' ? 'active' : ''}>Braces & Orthodontics</button>
-        <button onClick={() => handleTypeFilterChange('Tooth Extractions')} className={typeFilter === 'Tooth Extractions' ? 'active' : ''}>Tooth Extractions</button>
-        <button onClick={() => handleTypeFilterChange('Dental cleaning')} className={typeFilter === 'Dental cleaning' ? 'active' : ''}>Dental cleaning</button>
+        {clinicServices.map((service) => (
+  <button key={service._id} onClick={() => handleTypeFilterChange(service.name)} className={typeFilter === service.name ? 'active' : ''}>
+    {service.name}
+  </button>
+))}
       </div>
 
       {/* Date Filter */}
@@ -206,19 +227,19 @@ const AdminSales = () => {
           {dateFilter === 'Daily' && salesData.map((day, index) => (
             <div key={index} className="sales-summary-card">
               <h2 className="sales-summary-card-title">{day.date}</h2>
-              <p className="sales-summary-card-total">Total Sales: ${day.totalSales.toFixed(2)}</p>
+              <p className="sales-summary-card-total">Total Sales: ₱{day.totalSales.toFixed(2)}</p>
             </div>
           ))}
           {dateFilter === 'Weekly' && salesData.map((week, index) => (
             <div key={index} className="sales-summary-card">
               <h2 className="sales-summary-card-title">Week starting {week.week}</h2>
-              <p className="sales-summary-card-total">Total Sales: ${week.totalSales.toFixed(2)}</p>
+              <p className="sales-summary-card-total">Total Sales: ₱{week.totalSales.toFixed(2)}</p>
             </div>
           ))}
           {dateFilter === 'Monthly' && salesData.map((month, index) => (
             <div key={index} className="sales-summary-card">
               <h2 className="sales-summary-card-title">{month.month}</h2>
-              <p className="sales-summary-card-total">Total Sales: ${month.totalSales.toFixed(2)}</p>
+              <p className="sales-summary-card-total">Total Sales: ₱{month.totalSales.toFixed(2)}</p>
             </div>
           ))}
         </div>

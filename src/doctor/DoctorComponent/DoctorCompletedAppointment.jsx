@@ -60,7 +60,7 @@ const DoctorCompletedAppointment = () => {
       const relevantAppointments = response.data.filter(
         (app) => 
           ['Completed', 'No Show', 'Cancelled'].includes(app.appointmentStatus) &&
-          app.bookedClinic === clinic // Match logged-in user's clinic
+          app.bookedClinic === "clinic" // Match logged-in user's clinic
       );
 
       setAppointments(relevantAppointments);

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import AppointmentStepOne from '../appointmentPage/AppointmentStepOne';
 import AppointmentStepTwo from '../appointmentPage/AppointmentStepTwo';
 import { generateAvailableDates } from '../../utils/appDate';
+import UpdateFee from '../../test/UpdateFee.jsx';
 import './ViewAppointment.css';
 
 function ViewAppointment() {
@@ -31,6 +32,8 @@ function ViewAppointment() {
   const appointmentsPerPage = 5;
 
   const [editingAppointmentId, setEditingAppointmentId] = useState(null);
+  const [showUpdateFee, setShowUpdateFee] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -78,7 +81,7 @@ function ViewAppointment() {
       const filteredAppointments = response.data.filter(
         appointment =>
           (appointment.appointmentStatus === 'pending' || appointment.appointmentStatus === 'Rebooked') &&
-          appointment.bookedClinic === clinic
+          appointment.bookedClinic === clinic 
       );
       setAppointments(filteredAppointments);
       setBookedAppointments(filteredAppointments);
@@ -103,6 +106,11 @@ function ViewAppointment() {
           app._id === response.data._id ? { ...app, appointmentStatus: response.data.appointmentStatus } : app
         )
       );
+
+      if (newStatus === 'Completed') {
+        setSelectedAppointment(response.data);
+        setShowUpdateFee(true);
+      }
     } catch (err) {
       console.error('Error updating appointment status:', err);
       setError('Failed to update appointment status');
@@ -372,6 +380,7 @@ function ViewAppointment() {
         <span>Page {currentPage} of {totalPages}</span>
         <button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
       </div>
+      {showUpdateFee && <UpdateFee selectedAppointment={selectedAppointment} onClose={() => setShowUpdateFee(false)} />}
     </div>
   );
 }

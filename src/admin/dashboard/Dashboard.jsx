@@ -88,12 +88,12 @@ function Dashboard() {
             edit schedule
           </button>
           
-          {/* <button
+           <button
             className={activeComponent === 'AdminSales' ? 'active' : ''}
             onClick={() => setActiveComponent('AdminSales')}
           >
             Total Sales
-          </button> */}
+          </button> 
           {/* <button
             className={activeComponent === 'ToAdmin' ? 'active' : ''}
             onClick={() => setActiveComponent('ToAdmin')}

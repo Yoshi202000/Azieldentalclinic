@@ -30,6 +30,8 @@ import updateDoctorInformationRoutes from './routes/doctorsDescription.js';
 import doctorSchedule from './routes/manageSchedule.js';
 import appointmentFee from './routes/appointmentFee.js';
 
+import DentalChartForm from './routes/DentalRecord.js';
+
 import clinicRoutes from './routes/clinicRoutes.js';
 
 import doctorsDescriptionRoutes from './routes/doctorsDescription.js';
@@ -101,6 +103,7 @@ app.use('/api', doctorSchedule);
 app.use('/', doctorsDescriptionRoutes);  // Mount at root level
 app.use('/appointmentFee', appointmentFee);
 app.use('/', clinicRoutes);
+app.use('/', DentalChartForm);
 
 // Load SSL certificates for HTTPS
 // const server = https.createServer({
