@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../styles/ViewDentalChart.css';
+import '../styles/DentalChart.css';
+
 const DentalChartForm = () => {
   const [patientType, setPatientType] = useState('adult'); // Default to adult
   const [formData, setFormData] = useState({
@@ -13,17 +14,15 @@ const DentalChartForm = () => {
 
   const toothNumbers = patientType === 'adult'
     ? Array.from({ length: 32 }, (_, i) => i + 1) // Adult: 1-32
-    : 'ABCDEFGHIJJKLMNOPQRST'.split(''); // Child: A-T
-
-  console.log(toothNumbers);
+    : 'ABCDEFGHIJKLMNOPQRST'.split(''); // Child: A-T
 
   const toothStatuses = ['Healthy', 'Cleaned', 'Decayed', 'Removed', 'Filled', 'Crowned', 'Braced'];
 
-  // Initialize teeth status to Healthy
+  // Initialize teeth status and notes
   const initializeTeethStatus = () => {
     const initialTeeth = {};
     toothNumbers.forEach((tooth) => {
-      initialTeeth[tooth] = { status: 'Healthy', notes: '' }; // Default status is Healthy
+      initialTeeth[tooth] = { status: 'Healthy', notes: '' }; // Default status is Healthy, notes empty
     });
     return initialTeeth;
   };
@@ -48,7 +47,18 @@ const DentalChartForm = () => {
       ...prevData,
       teeth: {
         ...prevData.teeth,
-        [tooth]: { status, notes: '' }, // Update status
+        [tooth]: { ...prevData.teeth[tooth], status }, // Update only status
+      },
+    }));
+  };
+
+  // Handle notes input change
+  const handleToothNotesChange = (tooth, notes) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      teeth: {
+        ...prevData.teeth,
+        [tooth]: { ...prevData.teeth[tooth], notes }, // Update only notes
       },
     }));
   };
@@ -76,7 +86,7 @@ const DentalChartForm = () => {
   };
 
   // Initialize teeth status on component mount
-  React.useEffect(() => {
+  useEffect(() => {
     setFormData((prevData) => ({
       ...prevData,
       teeth: initializeTeethStatus(), // Set default status to Healthy
@@ -84,11 +94,11 @@ const DentalChartForm = () => {
   }, [patientType]);
 
   return (
-    <div className="dental-chart-form">
+    <div className="dentalChartForm-container">
       <h2>Dental Chart Form</h2>
 
       {/* Patient Type Selection */}
-      <div>
+      <div className="dentalChartForm-typeSelection">
         <label>Patient Type:</label>
         <select value={patientType} onChange={(e) => handlePatientTypeChange(e.target.value)}>
           <option value="adult">Adult</option>
@@ -97,31 +107,31 @@ const DentalChartForm = () => {
       </div>
 
       {/* Patient Details */}
-      <div>
+      <div className="dentalChartForm-inputGroup">
         <label>First Name:</label>
         <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
       </div>
 
-      <div>
+      <div className="dentalChartForm-inputGroup">
         <label>Last Name:</label>
         <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
       </div>
 
-      <div>
+      <div className="dentalChartForm-inputGroup">
         <label>Email:</label>
         <input type="email" name="email" value={formData.email} onChange={handleInputChange} required />
       </div>
 
-      <div>
+      <div className="dentalChartForm-inputGroup">
         <label>Date:</label>
         <input type="date" name="date" value={formData.date} onChange={handleInputChange} />
       </div>
 
-      {/* Tooth Status Selection */}
-      <h3>Select Tooth Status:</h3>
-      <div className="tooth-grid">
+      {/* Tooth Status and Notes Selection */}
+      <h3>Select Tooth Status & Add Notes:</h3>
+      <div className="dentalChartForm-toothGrid">
         {toothNumbers.map((tooth) => (
-          <div key={`${patientType}-${tooth}`} className="tooth-box">
+          <div key={`${patientType}-${tooth}`} className="dentalChartForm-toothBox">
             <label>Tooth {tooth}</label>
             <select 
               value={formData.teeth[tooth]?.status || 'Healthy'} // Default to Healthy
@@ -131,12 +141,20 @@ const DentalChartForm = () => {
                 <option key={status} value={status}>{status}</option>
               ))}
             </select>
+
+            {/* Notes Input */}
+            <input
+              type="text"
+              placeholder="Add notes"
+              value={formData.teeth[tooth]?.notes || ''}
+              onChange={(e) => handleToothNotesChange(tooth, e.target.value)}
+            />
           </div>
         ))}
       </div>
 
       {/* Submit Button */}
-      <button onClick={handleSubmit}>Submit Dental Chart</button>
+      <button className="dentalChartForm-submitButton" onClick={handleSubmit}>Submit Dental Chart</button>
     </div>
   );
 };

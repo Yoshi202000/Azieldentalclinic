@@ -35,8 +35,6 @@ can view all the information from both clinic
 
     - can edit content of the clinic
         - only for the super admin
-
-    - View FeedBack(done)
  
 - admin dashboard per clinic
 can view all the information from own and all patient information for both clinic patient
@@ -62,8 +60,6 @@ own clinic == token information
     - no edit schedule becasue admin is not doctor
         - add/remove admin/doctor own clinic 
         - can only choose from own clinic as a admin of the clinic
-
-    - View FeedBack (done)
 
 DOCTOR DASHBOARD
 

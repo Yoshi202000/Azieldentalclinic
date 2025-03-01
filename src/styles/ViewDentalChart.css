@@ -1,11 +1,13 @@
-.view-dental-chart {
+.dentalChart-view {
     max-width: 600px;
+    height: 700px;
     margin: auto;
     padding: 20px;
     border: 1px solid #ddd;
     border-radius: 8px;
     background: #f9f9f9;
     text-align: center;
+    overflow: scroll;
 }
 
 input {

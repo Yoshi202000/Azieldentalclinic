@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import '../styles/ViewDentalChart.css';
 
 const ViewDentalChart = () => {
     const [email, setEmail] = useState('');
@@ -88,13 +89,26 @@ const ViewDentalChart = () => {
                     <h3>Select a Date</h3>
                     <div className="dentalChart-date-list">
                         {patientData.adultDentalChart && (
-                            <button className={`dentalChart-date-button ${selectedDate === patientData.adultDentalChart.date ? 'active' : ''}`} onClick={() => handleDateSelection(patientData.adultDentalChart.date)}>
-                                {patientData.adultDentalChart.date}
-                            </button>
+                            <button 
+                            className={`dentalChart-date-button ${selectedDate === patientData.adultDentalChart.date ? 'active' : ''}`} 
+                            onClick={() => handleDateSelection(patientData.adultDentalChart.date)}
+                        >
+                            {new Date(patientData.adultDentalChart.date).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            })}
+                        </button>
                         )}
                         {patientData.childDentalChart && (
-                            <button className={`dentalChart-date-button ${selectedDate === patientData.childDentalChart.date ? 'active' : ''}`} onClick={() => handleDateSelection(patientData.childDentalChart.date)}>
-                                {patientData.childDentalChart.date}
+                            <button className={`dentalChart-date-button ${selectedDate === patientData.childDentalChart.date ? 'active' : ''}`} 
+                            onClick={() => handleDateSelection(patientData.childDentalChart.date)}
+                            >
+                                {new Date(patientData.childDentalChart.date).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            })}
                             </button>
                         )}
                     </div>
