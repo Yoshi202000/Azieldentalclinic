@@ -61,7 +61,7 @@ router.post('/mark-notification-read', async (req, res) => {
 
   try {
     let notification;
-    if (notificationType === 'admin') {
+    if (notificationType === 'doctor' ||'admin') {
       notification = await AdminNotification.findByIdAndUpdate(
         notificationId,
         { isRead: true },

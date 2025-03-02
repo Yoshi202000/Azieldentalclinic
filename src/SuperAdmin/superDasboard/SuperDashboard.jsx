@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import '../../admin/dashboard/Dashboard.css';
 import SuperPatientsInformation from '../superComponent/SuperPatientsInformation';
 import SuperViewAppointment from '../superComponent/SuperViewAppointment';
-import SuperCompletedAppointment from '../superComponent/superComponent/SuperCompletedAppointment';
+import SuperCompletedAppointment from '../superComponent/SuperCompletedAppointment';
 import SuperViewFeedback from '../superComponent/SuperViewFeedback';
 import SuperApproveToAdmin from '../superComponent/SuperApproveToAdmin';
-import AccountSettings from '../superComponent/SuperAccountSettings';
-import SuperAdminSales from '../../superComponent/SuperAdminSales';
+import AccountSettings from '../../component/profile/AccountSettings';
+import SuperAdminSales from '../superComponent/SuperAdminSales';
 import DrawerComponent from '../../component/Drawers';
 import Footer from '../../component/Footer';
 import Chat from '../../component/chat';
 import SuperDoctorSignup from '../superComponent/SuperAddUser';
-import SuperViewAdminDoctor from '../../component/admin/ViewAdminDoctor';
+import SuperViewAdminDoctor from '../superComponent/SuperViewAdminDoctor';
 import SuperEditContent from '../superComponent/SuperEditContent'
 
 function SuperDashboard() {
@@ -84,9 +84,6 @@ function SuperDashboard() {
             onClick={() => setActiveComponent('ViewAdminDoctor')}
           >
             View Admin Doctor
-          </button>
-          <button>
-            edit schedule
           </button>
           
           {/* <button

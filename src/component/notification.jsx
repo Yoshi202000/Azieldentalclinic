@@ -40,7 +40,7 @@ function Notification() {
 
       // Fetch notifications based on user role
       let notificationsResponse;
-      if (userData.user.role.toLowerCase() === 'admin') {
+      if (userData.user.role.toLowerCase() === 'doctor' || 'admin') {
         notificationsResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin-notifications`, {          headers: { Authorization: `Bearer ${token}` }
         });
         
@@ -56,7 +56,7 @@ function Notification() {
       }));
 
       // Filter patient notifications by user email
-      if (userData.user.role.toLowerCase() !== 'admin') {
+      if (userData.user.role.toLowerCase() !== 'doctor' || 'admin') {
         roleSpecificNotifications = roleSpecificNotifications.filter(
           notification => notification.userEmail === userData.user.email
         );

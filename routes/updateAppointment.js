@@ -4,10 +4,21 @@ import Appointment from '../models/Appointment.js';
 const router = express.Router();
 
 router.put('/updateAppointment/:id', async (req, res) => {
+  console.log('appointment update route hit');
   try {
-    const { id } = req.params;
-    const { appointmentType, appointmentDate, appointmentTimeFrom } = req.body;
+    console.log('try route hit');
 
+    const { id } = req.params;
+
+    //console.log check id is sent
+    console.log('id:', id);
+
+    const { appointmentType, appointmentDate, appointmentTimeFrom } = req.body;
+    
+    // console check appointment type is sent and 
+    console.log (appointmentType, appointmentDate, appointmentTimeFrom);
+    
+    
     // Fetch the current appointment
     const currentAppointment = await Appointment.findById(id);
 
@@ -31,7 +42,6 @@ router.put('/updateAppointment/:id', async (req, res) => {
       },
       { new: true }
     );
-
     res.json(updatedAppointment);
   } catch (error) {
     console.error('Error updating appointment:', error);

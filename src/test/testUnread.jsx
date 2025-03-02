@@ -58,9 +58,9 @@ function TestUnread() {
         const data = await response.json();
 
         if (loggedInUser.role === 'patient') {
-          const adminUsers = data.filter(user => user.role === 'admin');
+          const adminUsers = data.filter(user => user.role === 'admin' || user.role === 'doctor');
           setUsers(adminUsers);
-        } else if (loggedInUser.role === 'admin') {
+        } else if (loggedInUser.role === 'admin' || loggedInUser.role === 'doctor') {
           const patientUsers = data.filter(user => user.role === 'patient');
           setUsers(patientUsers);
         }

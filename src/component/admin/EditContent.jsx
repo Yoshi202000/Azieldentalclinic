@@ -131,7 +131,7 @@ const EditContent = () => {
       const updatedServices = [...prevServices];
       updatedServices[index] = {
         ...updatedServices[index],
-        image: file,
+        image: file, // Store the file temporarily
         imageUpdated: true, // Mark image as updated
       };
   
@@ -168,7 +168,6 @@ const EditContent = () => {
   }
 
   // Handles form submission by sending clinic data to the backend.
-  // Prepares and sends a FormData object containing clinic and service information.
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Submitting form data');
@@ -200,11 +199,12 @@ const EditContent = () => {
   
       // Check if image was updated
       if (service.imageUpdated && !(typeof service.image === 'string')) {
-        // Append new image if updated
-        formData.append(`service_image_${index}`, service.image);
+        // Change the filename before appending
+        const newFileName = `service_image_${index}.png`; // Change the filename as needed
+        formData.append(`service_image_${index}`, service.image, newFileName); // Append new image with new filename
       } else if (!service.imageUpdated && typeof service.image === 'string') {
-        // Send a flag to preserve the existing image
-        formData.append(`service_keep_existing_image_${index}`, 'true');
+        // Use the existing image path
+        formData.append(`service_image_${index}`, service.image); // Append existing image path
       } else {
         console.log(`No image provided for service at index ${index}`);
       }

@@ -34,6 +34,7 @@ import UpdateFee from './test/UpdateFee.jsx';
 import DoctorDashboard from './doctor/DoctorDashboard/DoctorDashboard.jsx';
 import DentalChartForm from './component/DentalChart.jsx';
 import ViewDentalChart from './component/ViewDentalChart.jsx';
+import SuperDashboard from './SuperAdmin/superDasboard/SuperDashboard.jsx';
 
 
 
@@ -48,8 +49,6 @@ const ProtectedVerificationRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 };
-
-
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -67,6 +66,7 @@ createRoot(document.getElementById('root')).render(
         <Route path='/fee' element={<UpdateFee/>}/>
         <Route path='/dentalchart' element={<DentalChartForm/>}/>
         <Route path='/viewdental' element={<ViewDentalChart/>}/>
+        
 
 
 
@@ -165,6 +165,15 @@ createRoot(document.getElementById('root')).render(
           element={
             <ProtectedRoute allowedRoles={["doctor"]}>
               <DoctorDashboard />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/superDashboard" 
+          element={
+            <ProtectedRoute allowedRoles={["superAdmin"]}>
+              <SuperDashboard />
             </ProtectedRoute>
           } 
         />

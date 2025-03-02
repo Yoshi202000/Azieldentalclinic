@@ -6,13 +6,15 @@ import AppointmentStepTwo from '../appointmentPage/AppointmentStepTwo';
 import { generateAvailableDates } from '../../utils/appDate';
 import UpdateFee from '../../test/UpdateFee.jsx';
 import './ViewAppointment.css';
+import DentalChartForm from '../../component/DentalChart.jsx';
 
 function ViewAppointment() {
+  const [user, setUser] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [bookedAppointments, setBookedAppointments] = useState([]);
 
-  const [user, setUser] = useState(null);
   const [editingAppointment, setEditingAppointment] = useState(null);
   const [showTypeChange, setShowTypeChange] = useState(false);
   const [showDateTimeChange, setShowDateTimeChange] = useState(false);
@@ -20,22 +22,47 @@ function ViewAppointment() {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTimeFrom, setSelectedTimeFrom] = useState('');
   const [availableDates, setAvailableDates] = useState({});
-  const [bookedAppointments, setBookedAppointments] = useState([]);
   const [isContainerExpanded, setIsContainerExpanded] = useState(false);
   const [nameFilter, setNameFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [dateSortOrder, setDateSortOrder] = useState('');
+  const [doctors, setDoctors] = useState([]);
+
   const editSectionRef = useRef(null);
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
   const appointmentsPerPage = 5;
 
+  const [services, setServices] = useState([]); // State to hold services data
+
+
   const [editingAppointmentId, setEditingAppointmentId] = useState(null);
   const [showUpdateFee, setShowUpdateFee] = useState(false);
+  const [showDentalChart, setShowDentalChart] = useState(false);
+  const [dentalChartData, setDentalChartData] = useState({ firstName: '', lastName: '', email: '' });
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [schedules, setSchedules] = useState([]);
+  const [selectedSchedule, setSelectedSchedule] = useState(null);
+  const [selectedSlot, setSelectedSlot] = useState(null);
+
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    dob: '',
+    phoneNumber: '',
+    bookedClinic: '', // Ensure this is initialized
+    email: '',
+    selectedDoctor: '',
+    doctorEmail: '',
+    doctorFirstName: '',
+    doctorLastName: '',
+    appointmentTimeFrom: '',
+  });
 
   useEffect(() => {
+    fetchDoctors();
+    fetchServicesData();
     const token = localStorage.getItem('token');
     if (!token) {
       alert('Please log in to continue.');
@@ -46,7 +73,21 @@ function ViewAppointment() {
     fetchUserInfo(token);
     const dates = generateAvailableDates();
     setAvailableDates(dates);
+    fetchSchedules();
   }, [navigate]);
+
+  const fetchServicesData = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
+      if (response.data && response.data.services) {
+        setServices(response.data.services);
+      } else {
+        console.error('Failed to fetch services data');
+      }
+    } catch (error) {
+      console.error('Error fetching services data:', error);
+    }
+  }; 
 
   const fetchUserInfo = async (token) => {
     try {
@@ -69,6 +110,40 @@ function ViewAppointment() {
         navigate('/login');
       }
     }
+  };
+
+  const fetchDoctors = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/doctor-info`);
+      if (response.status === 200) {
+        setDoctors(response.data.doctors);
+      } else {
+        console.error('Failed to fetch doctors');
+      }
+    } catch (error) {
+      console.error('Error fetching doctors:', error);
+    }
+  };
+
+  const fetchSchedules = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/all-schedules`);
+      setSchedules(response.data);
+    } catch (err) {
+      console.error('Error fetching schedules:', err);
+      setError('Failed to fetch schedules');
+    }
+  };
+  
+  const handleComplete = (appointment) => {
+    setSelectedAppointment(appointment);
+    const { patientFirstName, patientLastName, patientEmail } = appointment;
+    setDentalChartData({ 
+      firstName: patientFirstName, 
+      lastName: patientLastName, 
+      email: patientEmail 
+    });
+    setShowDentalChart(true);
   };
 
   const fetchAppointments = async (token, clinic) => {
@@ -101,14 +176,16 @@ function ViewAppointment() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      const updatedAppointment = response.data;
+
       setAppointments(prevAppointments =>
         prevAppointments.map(app =>
-          app._id === response.data._id ? { ...app, appointmentStatus: response.data.appointmentStatus } : app
+          app._id === updatedAppointment._id ? { ...app, appointmentStatus: updatedAppointment.appointmentStatus } : app
         )
       );
 
       if (newStatus === 'Completed') {
-        setSelectedAppointment(response.data);
+        setSelectedAppointment(updatedAppointment);
         setShowUpdateFee(true);
       }
     } catch (err) {
@@ -149,6 +226,7 @@ function ViewAppointment() {
   };
 
   const handleUpdateAppointment = async () => {
+    
     try {
       const token = localStorage.getItem('token');
       const updatedAppointment = {
@@ -241,6 +319,57 @@ function ViewAppointment() {
     return timeSlots;
   };
 
+  const updateBookedAppointment = async (appointmentId, newDate, newTimeFrom) => {
+    if (!newDate || !newTimeFrom) {
+      alert("Please select a valid date and time.");
+      return;
+    }
+  
+    try {
+      const token = localStorage.getItem('token');
+      
+      console.log("Updating Appointment:", { appointmentId, newDate, newTimeFrom });
+  
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/updateAppointment/${appointmentId}`,
+        {
+          appointmentDate: newDate,
+          appointmentTimeFrom: newTimeFrom,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (response.status === 200) {
+        setAppointments(prevAppointments =>
+          prevAppointments.map(app =>
+            app._id === appointmentId
+              ? { ...app, appointmentDate: newDate, appointmentTimeFrom: newTimeFrom }
+              : app
+          )
+        );
+        alert('Appointment updated successfully!');
+      } else {
+        alert('Failed to update appointment.');
+      }
+    } catch (error) {
+      console.error('Error updating appointment:', error);
+      alert('An error occurred while updating the appointment.');
+    }
+  };
+  
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+    }));
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
@@ -303,6 +432,9 @@ function ViewAppointment() {
                         <button className="AdminAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}
                         </button>
+                        <button className="AdminAppointmentButton" onClick={() => handleComplete(appointment)}>
+                          Create Dental Record
+                        </button>
                       </td>
                     </tr>
                     {editingAppointmentId === appointment._id && (
@@ -330,10 +462,14 @@ function ViewAppointment() {
 
                             <div className="AdminAppointmentEditContent">
                               {showTypeChange && (
-                                <AppointmentStepOne
-                                  selectedCard={selectedCard}
-                                  handleCardSelect={handleCardSelect}
-                                />
+                                <AppointmentStepOne 
+                                formData={formData}
+                                handleInputChange={handleInputChange}
+                                selectedCard={selectedCard} 
+                                handleCardSelect={handleCardSelect}
+                                services={services}
+                                doctors={doctors}
+                              />
                               )}
 
                               {showDateTimeChange && (
@@ -381,6 +517,14 @@ function ViewAppointment() {
         <button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
       </div>
       {showUpdateFee && <UpdateFee selectedAppointment={selectedAppointment} onClose={() => setShowUpdateFee(false)} />}
+      {showDentalChart && (
+        <DentalChartForm 
+          initialFirstName={dentalChartData.firstName}
+          initialLastName={dentalChartData.lastName}
+          initialEmail={dentalChartData.email}
+          onClose={() => setShowDentalChart(false)}
+        />
+      )}
     </div>
   );
 }

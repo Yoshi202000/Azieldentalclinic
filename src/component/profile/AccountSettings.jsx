@@ -17,11 +17,11 @@ const AccountSettings = () => {
     clinic: '',
     greetings: '',
     description: '',
-    services: [], // Initialize services as an empty array
+    services: [],
   });
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
-  const [availableServices, setAvailableServices] = useState([]); // Initialize as an empty array
+  const [availableServices, setAvailableServices] = useState([]);
 
   useEffect(() => {
     const fetchServicesData = async () => {
@@ -52,9 +52,7 @@ const AccountSettings = () => {
       try {
         const verifyTokenResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
           method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
           credentials: 'include',
         });
 
@@ -63,19 +61,7 @@ const AccountSettings = () => {
         }
 
         const verifyTokenData = await verifyTokenResponse.json();
-
-        const {
-          firstName,
-          lastName,
-          email,
-          phoneNumber,
-          dob,
-          role,
-          clinic,
-          greetings,
-          description,
-          services,
-        } = verifyTokenData.user || {};
+        const { firstName, lastName, email, phoneNumber, dob, role, clinic, greetings, description, services } = verifyTokenData.user || {};
 
         setFormData({
           firstName,
@@ -87,7 +73,7 @@ const AccountSettings = () => {
           clinic,
           greetings: greetings || '',
           description: description || '',
-          services: Array.isArray(services) ? services.map((service) => service.name) : [],
+          services: Array.isArray(services) ? services.map(service => service.name) : [],
         });
 
         setLoading(false);
@@ -103,10 +89,7 @@ const AccountSettings = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleServiceSelect = (serviceName) => {
@@ -125,32 +108,31 @@ const AccountSettings = () => {
     setIsError(false);
 
     const token = localStorage.getItem('token');
-    console.log('Submitting with token:', token); // Debug log
+    console.log('Submitting with token:', token);
 
     const requestData = {
       doctorInformation: {
         doctorGreeting: formData.greetings,
         doctorDescription: formData.description,
-        services: formData.services
-      }
+        services: formData.services.filter(service => availableServices.some(s => s.name === service)),
+      },
     };
 
-    console.log('Sending request with data:', requestData); // Debug log
+    console.log('Sending request with data:', requestData);
 
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/update-doctor-information`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(requestData)
+        body: JSON.stringify(requestData),
       });
 
-      console.log('Response status:', response.status); // Debug log
-
+      console.log('Response status:', response.status);
       const data = await response.json();
-      console.log('Response data:', data); // Debug log
+      console.log('Response data:', data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Failed to update information');
@@ -161,7 +143,7 @@ const AccountSettings = () => {
           ...prev,
           greetings: data.user.doctorGreeting,
           description: data.user.doctorDescription,
-          services: data.user.services.map(service => service.name)
+          services: data.user.services.map(service => service.name),
         }));
       }
 
@@ -175,78 +157,49 @@ const AccountSettings = () => {
     }
   };
 
-  // Only show doctor-specific fields if user is a doctor
   const isDoctorRole = formData.role === 'doctor';
+  const isadmin = formData.role === 'admin'|| formData.role === 'doctor' || formData.role === 'superAdmin';
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="account-settings-container">
       <h1>Profile Information</h1>
       {message && <p className={isError ? 'error-message' : 'success-message'}>{message}</p>}
 
-      <label htmlFor="firstName">First Name:</label>
-      <input type="text" name="firstName" value={formData.firstName || ''} onChange={handleInputChange}   readOnly
- />
+      <label>First Name:</label>
+      <input type="text" value={formData.firstName} readOnly />
 
-      <label htmlFor="lastName">Last Name:</label>
-      <input type="text" name="lastName" value={formData.lastName || ''} onChange={handleInputChange}  readOnly
- />
+      <label>Last Name:</label>
+      <input type="text" value={formData.lastName} readOnly />
 
-      <label htmlFor="email">Email:</label>
-      <input type="email" name="email" value={formData.email || ''} onChange={handleInputChange}  readOnly
- />
-
+      <label>Email:</label>
+      <input type="email" value={formData.email} readOnly />
+      {isadmin && (<>
+          <label>Role:</label>
+            <input type="role" value={formData.role} readOnly />
+            </>)}
       {isDoctorRole && (
         <>
-          <label htmlFor="role">Role:</label>
-          <input type="text" name="role" value={formData.role || ''} onChange={handleInputChange}   readOnly
-          />
-
-          <label htmlFor="clinic">Clinic:</label>
-          <input type="text" name="clinic" value={formData.clinic || ''} onChange={handleInputChange}   readOnly
-          />
+          <label>Clinic:</label>
+          <input type="text" value={formData.clinic} readOnly />
 
           <form onSubmit={handleSubmit}>
-            <label htmlFor="greetings">Greetings:</label>
-            <input
-              type="text"
-              name="greetings"
-              value={formData.greetings || ''}
-              onChange={(e) => setFormData({ ...formData, greetings: e.target.value })}
-            />
+            <label>Greetings:</label>
+            <input type="text" name="greetings" value={formData.greetings} onChange={handleInputChange} />
 
-            <label htmlFor="description">Description:</label>
-            <input
-              type="text"
-              name="description"
-              value={formData.description || ''}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            />
+            <label>Description:</label>
+            <input type="text" name="description" value={formData.description} onChange={handleInputChange} />
+            
+            <h3>Select Services</h3>
+            {availableServices.map((service, index) => (
+              <div key={index}>
+                <input type="checkbox" checked={formData.services.includes(service.name)} onChange={() => handleServiceSelect(service.name)} />
+                <label>{service.name}</label>
+              </div>
+            ))}
 
-            <div className="services-container">
-              <h3>Select Services</h3>
-              {availableServices && availableServices.length > 0 ? (
-                availableServices.map((service, index) => (
-                  <div key={index}>
-                    <input
-                      type="checkbox"
-                      checked={formData.services.includes(service.name)}
-                      onChange={() => handleServiceSelect(service.name)}
-                    />
-                    <label>{service.name}</label>
-                  </div>
-                ))
-              ) : (
-                <p>No services available</p>
-              )}
-            </div>
-
-            <button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Submitting...' : 'Submit'}
-            </button>
+            <button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Submitting...' : 'Submit'}</button>
           </form>
         </>
       )}

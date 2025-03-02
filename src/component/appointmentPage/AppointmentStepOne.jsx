@@ -75,7 +75,7 @@ const AppointmentStepOne = ({
             <Card
               name={service.name}
               description={service.description}
-              image={service.image ? `data:image/png;base64,${service.image}` : null}
+              image={service.image ? `src${service.image}` : null}
               isSelected={selectedCard === service.name}
               onClick={() => {
                 handleCardSelect(service.name);

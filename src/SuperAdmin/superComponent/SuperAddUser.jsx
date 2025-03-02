@@ -180,4 +180,4 @@ function SuperDoctorSignup() {
     );
 }
 
-export default DoctorSignup;
+export default SuperDoctorSignup;

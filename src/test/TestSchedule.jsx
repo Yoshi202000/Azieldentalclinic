@@ -127,10 +127,17 @@ const TestSchedule = () => {
 
         if (response.status === 200) {
           setSchedule(response.data); // Set the fetched schedules to state
+        } else {
+          setErrorMessage('Failed to fetch schedules.');
         }
       } catch (error) {
         console.error('Error fetching schedules:', error);
-        setErrorMessage('Failed to fetch schedules: ' + (error.response?.data?.message || error.message));
+        // Check if the error response exists and log the message
+        if (error.response) {
+          setErrorMessage('Failed to fetch schedules: ' + (error.response.data.message || error.message));
+        } else {
+          setErrorMessage('Failed to fetch schedules: ' + error.message);
+        }
       } finally {
         setLoading(false);
       }

@@ -6,7 +6,7 @@ import { authenticateUser } from './middleware/authMiddleware.js';
 const router = express.Router();
 
 /**
- * Route to create or update a dental chart for an adult or child
+ * Route to create a new dental chart for an adult or child
  * Protected by authentication middleware
  */
 router.post('/add-dental-chart', authenticateUser, async (req, res) => {
@@ -26,18 +26,7 @@ router.post('/add-dental-chart', authenticateUser, async (req, res) => {
 
         let dentalChartModel = type === 'adult' ? AdultDentalChart : ChildDentalChart;
 
-        // Check if a record already exists for this user
-        let existingChart = await dentalChartModel.findOne({ email });
-
-        if (existingChart) {
-            // Update existing record
-            existingChart.teeth = teeth;
-            existingChart.date = date || existingChart.date;
-            await existingChart.save();
-            return res.status(200).json({ message: `${type} dental chart updated successfully`, dentalChart: existingChart });
-        }
-
-        // Create a new dental chart record
+        // Create a new dental chart record (even if the same email exists)
         const newDentalChart = new dentalChartModel({
             firstName,
             lastName,
@@ -48,7 +37,6 @@ router.post('/add-dental-chart', authenticateUser, async (req, res) => {
 
         await newDentalChart.save();
         res.status(201).json({ message: `${type} dental chart added successfully`, dentalChart: newDentalChart });
-
     } catch (error) {
         console.error('Error processing dental chart:', error);
         res.status(500).json({ message: 'An error occurred while processing the dental chart' });

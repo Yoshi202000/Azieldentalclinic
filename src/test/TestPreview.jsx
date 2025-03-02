@@ -65,8 +65,8 @@ const TestPreview = () => {
               <div>
                 {/* Displaying the image only if service.image is a valid string */}
                 <img
-                  src={`data:image/jpeg;base64,${service.image}`}
-                  alt={`Service ${index + 1}`}
+              image={service.image ? `src${service.image}` : null}
+              alt={`Service ${index + 1}`}
                   style={{ maxWidth: '200px', maxHeight: '200px' }}
                 />
               </div>

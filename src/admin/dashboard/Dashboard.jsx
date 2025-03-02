@@ -84,9 +84,6 @@ function Dashboard() {
           >
             View Admin Doctor
           </button>
-          <button>
-            edit schedule
-          </button>
           
            <button
             className={activeComponent === 'AdminSales' ? 'active' : ''}

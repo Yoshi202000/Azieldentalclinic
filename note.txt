@@ -1,4 +1,4 @@
-doctor account settings have error with pushing the services array that cannot remove all services from mongodb before updating the services
+Privacy Policy before sign up
 
 I have to create an admin, doctor, superadmin dashboard (done but need to fix the content)
 super admin === no filter
@@ -10,10 +10,7 @@ statistic(AdminFee/SuperAdminFee) need to filter by services from available clin
 
 can view all the information from both clinic 
 
-    - view profile
-        - no need to have an services array so hidden
-        - for the role, only the patient cannot see their role
-        
+
     - view/edit appointment 
         - done for filtering only
         - applied the UpdateFee function but need check to see if really applied
@@ -68,8 +65,7 @@ own clinic == from token information
     - viewAppointment filter by own clinic for own clinic appointment
         - with health record, and fees for appointmetn
 
-    - view profile
-        - has same error  as line 1
+    - view profile(done)
 
     - view/edit appointment for own appointment 
         - done for filtering only not yet for health record 
@@ -85,12 +81,14 @@ own clinic == from token information
         - need optimization
 
     - edit schedule is not yet inputted
-        - ez
+        - not ez
 
     - View FeedBack done
 
 notification via email and navigation bar navigation bar is done for email notification is done
- - next problem is to send the notification reminder with delay of 1 month 
+    - next problem is to send the notification reminder with delay of 1 month 
+    - if the reminder is on then check the date
+
 
 more convenient manage scheduling for doctor
 
@@ -103,10 +101,25 @@ apply the fee function to doctor, and admin dashboard
     - need an health record before proceed to fee
 
 
-notification error that the logic cannot fetch the user role. if statement is not identifying the user role
+
+
+
+
+on process
+notification error that the logic cannot fetch the user role. if statement is not identifying the user role(wag nalang pansinin)
+
+
+
+
+
+
+
+
+
 
 
 CREATE NEW FUNCTION 
+need check by clinic
 dental health record for every appointment
     - start with schema for both child and adult tooth chart (done?)
     - next is to create an backend that can push both child and adult tooth chart 

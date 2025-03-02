@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/DentalChart.css';
 
-const DentalChartForm = () => {
+const DentalChartForm = ({ initialFirstName = '', initialLastName = '', initialEmail = '', onClose }) => {
   const [patientType, setPatientType] = useState('adult'); // Default to adult
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
+    firstName: initialFirstName,
+    lastName: initialLastName,
+    email: initialEmail,
     date: new Date().toISOString().split('T')[0], // Default to today's date
     teeth: {},
   });
@@ -79,6 +79,7 @@ const DentalChartForm = () => {
       });
 
       alert(response.data.message);
+      onClose(); // Close the DentalChartForm after successful submission
     } catch (error) {
       console.error('Error saving dental chart:', error);
       alert('Failed to save dental chart. Please try again.');
@@ -92,6 +93,16 @@ const DentalChartForm = () => {
       teeth: initializeTeethStatus(), // Set default status to Healthy
     }));
   }, [patientType]);
+
+  // Use useEffect to update formData when initial props change
+  useEffect(() => {
+    setFormData((prevData) => ({
+      ...prevData,
+      firstName: initialFirstName,
+      lastName: initialLastName,
+      email: initialEmail,
+    }));
+  }, [initialFirstName, initialLastName, initialEmail]);
 
   return (
     <div className="dentalChartForm-container">

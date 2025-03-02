@@ -40,8 +40,9 @@ function App() {
             <Card
               key={index}
               name={service.name}
-              description={service.description}
-              image={service.image ? `data:image/jpeg;base64,${service.image}` : null}
+              description={service.image}
+              image={service.image ? `src${service.image}` : null}
+
             />
           ))}
         </div>

@@ -38,6 +38,7 @@ router.put('/update-doctor-information', authenticateUser, async (req, res) => {
       console.error('Error updating doctor information:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
+    
   });
   
   

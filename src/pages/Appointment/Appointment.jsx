@@ -65,7 +65,7 @@ const Appointment = () => {
     fetchDoctors();
   }, []);
 
-  const fetchServicesData = async () => {
+ const fetchServicesData = async () => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
       if (response.data && response.data.services) {
@@ -76,7 +76,7 @@ const Appointment = () => {
     } catch (error) {
       console.error('Error fetching services data:', error);
     }
-  };
+  }; 
 
   const fetchBookedAppointments = async () => {
     try {

@@ -36,6 +36,9 @@ import clinicRoutes from './routes/clinicRoutes.js';
 
 import doctorsDescriptionRoutes from './routes/doctorsDescription.js';
 
+// test routes
+import MonthlyReminder from './routes/monthlyReminder.js';
+
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -104,6 +107,10 @@ app.use('/', doctorsDescriptionRoutes);  // Mount at root level
 app.use('/appointmentFee', appointmentFee);
 app.use('/', clinicRoutes);
 app.use('/', DentalChartForm);
+
+// test route for monthly reminder
+app.use('/', MonthlyReminder);
+
 
 // Load SSL certificates for HTTPS
 // const server = https.createServer({

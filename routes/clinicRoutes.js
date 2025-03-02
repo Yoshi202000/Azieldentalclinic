@@ -51,7 +51,8 @@ router.get('/clinic', async (req, res) => {
     if (clinic) {
       clinic.services = clinic.services.map(service => ({
         ...service.toObject(),
-        image: service.image ? `${req.protocol}://${req.get('host')}${service.image}` : null, // Full image URL
+        //image: service.image ? `${req.protocol}://${req.get('host')}${service.image}` : null, // Full image URL
+        image: service.image ? `${service.image}` : null, 
       }));
     }
     console.log('Fetched clinic data:', clinic);
@@ -160,7 +161,7 @@ router.put('/clinic', upload.any(), async (req, res) => {
       clinic.services.push({
         name: req.body[`service_name_${i}`],
         description: req.body[`service_description_${i}`],
-        image: serviceImage ? `/uploads/${filename}` : undefined, // Save the relative path
+        image: `/uploads/${filename}`, // Save the relative path
         clinic: req.body[`service_clinic_${i}`] || 'both',
       });
     }

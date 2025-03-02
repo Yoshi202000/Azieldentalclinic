@@ -4,6 +4,8 @@ import Schedule from "../models/ManageSchedule.js";
 
 const router = express.Router();
 
+
+
 // Generate and add daily slots for a doctor
 router.post('/schedule/generate', authenticateUser, async (req, res) => {
   try {
@@ -28,17 +30,24 @@ router.post('/schedule/generate', authenticateUser, async (req, res) => {
   }
 });
 
+
+
 // Get all schedules
 router.get('/schedules', authenticateUser, async (req, res) => {
   try {
     const userEmail = req.user.email; // Get the email from the verified token
     const schedules = await Schedule.find({ email: userEmail }); // Filter schedules by email
+    if (!schedules) {
+      return res.status(404).json({ message: 'No schedules found for this user.' });
+    }
     res.status(200).json(schedules);
   } catch (error) {
     console.error('Error fetching schedules:', error);
     res.status(500).json({ message: 'Error fetching schedules.', error: error.message });
   }
 });
+
+
 
 // Update a specific slot's status
 router.put('/schedule/:id/slot', async (req, res) => {
@@ -69,6 +78,9 @@ router.put('/schedule/:id/slot', async (req, res) => {
   }
 });
 
+
+
+
 // Delete a schedule (entire day)
 router.delete('/schedule/:id', async (req, res) => {
   try {
@@ -84,6 +96,9 @@ router.delete('/schedule/:id', async (req, res) => {
     res.status(500).json({ message: 'Error deleting schedule.', error });
   }
 });
+
+
+
 
 // Create a new schedule (POST route)
 router.post('/schedule', authenticateUser, async (req, res) => {
@@ -114,6 +129,8 @@ router.post('/schedule', authenticateUser, async (req, res) => {
   }
 });
 
+
+
 // Fetch slots for a specific date
 router.get('/schedule/:date', async (req, res) => {
   try {
@@ -130,6 +147,8 @@ router.get('/schedule/:date', async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch slots.' });
   }
 });
+
+
 
 // Fetch all taken slots
 router.get('/slots/taken', async (req, res) => {
@@ -157,6 +176,8 @@ router.get('/slots/taken', async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch taken slots.' });
   }
 });
+
+
 
 // Bulk generate slots for multiple days
 router.post('/schedule/bulk-generate', authenticateUser, async (req, res) => {
@@ -198,6 +219,8 @@ router.post('/schedule/bulk-generate', authenticateUser, async (req, res) => {
   }
 });
 
+
+
 // Update schedule endpoint
 router.put('/schedule/update', async (req, res) => {
   try {
@@ -234,6 +257,8 @@ router.put('/schedule/update', async (req, res) => {
   }
 });
 
+
+
 router.get('/user/schedules', authenticateUser, async (req, res) => {
   try {
     console.log('Authenticated user:', req.user); // Log user info
@@ -246,6 +271,7 @@ router.get('/user/schedules', authenticateUser, async (req, res) => {
   }
 });
 
+// Update a specific schedule slot status
 router.patch('/schedule/:id', authenticateUser, async (req, res) => {
   const { id } = req.params;
   const { slots } = req.body; // Expecting only the slots to be updated
@@ -276,6 +302,7 @@ router.patch('/schedule/:id', authenticateUser, async (req, res) => {
   }
 });
 
+
 // Fetch all schedules
 router.get('/all-schedules', async (req, res) => {
   try {
@@ -300,6 +327,7 @@ router.get('/all-schedules', async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch schedules', error: error.message });
   }
 });
+
 
 // Update a specific slot for a schedule
 router.patch('/schedule/:id/slot', async (req, res) => {
@@ -339,6 +367,7 @@ router.patch('/schedule/:id/slot', async (req, res) => {
     res.status(500).json({ message: error.message || 'Error updating slot' });
   }
 });
+
 
 // Update slot status
 router.put('/update-slot-status', authenticateUser, async (req, res) => {
