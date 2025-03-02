@@ -3,7 +3,7 @@ import FooterCol from './FooterCol';
 import '../styles/Footer.css';
 
 const AzielAddress = [
-  {name: "Aziel Dental Clinic", link: "//maps.app.goo.gl/7tzpcfthsECPe7n87"},
+  {name: "Aziel Dental Clinica", link: "//maps.app.goo.gl/7tzpcfthsECPe7n87"},
   {name: "Congressional Ave," , link: "//maps.app.goo.gl/7tzpcfthsECPe7n87"},
   {name: "Dasmariñas, 4115 Cavite" , link: "//maps.app.goo.gl/7tzpcfthsECPe7n87"},
 
@@ -27,7 +27,7 @@ const Footer = () => {
             <div className="Footerontainer">
                 <div className="row">
                     <FooterCol key={1} menuTitle="Services" menuItems={services}/>
-                    <FooterCol key={2} menuTitle="Address for Aziel Dental Clinic" menuItems={AzielAddress}/> 
+                    <FooterCol key={2} menuTitle="Address for Aziel Dental Clinica" menuItems={AzielAddress}/> 
                     <FooterCol key={3} menuTitle="Address for Arts of Millennials Dental Clinic" menuItems={ArtsAddress}> 
 
                     </FooterCol>

@@ -62,6 +62,11 @@ router.get('/clinic', async (req, res) => {
       description: clinic?.description || null,
       address: clinic?.address || null,
       addressTwo: clinic?.addressTwo || null,
+      nameOnePhone: clinic?.nameOnePhone || null,
+      nameTwoPhone: clinic?.nameTwoPhone || null,
+      termsAndConditions: clinic?.termsAndConditions || null,
+
+
       clinicCatchLine: clinic?.clinicCatchLine || null,
       clinicHeader: clinic?.clinicHeader || null,
       loginMessage: clinic?.loginMessage || null,
@@ -101,6 +106,9 @@ router.put('/clinic', upload.any(), async (req, res) => {
     clinic.address = req.body.address || clinic.address;
     clinic.addressTwo = req.body.addressTwo || clinic.addressTwo;
     clinic.clinicCatchLine = req.body.clinicCatchLine || clinic.clinicCatchLine;
+    clinic.nameOnePhone = req.body.nameOnePhone || clinic.nameOnePhone;
+    clinic.nameTwoPhone = req.body.nameTwoPhone || clinic.nameTwoPhone;
+    clinic.termsAndConditions = req.body.termsAndConditions || clinic.termsAndConditions;
     clinic.clinicHeader = req.body.clinicHeader || clinic.clinicHeader;
     clinic.loginMessage = req.body.loginMessage || clinic.loginMessage;
     clinic.loginDescription = req.body.loginDescription || clinic.loginDescription;

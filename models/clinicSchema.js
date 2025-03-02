@@ -17,6 +17,11 @@ const clinicSchema = new mongoose.Schema({
   responsiveBg: {type: Buffer, required: true, default: null },
   clinicLogo: {type: Buffer, required: true, default: null},
 
+  nameOnePhone: { type: String, required: true, default: null },
+  nameTwoPhone: { type: String, required: true, default: null }, // New field
+
+  termsAndConditions: { type: String, required: true, default: null},
+
   // Additional fields based on new requirements
   clinicCatchLine: { type: String, required: true, default: null }, // Catch line for services page
 

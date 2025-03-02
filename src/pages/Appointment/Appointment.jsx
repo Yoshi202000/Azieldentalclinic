@@ -38,6 +38,8 @@ const Appointment = () => {
   const [doctors, setDoctors] = useState([]);
   const [selectedSchedule, setSelectedSchedule] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [nameOne, setNameOne] = useState(''); // State to hold nameOne
+  const [nameTwo, setNameTwo] = useState(''); // State to hold nameTwo
 
   const generateTimeSlots = (start, end) => {
     const timeSlots = [];
@@ -69,7 +71,11 @@ const Appointment = () => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
       if (response.data && response.data.services) {
+        const { nameOne, nameTwo } = response.data; // Fetch nameOne and nameTwo
         setServices(response.data.services);
+        setNameOne(nameOne); // Set nameOne in state
+        setNameTwo(nameTwo); // Set nameTwo in state
+        console.log('Fetched names:', nameOne, nameTwo); // Log the fetched names
       } else {
         console.error('Failed to fetch services data');
       }
@@ -236,6 +242,8 @@ const Appointment = () => {
             handleCardSelect={handleCardSelect}
             services={services}
             doctors={doctors}
+            nameOne={nameOne} // Pass nameOne as prop
+            nameTwo={nameTwo} // Pass nameTwo as prop
           />
         )}
         {step === 2 && (

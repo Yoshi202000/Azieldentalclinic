@@ -109,6 +109,8 @@ router.post('/appointments', authenticateToken, async (req, res) => {
       doctor,
     });
 
+    console.log(bookedClinic);
+
     const savedAppointment = await newAppointment.save();
 
     const adminNotification = new AdminNotification({

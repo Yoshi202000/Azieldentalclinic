@@ -1,131 +1,155 @@
-Privacy Policy before sign up
-
-I have to create an admin, doctor, superadmin dashboard (done but need to fix the content)
-super admin === no filter
-admin clinic filter
-doctor clinic filter or email filter
-statistic(AdminFee/SuperAdminFee) need to filter by services from available clinic services
-
-- superadmin dashboard
-
-can view all the information from both clinic 
+    Privacy Policy before sign up
 
 
-    - view/edit appointment 
-        - done for filtering only
-        - applied the UpdateFee function but need check to see if really applied
+    statistic(AdminFee/SuperAdminFee) need to filter by services from available clinic services
 
-    - view statistic 
-     - daily, weekly, monthly sales chart 
-     - for super admin need 2 new button that can see the both statistic for 2 clinic
-     - done for filtering with services
+    - superadmin dashboard
 
-    - view patient information 
-        - including patient basic information, health information, tooth chart information
+    can view all the information from both clinic 
 
-    - no edit schedule 
-        - becasue admin is not doctor
-        - should be hidden from super admin
 
-    - add/remove admin/doctor for both clinic
-        - can chooose from 2 clinic as a admin of the clinic
+        - view/edit appointment 
+            - step two is not working and for step one need 
+                to check if the clinic and doctor are updating correctly
 
-    - can edit content of the clinic
-        - only for the super admin
- 
-- admin dashboard per clinic
-can view all the information from own and all patient information for both clinic patient
-own clinic == token information 
+        - view statistic 
+        - for super admin need 2 new button that can see the both statistic for 2 clinic
 
-    - view profile
-        - no need to have an services array so hidden
+        - view patient information 
+            - health information, tooth chart information
+
+        - add/remove admin/doctor for both clinic
+            - can chooose from 2 clinic as a admin of the clinic
+
+        - can edit content of the clinic
+            - only for the super admin
+    
+    - admin dashboard per clinic
+    can view all the information from own and all patient information for both clinic patient
+    own clinic == token information 
+            
+        - view/edit appointment for own clinic appointment
+        - step two is not working and for step one need 
+                to check if the clinic and doctor are updating correctly
+
+        - add an fees
+            - should included with view/edit appointment
+
+        - view statistic for own clinic 
+            - daily, weekly, monthly sales chart for own clinic
+            - need to check
         
-    - view/edit appointment for own clinic appointment
-        - with adding record health record, and fees for appointmetn 
-        - done for filtering only
-        - applied the UpdateFee function but need check to see if really applied
-    - add an fees
-        - should included with view/edit appointment
+        - view patient information for both clinic 
+            - health information, tooth chart information
 
-    - view statistic for own clinic 
-        - daily, weekly, monthly sales chart for own clinic
-        - need to check
-    
-    - view patient information for both clinic 
-        - including patient basic information, health information, tooth chart information
+    DOCTOR DASHBOARD
 
-    - no edit schedule becasue admin is not doctor
-        - add/remove admin/doctor own clinic 
-        - can only choose from own clinic as a admin of the clinic
+    own clinic == from token information 
 
-DOCTOR DASHBOARD
+        - view/edit appointment for own appointment 
+            - step two is not working and for step one need 
+                to check if the clinic and doctor are updating correctly
+        
+        - view patient information for both clinic
+            - dental record left and health record 
 
-own clinic == from token information 
+        - edit schedule  
+            - need optimization
 
-    - viewAppointment filter by own clinic for own clinic appointment
-        - with health record, and fees for appointmetn
+        - edit schedule is not yet inputted
+            - not ez
 
-    - view profile(done)
+        - View FeedBack done
 
-    - view/edit appointment for own appointment 
-        - done for filtering only not yet for health record 
-        - applied the UpdateFee function but need check to see if really applied
-    
-    - add an fee per appointment
-        - DONE?
-    
-    - view patient information for both clinic
-        - dental record left
-
-    - edit schedule  
-        - need optimization
-
-    - edit schedule is not yet inputted
-        - not ez
-
-    - View FeedBack done
-
-notification via email and navigation bar navigation bar is done for email notification is done
-    - next problem is to send the notification reminder with delay of 1 month 
-    - if the reminder is on then check the date
+    notification via email and navigation bar navigation bar is done for email notification is done
+        - next problem is to send the notification reminder with delay of 1 month 
+        - if the reminder is on then check the date
 
 
-more convenient manage scheduling for doctor
+    more convenient manage scheduling for doctor
 
-appointmentStepTwo date and time from today done
- - next problem is to make unavailable the taken schedule for appoinemtn slot 
- - need to make two variable for slot to make it send from testStepTwo.jsx to appointment.jsx 
+    appointmentStepTwo
+    - next problem is to make unavailable the taken schedule for appoinemtn slot 
+    - need to make two variable for slot to make it send from testStepTwo.jsx to appointment.jsx 
 
-apply the fee function to doctor, and admin dashboard
-    - done for doctor 
-    - need an health record before proceed to fee
+    apply the fee function to doctor, and admin dashboard
+        - done for doctor 
+        - need an health record before proceed to fee
+
+
+    on process
+    notification error that the logic cannot fetch the user role. if statement is not identifying the user role(wag nalang pansinin)
 
 
 
 
 
 
-on process
-notification error that the logic cannot fetch the user role. if statement is not identifying the user role(wag nalang pansinin)
+    CREATE NEW FUNCTION 
+    need check by clinic
+    dental health record for every appointment
+        - start with schema for both child and adult tooth chart (done?)
+        - next is to create an backend that can push both child and adult tooth chart 
+        - next is to create a frontend that can pick if the patient is child or adult
+        - next is to create a frontend that is visible with image of the tooth and input detail of the tooth 
+        - next is to create a buton that can push the input detail to the mongodb 
+        - next is to create a backend that can pull the record of the health record of the patient with email address
+        - next is to create an page that can view the health record of the patient with the dashboard patient information
+        - next is to import to the edit appointment page that when the doctor update the appointment the dental record will be created at the same time 
 
 
 
 
+this will be appear in signup page  and this will be updatable by superadmin
+
+**Privacy Policy**
+
+**Effective Date:** [Insert Date]\
+**Last Updated:** [Insert Date]
+
+AzielDentalClinic ("we," "our," or "us") operates the website AzielDentalClinic.xyz. This Privacy Policy explains how we collect, use, store, and protect your personal information when you use our website.
+
+**1. Information We Collect**\
+When you book an appointment or interact with our website, we collect the following information:
+
+- **Personal Information:** First name, last name, email, phone number.
+- **Medical Information:** Health record, dental record (provided by you or recorded during appointments).
+- **Communication Data:** Chat history for security purposes.
+
+**2. How We Use Your Information**\
+We use your information for the following purposes:
+
+- To process and manage appointment bookings.
+- To maintain accurate medical and dental records.
+- To improve our services and website functionality.
+- To monitor chat history for security and support.
+- To comply with legal and regulatory obligations.
+
+**3. Data Sharing and Security**
+
+- **Who Has Access?** Your personal and medical information is only visible to authorized clinic administrators and doctors.
+- **Third-Party Links:** Our website may link to our official Facebook, Instagram, and Google Maps locations, but we do not share personal data with these platforms.
+- **Security Measures:** We implement security protocols to protect your information from unauthorized access, alteration, or loss.
+
+**4. Data Retention**\
+We retain your personal and medical records as required by law and clinic policies. If you wish to request data deletion, you may contact us.
+
+**5. Your Rights**\
+You have the right to:
+
+- Access and review your personal data.
+- Request corrections to inaccurate information.
+- Request deletion of your account and personal data (subject to legal retention requirements).
+- Opt-out of non-essential communications.
+
+**6. Changes to This Privacy Policy**\
+We reserve the right to update this Privacy Policy. Any changes will be posted on this page with an updated "Last Updated" date.
+
+**7. Contact Us**\
+If you have questions about this Privacy Policy or wish to exercise your rights, contact us at:
+
+- **Phone:** 09111111111
+- **Email:** [azieldentalclinic@gmail.com](mailto\:azieldentalclinic@gmail.com)
 
 
 
-
-
-
-
-CREATE NEW FUNCTION 
-need check by clinic
-dental health record for every appointment
-    - start with schema for both child and adult tooth chart (done?)
-    - next is to create an backend that can push both child and adult tooth chart 
-    - next is to create a frontend that can pick if the patient is child or adult
-    - next is to create a frontend that is visible with image of the tooth and input detail of the tooth 
-    - next is to create a buton that can push the input detail to the mongodb 
-    - next is to create a backend that can pull the record of the health record of the patient with email address
-    - next is to create an page that can view the health record of the patient with the dashboard patient information
-    - next is to import to the edit appointment page that when the doctor update the appointment the dental record will be created at the same time 

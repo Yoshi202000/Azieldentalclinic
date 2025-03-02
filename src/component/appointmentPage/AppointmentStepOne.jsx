@@ -7,7 +7,9 @@ const AppointmentStepOne = ({
   formData, 
   handleInputChange,
   services, // Services passed from Appointment component
-  doctors
+  doctors,
+  nameOne,
+  nameTwo
 }) => {
   // Add this function to filter services based on selected doctor
   const getFilteredServices = () => {
@@ -37,12 +39,18 @@ const AppointmentStepOne = ({
       <select 
         name="bookedClinic" 
         value={formData.bookedClinic} 
-        onChange={handleInputChange}
+        onChange={(e) => {
+          handleInputChange(e); // Call the existing input change handler
+          // Set bookedClinic based on selected option
+          if (e.target.value === nameOne || e.target.value === nameTwo) {
+            handleInputChange({ target: { name: 'bookedClinic', value: e.target.value } });
+          }
+        }}
         required
       >
         <option value="" disabled>Choose your clinic</option>
-        <option value="Aziel Dental Clinic">Aziel Dental Clinic</option>
-        <option value="Arts of Millennials Dental Clinic">Arts of Millennials Dental Clinic</option>
+        <option value={nameOne}>{nameOne}</option>
+        <option value={nameTwo}>{nameTwo}</option>
       </select>
 
       {/* Doctor Selection */}

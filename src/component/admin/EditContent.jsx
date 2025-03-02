@@ -21,6 +21,9 @@ const EditContent = () => {
     const [responsiveBgPreview, setResponsiveBgPreview] = useState(''); // For previewing the image
     const [clinicLogo, setClinicLogo] = useState (null);
     const [clinicLogoPreview, setClinicLogoPreview] = useState ('');
+    const [nameOnePhone, setNameOnePhone] = useState('null');
+    const [nameTwoPhone, setNameTwoPhone] = useState('null');
+    const[termsAndConditions, setTermsAndConditions] = useState('null');
     
 
   // Fetches existing clinic data from the backend when the component mounts
@@ -45,6 +48,9 @@ const EditContent = () => {
             welcomeMessage,
             signupMessage,
             signupDescription,
+            nameOnePhone,
+            nameTwoPhone,
+            termsAndConditions,
           } = response.data;
   
           console.log('Fetched Clinic Data:', response.data);
@@ -60,6 +66,9 @@ const EditContent = () => {
           setWelcomeMessage(welcomeMessage || '');
           setSignupMessage(signupMessage || '');
           setSignupDescription(signupDescription || '');
+          setNameOnePhone(nameOnePhone || '');
+          setNameTwoPhone(nameTwoPhone || '');
+          setTermsAndConditions(termsAndConditions || '');
   
           // Set services with default "both" for clinic
           setServices(
@@ -188,6 +197,10 @@ const EditContent = () => {
     formData.append('welcomeMessage', welcomeMessage || '');
     formData.append('signupMessage', signupMessage || '');
     formData.append('signupDescription', signupDescription || '');
+    formData.append('nameOnePhone', nameOnePhone || '');
+    formData.append('nameTwoPhone', nameTwoPhone || '');
+    formData.append('termsAndConditions', termsAndConditions || '');
+
   
     // Append services to form data
     services.forEach((service, index) => {
@@ -260,6 +273,15 @@ const EditContent = () => {
           />
         </label>
         <label>
+          Clinic One PhoneNumber
+          <input
+            type="text"
+            name="nameOnePhone"
+            value={nameOnePhone}
+            onChange={(e) => setNameOnePhone(e.target.value)}
+            />
+        </label>
+        <label>
           Clinic Name Two:
           <input
             type="text"
@@ -267,6 +289,15 @@ const EditContent = () => {
             value={nameTwo}
             onChange={(e) => setNameTwo(e.target.value)}
           />
+        </label>
+        <label>
+          Clinic Two PhoneNumber
+          <input
+            type="text"
+            name="nameTwoePhone"
+            value={nameTwoPhone}
+            onChange={(e) => setNameTwoPhone(e.target.value)}
+            />
         </label>
         <label>
           Address:
@@ -285,6 +316,16 @@ const EditContent = () => {
             value={clinicAddressTwo}
             onChange={(e) => setClinicAddressTwo(e.target.value)}
           />
+        </label>
+        <label>
+          Terms and Conditions:
+          <textarea
+            name="termsAndConditions"
+            rows="5"
+            cols="30"
+            value={termsAndConditions}
+            onChange={(e) => setTermsAndConditions(e.target.value)}
+          ></textarea>
         </label>
         <label>
           Clinic Description:

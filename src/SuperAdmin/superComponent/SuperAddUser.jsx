@@ -131,8 +131,8 @@ function SuperDoctorSignup() {
                                 onChange={handleChange}
                                 required
                             >
-                                <option value="Arts of Millennials Dental Clinic">Arts of Millennials Dental Clinic</option>
-                                <option value="Aziel Dental Clinic">Aziel Dental Clinic</option>
+                                <option value="Arts of Millennials Dental Clinica">Arts of Millennials Dental Clinic</option>
+                                <option value="Aziel Dental Clinic">Aziel Dental Clinica</option>
                             </select>
                         </div>
                         <div className="adduserFormGroup">
