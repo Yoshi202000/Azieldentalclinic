@@ -10,7 +10,8 @@ const AppointmentStepOne = ({
   doctors,
   nameOne,
   nameTwo
-}) => {
+}
+) => {
   // Add this function to filter services based on selected doctor
   const getFilteredServices = () => {
     if (!formData.selectedDoctor) return services;
@@ -44,7 +45,9 @@ const AppointmentStepOne = ({
           // Set bookedClinic based on selected option
           if (e.target.value === nameOne || e.target.value === nameTwo) {
             handleInputChange({ target: { name: 'bookedClinic', value: e.target.value } });
+            console.log(e.target.value);
           }
+        
         }}
         required
       >

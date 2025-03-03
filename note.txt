@@ -7,7 +7,6 @@
 
     can view all the information from both clinic 
 
-
         - view/edit appointment 
             - step two is not working and for step one need 
                 to check if the clinic and doctor are updating correctly

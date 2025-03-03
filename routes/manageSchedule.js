@@ -1,6 +1,8 @@
 import express from "express";
+import moment from 'moment';
 import { authenticateUser } from "./middleware/authMiddleware.js";
 import Schedule from "../models/ManageSchedule.js";
+
 
 const router = express.Router();
 
@@ -181,32 +183,36 @@ router.get('/slots/taken', async (req, res) => {
 
 // Bulk generate slots for multiple days
 router.post('/schedule/bulk-generate', authenticateUser, async (req, res) => {
-  console.log('Received schedule data:', req.body); // Log the incoming data
+  console.log('Received schedule data:', req.body);
   try {
-    const { schedule } = req.body; // Expecting an array of schedules
-
+    const { schedule } = req.body;
+    
     if (!Array.isArray(schedule) || schedule.length === 0) {
       return res.status(400).json({ message: 'Valid schedule data is required.' });
     }
 
-    // Iterate over the schedules and save each one
+    const today = moment().startOf('day');
+    const maxDate = moment().add(60, 'days').endOf('day');
+
     for (const daySchedule of schedule) {
       const { date, slots } = daySchedule;
-
-      // Validate the date and slots
+      
       if (!date || !Array.isArray(slots)) {
         return res.status(400).json({ message: 'Each schedule must have a date and slots array.' });
       }
 
-      // Create a new schedule with required fields
+      const scheduleDate = moment(date, 'YYYY-MM-DD', true);
+      if (!scheduleDate.isValid() || scheduleDate.isBefore(today) || scheduleDate.isAfter(maxDate)) {
+        return res.status(400).json({ message: `Date ${date} is invalid. Schedules can only be created for the next 60 days.` });
+      }
+
       const newSchedule = new Schedule({
         date,
         slots,
-        clinic: req.user.clinic, // Assuming you want to use the authenticated user's clinic
-        email: req.user.email, // Assuming you want to use the authenticated user's email
-        firstName: req.user.firstName, // Assuming you want to use the authenticated user's first name
-        lastName: req.user.lastName, // Assuming you want to use the authenticated user's last name
-        // Add other necessary fields if required
+        clinic: req.user.clinic,
+        email: req.user.email,
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
       });
 
       await newSchedule.save();
