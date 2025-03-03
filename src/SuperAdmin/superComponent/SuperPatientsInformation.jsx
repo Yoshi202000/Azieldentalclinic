@@ -26,6 +26,8 @@ const SuperPatientsInformation = () => {
   const [isContainerExpanded, setIsContainerExpanded] = useState(false);
   const editSectionRef = useRef(null);
 
+  const [showHealthRecord, setShowHealthRecord] = useState(false);
+
   const generateTimeSlots = (start, end) => {
     const timeSlots = [];
     let current = new Date();
@@ -211,6 +213,7 @@ const SuperPatientsInformation = () => {
                 <th>Last Name</th>
                 <th>Email</th>
                 <th>Phone Number</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -220,6 +223,21 @@ const SuperPatientsInformation = () => {
                   <td>{user.lastName}</td>
                   <td>{user.email}</td>
                   <td>{user.phoneNumber}</td>
+                  <td>
+                    <button onClick={() => {
+                      setSelectedUser(user);setShowHealthRecord(true);
+                      setShowAppointments(false);
+                    }}>
+                      Show Health Record
+                    </button>
+                    <button onClick={() => {
+                      setSelectedUser(user);
+                      setShowAppointments(true);
+                      setShowHealthRecord(false);
+                    }}>
+                      Show Appointments
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -227,6 +245,58 @@ const SuperPatientsInformation = () => {
 
           {selectedUser && (
             <>
+              {showHealthRecord && (
+                <div className="PIQuestionsHeader">
+                  <h2 className="PIQuestionsTitle">
+                    Health Record for {selectedUser.firstName} {selectedUser.lastName}
+                  </h2>
+                  <table className="AdminAppointmentTable">
+                    <tbody>
+                      <tr>
+                        <td>Smoking status:</td>
+                        <td>{selectedUser.questionOne === true ? 'Yes' : selectedUser.questionOne === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Known allergies:</td>
+                        <td>{selectedUser.questionTwo === true ? 'Yes' : selectedUser.questionTwo === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Current medications:</td>
+                        <td>{selectedUser.questionThree === true ? 'Yes' : selectedUser.questionThree === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Previous dental surgeries:</td>
+                        <td>{selectedUser.questionFour === true ? 'Yes' : selectedUser.questionFour === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Anesthesia-related complications history:</td>
+                        <td>{selectedUser.questionFive === true ? 'Yes' : selectedUser.questionFive === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Current pain or discomfort:</td>
+                        <td>{selectedUser.questionSix === true ? 'Yes' : selectedUser.questionSix === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Heart condition history:</td>
+                        <td>{selectedUser.questionSeven === true ? 'Yes' : selectedUser.questionSeven === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Pregnancy status:</td>
+                        <td>{selectedUser.questionEight === true ? 'Yes' : selectedUser.questionEight === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Relevant medical conditions:</td>
+                        <td>{selectedUser.questionNine === true ? 'Yes' : selectedUser.questionNine === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Additional information:</td>
+                        <td>{selectedUser.questionTen === true ? 'Yes' : selectedUser.questionTen === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
               {showAppointments && (
                 <>
                   <div className="PIAppointmentsHeader">
@@ -332,58 +402,6 @@ const SuperPatientsInformation = () => {
                     <p className="PINoAppointments">No appointments found for this patient.</p>
                   )}
                 </>
-              )}
-
-              {showAppointments && (
-                <div className="PIQuestionsHeader">
-                  <h2 className="PIQuestionsTitle">
-                    Health Record for {selectedUser.firstName} {selectedUser.lastName}
-                  </h2>
-                  <table className="AdminAppointmentTable">
-                    <tbody>
-                      <tr>
-                        <td>Smoking status:</td>
-                        <td>{selectedUser.questionOne === true ? 'Yes' : selectedUser.questionOne === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Known allergies:</td>
-                        <td>{selectedUser.questionTwo === true ? 'Yes' : selectedUser.questionTwo === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Current medications:</td>
-                        <td>{selectedUser.questionThree === true ? 'Yes' : selectedUser.questionThree === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Previous dental surgeries:</td>
-                        <td>{selectedUser.questionFour === true ? 'Yes' : selectedUser.questionFour === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Anesthesia-related complications history:</td>
-                        <td>{selectedUser.questionFive === true ? 'Yes' : selectedUser.questionFive === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Current pain or discomfort:</td>
-                        <td>{selectedUser.questionSix === true ? 'Yes' : selectedUser.questionSix === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Heart condition history:</td>
-                        <td>{selectedUser.questionSeven === true ? 'Yes' : selectedUser.questionSeven === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Pregnancy status:</td>
-                        <td>{selectedUser.questionEight === true ? 'Yes' : selectedUser.questionEight === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Relevant medical conditions:</td>
-                        <td>{selectedUser.questionNine === true ? 'Yes' : selectedUser.questionNine === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Additional information:</td>
-                        <td>{selectedUser.questionTen === true ? 'Yes' : selectedUser.questionTen === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
               )}
             </>
           )}

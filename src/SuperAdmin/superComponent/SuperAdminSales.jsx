@@ -14,6 +14,10 @@ const SuperAdminSales = () => {
   const [salesData, setSalesData] = useState([]);
   const [isAscending, setIsAscending] = useState(true); // New state for sorting order
   const [clinicServices, setClinicServices] = useState([]); // State for clinic services
+  const [nameOne, setNameOne] = useState(''); // State for nameOne
+  const [nameTwo, setNameTwo] = useState(''); // State for nameTwo
+  const [selectedAppointmentType, setSelectedAppointmentType] = useState('All'); // State for selected appointment type
+  const [selectedClinic, setSelectedClinic] = useState(''); // State for selected clinic
   const navigate = useNavigate();
 
   // Effect to fetch user info and appointments
@@ -62,6 +66,11 @@ const SuperAdminSales = () => {
       });
       if (response.data && response.data.services) {
         setClinicServices(response.data.services); // Set clinic services
+
+        // Assuming the response contains clinic names
+        const { nameOne, nameTwo } = response.data; // Adjust this based on your actual response structure
+        setNameOne(nameOne); // Set nameOne
+        setNameTwo(nameTwo); // Set nameTwo
       } else {
         console.error('Failed to fetch clinic services');
       }
@@ -81,7 +90,7 @@ const SuperAdminSales = () => {
 
       // Filter appointments by clinic and only include appointments with status 'Completed'
       const filteredByClinicAndStatus = response.data.filter(
-        (app) => app.appointmentStatus === 'Completed'
+        (app) => app.appointmentStatus === 'Completed' 
       );
 
       setAppointments(filteredByClinicAndStatus);
@@ -110,23 +119,44 @@ const SuperAdminSales = () => {
 
   // Handle type filter change
   const handleTypeFilterChange = (type) => {
-    setTypeFilter(type);
-    filterAppointments(type, dateFilter);
+    if (type === selectedAppointmentType) {
+      // If the same type is clicked again, reset the filter
+      setSelectedAppointmentType('All'); // Reset to 'All'
+    } else {
+      setSelectedAppointmentType(type); // Set selected appointment type
+    }
+    filterAppointments(type === 'All' ? 'All' : type, dateFilter); // Call filterAppointments with the selected type and current date filter
   };
 
   // Handle date filter change
   const handleDateFilterChange = (filter) => {
     setDateFilter(filter);
-    filterAppointments(typeFilter, filter);
+    filterAppointments(selectedAppointmentType, filter);
+  };
+
+  // Handle clinic filter change
+  const handleClinicFilterChange = (clinic) => {
+    if (clinic === selectedClinic) {
+      // If the same clinic is clicked again, reset the filter
+      setSelectedClinic(''); // Reset to no clinic selected
+    } else {
+      setSelectedClinic(clinic); // Set selected clinic
+    }
+    filterAppointments(selectedAppointmentType, dateFilter); // Call filterAppointments with the current appointment type and date filter
   };
 
   // Filter appointments based on type and date filters
   const filterAppointments = (type, date, data = appointments) => {
     let filtered = data;
 
-    // Apply type filter
+    // Apply appointment type filter
     if (type !== 'All') {
       filtered = filtered.filter(app => app.appointmentType === type);
+    }
+
+    // Apply clinic filter
+    if (selectedClinic) {
+      filtered = filtered.filter(app => app.bookedClinic === selectedClinic);
     }
 
     // Apply date filter and group sales
@@ -140,7 +170,7 @@ const SuperAdminSales = () => {
       const monthlyData = groupByMonth(filtered);
       sortSalesData(monthlyData, isAscending);
     } else {
-      setSalesData([]);
+      setSalesData([]); // Reset sales data if no valid date filter
     }
 
     setFilteredAppointments(filtered);
@@ -194,12 +224,23 @@ const SuperAdminSales = () => {
       {/* Type Filter */}
       <div className="filter-buttons">
         <h3>Filter by Appointment Type:</h3>
-        <button onClick={() => handleTypeFilterChange('All')} className={typeFilter === 'All' ? 'active' : ''}>All</button>
+        <button onClick={() => handleTypeFilterChange('All')} className={selectedAppointmentType === 'All' ? 'active' : ''}>All</button>
         {clinicServices.map((service) => (
-          <button key={service._id} onClick={() => handleTypeFilterChange(service.name)} className={typeFilter === service.name ? 'active' : ''}>
+          <button key={service._id} onClick={() => handleTypeFilterChange(service.name)} className={selectedAppointmentType === service.name ? 'active' : ''}>
             {service.name}
           </button>
         ))}
+      </div>
+
+      {/* New buttons for filtering by clinic names */}
+      <div className="filter-buttons">
+        <h3>Filter by Clinic:</h3>
+        <button onClick={() => handleClinicFilterChange(nameOne)} className={selectedClinic === nameOne ? 'active' : ''}>
+          {nameOne}
+        </button>
+        <button onClick={() => handleClinicFilterChange(nameTwo)} className={selectedClinic === nameTwo ? 'active' : ''}>
+          {nameTwo}
+        </button>
       </div>
 
       {/* Date Filter */}

@@ -1,9 +1,22 @@
+   major error
+   testSchedule.jsx has token error and also the date and time of the schedule can send the same day and time so there is a conflict with step two
+
+   appointment.jsx has error that cannot retrieve the data from step two that cannot update the availability of slot in doctor schedule
+
+   in the edit appointment part step two is not working and for step one need to check if the clinic and doctor are updating correctly
+
+   
+   add feature
     Privacy Policy before sign up
 
+    payment with gcash that doctor will aprove when the patient pay the reservation fee
+    health record questions to clinic database
 
-    statistic(AdminFee/SuperAdminFee) need to filter by services from available clinic services
+
+  Need some adjustment 
 
     - superadmin dashboard
+    statistic(AdminFee/SuperAdminFee) need to filter by services from available clinic services
 
     can view all the information from both clinic 
 
@@ -86,6 +99,7 @@
 
     CREATE NEW FUNCTION 
     need check by clinic
+    design check
     dental health record for every appointment
         - start with schema for both child and adult tooth chart (done?)
         - next is to create an backend that can push both child and adult tooth chart 

@@ -88,7 +88,7 @@ router.post('/appointments', authenticateToken, async (req, res) => {
     bookedClinic,
     doctor,
   } = req.body;
-
+  console.log(bookedClinic);
   
 
   try {

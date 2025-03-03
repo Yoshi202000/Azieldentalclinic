@@ -4,6 +4,7 @@ import Card from '../Card';
 const AppointmentStepOne = ({ 
   selectedCard, 
   handleCardSelect, 
+  handleClinicSelect, 
   formData, 
   handleInputChange,
   services, // Services passed from Appointment component
@@ -41,13 +42,10 @@ const AppointmentStepOne = ({
         name="bookedClinic" 
         value={formData.bookedClinic} 
         onChange={(e) => {
+          const selectedClinic = e.target.value;
           handleInputChange(e); // Call the existing input change handler
-          // Set bookedClinic based on selected option
-          if (e.target.value === nameOne || e.target.value === nameTwo) {
-            handleInputChange({ target: { name: 'bookedClinic', value: e.target.value } });
-            console.log(e.target.value);
-          }
-        
+          // Call handleClinicSelect to pass the selected clinic to the parent component
+          handleClinicSelect(selectedClinic);
         }}
         required
       >

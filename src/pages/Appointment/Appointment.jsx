@@ -75,7 +75,6 @@ const Appointment = () => {
         setServices(response.data.services);
         setNameOne(nameOne); // Set nameOne in state
         setNameTwo(nameTwo); // Set nameTwo in state
-        console.log('Fetched names:', nameOne, nameTwo); // Log the fetched names
       } else {
         console.error('Failed to fetch services data');
       }
@@ -114,6 +113,14 @@ const Appointment = () => {
   const prevStep = () => setStep(step - 1);
 
   const handleCardSelect = (cardName) => setSelectedCard(cardName);
+  const handleClinicSelect = (clinicName) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      bookedClinic: clinicName,
+    }));
+    console.log(formData.bookedClinic);
+  };
+
   const handleDateSelect = (date) => {
     setSelectedDate(date);
     setSelectedTimeFrom(null); 
@@ -142,13 +149,15 @@ const Appointment = () => {
       doctorEmail: scheduleInfo.doctorEmail,
       doctorFirstName: scheduleInfo.doctorFirstName,
       doctorLastName: scheduleInfo.doctorLastName,
-      appointmentTimeFrom: scheduleInfo.appointmentTimeFrom,
-      bookedClinic: scheduleInfo.bookedClinic,
+      appointmentTimeFrom: scheduleInfo.appointmentTimeFrom
+      //,
+      //bookedClinic: scheduleInfo.bookedClinic,
     }));
+    console.log(formData.bookedClinic, "clinic selected from scheduleinfo");
   };
 
   const handleAppointmentSubmit = async () => {
-    if (!selectedCard || !formData.dob || !formData.lastName || !formData.firstName || !selectedDate || !selectedTimeFrom) {
+    if (!selectedCard || !formData.dob || !formData.lastName || !formData.firstName || !selectedDate || !selectedTimeFrom || !formData.bookedClinic) {
       alert('Please fill in all required fields.');
       return;
     }
@@ -172,7 +181,7 @@ const Appointment = () => {
       fee: null, 
       doctor: formData.doctorEmail,
     };
-
+    console.log(formData.bookedClinic, "selectedxxxxxxxx"); 
     console.log('Appointment Details:', appointmentDetails);
 
     try {
@@ -244,6 +253,7 @@ const Appointment = () => {
             doctors={doctors}
             nameOne={nameOne} // Pass nameOne as prop
             nameTwo={nameTwo} // Pass nameTwo as prop
+            handleClinicSelect={handleClinicSelect} // Pass the function as a prop
           />
         )}
         {step === 2 && (
