@@ -2,9 +2,10 @@ import React, { useEffect, useState, useRef } from 'react';
 import '../../admin/dashboard/Dashboard.css';
 import AppointmentStepOne from '../../component/appointmentPage/AppointmentStepOne.jsx';
 import TestStepTwo from '../../test/TestStepTwo';
+import ViewDentalChart from '../../component/viewDentalChart.jsx';
 import { generateAvailableDates } from '../../utils/appDate';
-import "../componentFor/AppointmentModal.css"
 import './ViewAppointment.css'
+
 
 const SuperPatientsInformation = () => {
   const [users, setUsers] = useState([]);
@@ -28,6 +29,7 @@ const SuperPatientsInformation = () => {
   const editSectionRef = useRef(null);
 
   const [showHealthRecord, setShowHealthRecord] = useState(false);
+  const [showDentalChart, setShowDentalChart] = useState(false);
 
   const generateTimeSlots = (start, end) => {
     const timeSlots = [];
@@ -193,15 +195,6 @@ const SuperPatientsInformation = () => {
     `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const showHealthRecordOnly = () => {
-    setShowHealthRecord(true);
-    setShowAppointments(false);
-  };
-  const showAppointmentsOnly = () => {
-    setShowAppointments(true);
-    setShowHealthRecord(false);
-  };
-  
   return (
     <div className="PIContainer">
       <h1 className="PITitle">Patients Information</h1>
@@ -234,13 +227,14 @@ const SuperPatientsInformation = () => {
                   <td>{user.email}</td>
                   <td>{user.phoneNumber}</td>
                   <td>
-                    <button onClick={showHealthRecordOnly}>
-  Health Record
-</button>
-
-<button onClick={showAppointmentsOnly}>
-  Appointments
-</button>
+                    <button onClick={() => {
+                      setSelectedUser(user);
+                      setShowHealthRecord(true);
+                      setShowAppointments(true);
+                      setShowDentalChart(true);
+                    }}>
+                      Show Records
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -249,17 +243,71 @@ const SuperPatientsInformation = () => {
 
           {selectedUser && (
             <>
-             {showAppointments && (
-                <>  
-                  <div className="modal-overlay">
-                    <div className='modal-content'>
-                    <h2 className="modal-title">
+              {showHealthRecord && (
+                <div className="PIQuestionsHeader">
+                  <h2 className="PIQuestionsTitle">
+                    Health Record for {selectedUser.firstName} {selectedUser.lastName}
+                  </h2>
+                  <button className="PIHideButton" onClick={() => setShowHealthRecord(false)}>
+                    Hide Health Record
+                  </button>
+                  <table className="AdminAppointmentTable">
+                    <tbody>
+                      <tr>
+                        <td>Smoking status:</td>
+                        <td>{selectedUser.questionOne === true ? 'Yes' : selectedUser.questionOne === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Known allergies:</td>
+                        <td>{selectedUser.questionTwo === true ? 'Yes' : selectedUser.questionTwo === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Current medications:</td>
+                        <td>{selectedUser.questionThree === true ? 'Yes' : selectedUser.questionThree === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Previous dental surgeries:</td>
+                        <td>{selectedUser.questionFour === true ? 'Yes' : selectedUser.questionFour === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Anesthesia-related complications history:</td>
+                        <td>{selectedUser.questionFive === true ? 'Yes' : selectedUser.questionFive === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Current pain or discomfort:</td>
+                        <td>{selectedUser.questionSix === true ? 'Yes' : selectedUser.questionSix === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Heart condition history:</td>
+                        <td>{selectedUser.questionSeven === true ? 'Yes' : selectedUser.questionSeven === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Pregnancy status:</td>
+                        <td>{selectedUser.questionEight === true ? 'Yes' : selectedUser.questionEight === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Relevant medical conditions:</td>
+                        <td>{selectedUser.questionNine === true ? 'Yes' : selectedUser.questionNine === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td>Additional information:</td>
+                        <td>{selectedUser.questionTen === true ? 'Yes' : selectedUser.questionTen === false ? 'No' : 'N/A'}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {showAppointments && (
+                <>
+                  <div className="PIAppointmentsHeader">
+                    <h2 className="PIAppointmentsTitle">
                       Appointments for {selectedUser.firstName} {selectedUser.lastName}
                     </h2>
-                    {/* <button className="modal-close" onClick={onClose}>✖</button> */}
-                    <button className="PIHideButton" onClick={toggleAppointments}>
-                      Hide Appointments & Health Record
+                    <button className="PIHideButton" onClick={() => setShowAppointments(false)}>
+                      Hide Appointments
                     </button>
+                  </div>
                   {filteredAppointments.length > 0 ? (
                     <table className="AdminAppointmentTable">
                       <thead>
@@ -354,64 +402,17 @@ const SuperPatientsInformation = () => {
                   ) : (
                     <p className="PINoAppointments">No appointments found for this patient.</p>
                   )}
-                            {/* <button onClick={onClose}>Close</button> */}
-
-                  </div>
-                </div></>
+                </>
               )}
-              {showHealthRecord && (
-                <div className="modal-overlay">
-                  <h2 className="modal-content">
-                    Health Record for {selectedUser.firstName} {selectedUser.lastName}
-                  </h2>
-                  <table className="AdminAppointmentTabl111e">
-                    <tbody>
-                      <tr>
-                        <td>Smoking status:</td>
-                        <td>{selectedUser.questionOne === true ? 'Yes' : selectedUser.questionOne === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Known allergies:</td>
-                        <td>{selectedUser.questionTwo === true ? 'Yes' : selectedUser.questionTwo === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Current medications:</td>
-                        <td>{selectedUser.questionThree === true ? 'Yes' : selectedUser.questionThree === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Previous dental surgeries:</td>
-                        <td>{selectedUser.questionFour === true ? 'Yes' : selectedUser.questionFour === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Anesthesia-related complications history:</td>
-                        <td>{selectedUser.questionFive === true ? 'Yes' : selectedUser.questionFive === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Current pain or discomfort:</td>
-                        <td>{selectedUser.questionSix === true ? 'Yes' : selectedUser.questionSix === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Heart condition history:</td>
-                        <td>{selectedUser.questionSeven === true ? 'Yes' : selectedUser.questionSeven === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Pregnancy status:</td>
-                        <td>{selectedUser.questionEight === true ? 'Yes' : selectedUser.questionEight === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Relevant medical conditions:</td>
-                        <td>{selectedUser.questionNine === true ? 'Yes' : selectedUser.questionNine === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td>Additional information:</td>
-                        <td>{selectedUser.questionTen === true ? 'Yes' : selectedUser.questionTen === false ? 'No' : 'N/A'}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              )};
 
-             
+              {showDentalChart && (
+                <div>
+                  <button className="PIHideButton" onClick={() => setShowDentalChart(false)}>
+                    Hide Dental Chart
+                  </button>
+                  <ViewDentalChart userId={selectedUser._id} />
+                </div>
+              )}
             </>
           )}
         </>

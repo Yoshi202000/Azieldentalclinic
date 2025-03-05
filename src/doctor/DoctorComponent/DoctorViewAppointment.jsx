@@ -421,7 +421,6 @@ const DoctorViewAppointment = () => {
                   <th>Clinic</th>
                   <th>Status</th>
                   <th>doctor</th>
-                  <th>Fee</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -436,7 +435,6 @@ const DoctorViewAppointment = () => {
                       <td>{appointment.bookedClinic}</td>
                       <td>{appointment.appointmentStatus}</td>
                       <td>{appointment.doctor}</td>
-                      <td>{appointment.fee}</td>
                       <td>
                         <button className="AdminAppointmentButton" onClick={() => {
                           setSelectedAppointment(appointment);

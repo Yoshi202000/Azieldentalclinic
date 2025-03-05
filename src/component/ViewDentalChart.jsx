@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/ViewDentalChart.css';
 
-const ViewDentalChart = () => {
-    const [email, setEmail] = useState('');
+const ViewDentalChart = ({ email }) => {
+    const [emailInput, setEmail] = useState(email || '');
     const [patientData, setPatientData] = useState(null);
     const [selectedDate, setSelectedDate] = useState('');
     const [dentalRecords, setDentalRecords] = useState(null);
@@ -12,7 +12,7 @@ const ViewDentalChart = () => {
 
     // Function to fetch patient records by email
     const fetchPatientRecords = async () => {
-        if (!email) {
+        if (!emailInput) {
             setError('Please enter an email address');
             return;
         }
@@ -24,7 +24,7 @@ const ViewDentalChart = () => {
         setSelectedDate('');
 
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/get-dental-chart/${email}`, {
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/get-dental-chart/${emailInput}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -57,19 +57,26 @@ const ViewDentalChart = () => {
         setDentalRecords({ adultDentalChart: adultRecord, childDentalChart: childRecord });
     };
 
+    useEffect(() => {
+        if (emailInput) {
+            fetchPatientRecords();
+        }
+    }, [emailInput]);
+
     return (
         <div className="dentalChart-view">
             <h2>View Dental Chart</h2>
 
             {/* Email Input */}
             <div>
-                <input
-                    type="email"
-                    placeholder="Enter patient's email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
+            <input
+                type="email"
+                placeholder="Enter patient's email"
+                value={emailInput}
+                onChange={(e) => setEmail(e.target.value)}
+                readOnly // Makes the input non-editable
+                required
+            />
                 <button onClick={fetchPatientRecords} disabled={loading}>
                     {loading ? 'Fetching...' : 'Search Patient'}
                 </button>
@@ -83,7 +90,7 @@ const ViewDentalChart = () => {
                 <div className="dentalChart-patient-info">
                     <h3>Patient Details</h3>
                     <p><strong>Name:</strong> {patientData.adultDentalChart?.firstName || patientData.childDentalChart?.firstName} {patientData.adultDentalChart?.lastName || patientData.childDentalChart?.lastName}</p>
-                    <p><strong>Email:</strong> {email}</p>
+                    <p><strong>Email:</strong> {emailInput}</p>
 
                     {/* Date Selection */}
                     <h3>Select a Date</h3>
@@ -120,7 +127,6 @@ const ViewDentalChart = () => {
                 <div className="dentalChart-results">
                     <h3>Dental Record for {selectedDate}</h3>
                     <p><strong>Patient Name:</strong> {patientData.adultDentalChart?.firstName || patientData.childDentalChart?.firstName} {patientData.adultDentalChart?.lastName || patientData.childDentalChart?.lastName}</p>
-
 
                     {/* Adult Chart */}
                     {dentalRecords.adultDentalChart && (

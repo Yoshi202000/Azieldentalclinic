@@ -4,6 +4,7 @@ import AppointmentStepOne from '../appointmentPage/AppointmentStepOne';
 import AppointmentStepTwo from '../appointmentPage/AppointmentStepTwo';
 import { generateAvailableDates } from '../../utils/appDate';
 import './ViewAppointment.css'
+import ViewDentalChart from '../../component/viewDentalChart.jsx';
 
 const PatientsInformation = () => {
   const [users, setUsers] = useState([]);
@@ -11,6 +12,8 @@ const PatientsInformation = () => {
   const [error, setError] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showAppointments, setShowAppointments] = useState(true);
+  const [showHealthRecord, setShowHealthRecord] = useState(true);
+  const [showDentalChart, setShowDentalChart] = useState(true);
   const [searchTerm, setSearchTerm] = useState(''); // New state for search term
 
   // New state variables for editing appointments
@@ -85,6 +88,8 @@ const PatientsInformation = () => {
   const handleUserClick = (user) => {
     setSelectedUser(user);
     setShowAppointments(true);
+    setShowHealthRecord(true);
+    setShowDentalChart(true);
   };
 
   const toggleAppointments = () => {
@@ -211,6 +216,7 @@ const PatientsInformation = () => {
                 <th>Last Name</th>
                 <th>Email</th>
                 <th>Phone Number</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -220,6 +226,16 @@ const PatientsInformation = () => {
                   <td>{user.lastName}</td>
                   <td>{user.email}</td>
                   <td>{user.phoneNumber}</td>
+                  <td>
+                    <button onClick={() => {
+                      setSelectedUser(user);
+                      setShowAppointments(true);
+                      setShowHealthRecord(true); // New state for showing health record
+                      setShowDentalChart(true); // New state for showing dental chart
+                    }}>
+                      Show All
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -233,8 +249,8 @@ const PatientsInformation = () => {
                     <h2 className="PIAppointmentsTitle">
                       Appointments for {selectedUser.firstName} {selectedUser.lastName}
                     </h2>
-                    <button className="PIHideButton" onClick={toggleAppointments}>
-                      Hide Appointments & Health Record
+                    <button className="PIHideButton" onClick={() => setShowAppointments(false)}>
+                      Hide Appointments
                     </button>
                   </div>
                   {filteredAppointments.length > 0 ? (
@@ -334,7 +350,7 @@ const PatientsInformation = () => {
                 </>
               )}
 
-              {showAppointments && (
+              {showHealthRecord && (
                 <div className="PIQuestionsHeader">
                   <h2 className="PIQuestionsTitle">
                     Health Record for {selectedUser.firstName} {selectedUser.lastName}
@@ -383,6 +399,18 @@ const PatientsInformation = () => {
                       </tr>
                     </tbody>
                   </table>
+                  <button className="PIHideButton" onClick={() => setShowHealthRecord(false)}>
+                    Hide Health Record
+                  </button>
+                </div>
+              )}
+
+              {showDentalChart && (
+                <div>
+                  <ViewDentalChart userId={selectedUser._id} />
+                  <button className="PIHideButton" onClick={() => setShowDentalChart(false)}>
+                    Hide Dental Chart
+                  </button>
                 </div>
               )}
             </>

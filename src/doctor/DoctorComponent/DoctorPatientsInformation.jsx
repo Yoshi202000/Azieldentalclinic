@@ -4,6 +4,7 @@ import AppointmentStepOne from '../../component/appointmentPage/AppointmentStepO
 import TestStepTwo from '../../test/TestStepTwo';
 import { generateAvailableDates } from '../../utils/appDate';
 import '../../component/admin/ViewAppointment.css';
+import ViewDentalChart from '../../component/viewDentalChart.jsx';
 
 const DoctorPatientsInformation = () => {
   const [users, setUsers] = useState([]);
@@ -25,6 +26,9 @@ const DoctorPatientsInformation = () => {
 
   const [isContainerExpanded, setIsContainerExpanded] = useState(false);
   const editSectionRef = useRef(null);
+
+  const [showHealthRecord, setShowHealthRecord] = useState(true);
+  const [showDentalChart, setShowDentalChart] = useState(true);
 
   const generateTimeSlots = (start, end) => {
     const timeSlots = [];
@@ -211,6 +215,7 @@ const DoctorPatientsInformation = () => {
                 <th>Last Name</th>
                 <th>Email</th>
                 <th>Phone Number</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -220,6 +225,16 @@ const DoctorPatientsInformation = () => {
                   <td>{user.lastName}</td>
                   <td>{user.email}</td>
                   <td>{user.phoneNumber}</td>
+                  <td>
+                    <button onClick={() => {
+                      setSelectedUser(user);
+                      setShowAppointments(true);
+                      setShowHealthRecord(true); // New state for showing health record
+                      setShowDentalChart(true); // New state for showing dental chart
+                    }}>
+                      Show All
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -233,8 +248,8 @@ const DoctorPatientsInformation = () => {
                     <h2 className="PIAppointmentsTitle">
                       Appointments for {selectedUser.firstName} {selectedUser.lastName}
                     </h2>
-                    <button className="PIHideButton" onClick={toggleAppointments}>
-                      Hide Appointments & Health Record
+                    <button className="PIHideButton" onClick={() => setShowAppointments(false)}>
+                      Hide Appointments
                     </button>
                   </div>
                   {filteredAppointments.length > 0 ? (
@@ -334,11 +349,14 @@ const DoctorPatientsInformation = () => {
                 </>
               )}
 
-              {showAppointments && (
+              {showHealthRecord && (
                 <div className="PIQuestionsHeader">
                   <h2 className="PIQuestionsTitle">
                     Health Record for {selectedUser.firstName} {selectedUser.lastName}
                   </h2>
+                  <button className="PIHideButton" onClick={() => setShowHealthRecord(false)}>
+                    Hide Health Record
+                  </button>
                   <table className="AdminAppointmentTable">
                     <tbody>
                       <tr>
@@ -383,6 +401,15 @@ const DoctorPatientsInformation = () => {
                       </tr>
                     </tbody>
                   </table>
+                </div>
+              )}
+
+              {showDentalChart && (
+                <div>
+                  <button className="PIHideButton" onClick={() => setShowDentalChart(false)}>
+                    Hide Dental Chart
+                  </button>
+                  <ViewDentalChart userId={selectedUser._id} email={selectedUser.email} />
                 </div>
               )}
             </>

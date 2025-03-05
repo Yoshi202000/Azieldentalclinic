@@ -60,6 +60,7 @@ function SuperViewAppointment() {
     doctorLastName: '',
     appointmentTimeFrom: '',
   });
+
   
   useEffect(() => {
     fetchDoctors();
@@ -192,23 +193,17 @@ function SuperViewAppointment() {
   };
 
   const handleEditAppointment = (appointment) => {
-    if (editingAppointmentId === appointment._id) {
-      setEditingAppointmentId(null);
-      setIsContainerExpanded(false);
-      setShowTypeChange(false);
-      setShowDateTimeChange(false);
-    } else {
-      setEditingAppointmentId(appointment._id);
-      setEditingAppointment(appointment);
-      setIsContainerExpanded(true);
-      setShowTypeChange(false);
-      setShowDateTimeChange(false);
-      setSelectedCard(appointment.appointmentType);
-      setSelectedDate(appointment.appointmentDate);
-      setSelectedTimeFrom(appointment.appointmentTimeFrom);
-      const dates = generateAvailableDates();
-      setAvailableDates(dates);
-    }
+    setSelectedAppointment(appointment);
+    setEditingAppointmentId(appointment._id);
+    setEditingAppointment(appointment);
+    setIsContainerExpanded(true);
+    setShowTypeChange(false);
+    setShowDateTimeChange(false);
+    setSelectedCard(appointment.appointmentType);
+    setSelectedDate(appointment.appointmentDate);
+    setSelectedTimeFrom(appointment.appointmentTimeFrom);
+    const dates = generateAvailableDates();
+    setAvailableDates(dates);
   };
 
   const handleCardSelect = (cardName) => setSelectedCard(cardName);
@@ -219,7 +214,9 @@ function SuperViewAppointment() {
   };
 
   const handleTimeSelect = (type, time) => {
-    if (type === 'from') setSelectedTimeFrom(time);
+    if (type === 'from') {
+      setSelectedTimeFrom(time);
+    }
   };
 
   const handleUpdateAppointment = async () => {
@@ -230,6 +227,7 @@ function SuperViewAppointment() {
         appointmentDate: selectedDate,
         appointmentTimeFrom: selectedTimeFrom || editingAppointment.appointmentTimeFrom,
       };
+      console.log('Updated Appointment');
 
       if (selectedDate !== editingAppointment.appointmentDate) {
         updatedAppointment.appointmentStatus = 'Rebooked';
@@ -372,6 +370,19 @@ function SuperViewAppointment() {
     }));
   };
 
+  const onScheduleSelect = (date, slot) => {
+    if (!date || !slot) {
+      alert("Please select a valid date and time.");
+      return; // Exit the function if date or slot is not selected
+    }
+
+    console.log("Selected Date:", date);
+    console.log("Selected Slot:", slot);
+    
+    // Call updateBookedAppointment with the selected date and slot
+    updateBookedAppointment(selectedAppointment._id, date, slot);
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
@@ -423,7 +434,7 @@ function SuperViewAppointment() {
               <tbody>
                 {displayedAppointments.map((appointment) => (
                   <React.Fragment key={appointment._id}>
-                    <tr>
+                    <tr onClick={() => handleEditAppointment(appointment)}>
                       <td>{`${appointment.patientFirstName} ${appointment.patientLastName}`}</td>
                       <td>{appointment.appointmentDate}</td>
                       <td>{appointment.appointmentTimeFrom}</td>
@@ -431,7 +442,10 @@ function SuperViewAppointment() {
                       <td>{appointment.bookedClinic}</td>
                       <td>{appointment.appointmentStatus}</td>
                       <td>
-                        <button className="AdminAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
+                        <button className="AdminAppointmentButton" onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditAppointment(appointment);
+                        }}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}
                         </button>
                       </td>
@@ -445,13 +459,15 @@ function SuperViewAppointment() {
                           >
                             <h2>Edit Appointment</h2>
                             <div className="AdminAppointmentEditButtons">
-                              <button className="AdminAppointmentButton" onClick={() => {
+                              <button className="AdminAppointmentButton" onClick={(e) => {
+                                e.stopPropagation();
                                 setShowTypeChange(!showTypeChange);
                                 setShowDateTimeChange(false);
                               }}>
                                 Change Appointment Type
                               </button>
-                              <button className="AdminAppointmentButton" onClick={() => {
+                              <button className="AdminAppointmentButton" onClick={(e) => {
+                                e.stopPropagation();
                                 setShowDateTimeChange(!showDateTimeChange);
                                 setShowTypeChange(false);
                               }}>
@@ -475,10 +491,18 @@ function SuperViewAppointment() {
                                 <TestStepTwo
                                   availableDates={availableDates}
                                   selectedDate={selectedDate}
-                                  handleDateSelect={handleDateSelect}
+                                  handleDateSelect={(date) => {
+                                    setSelectedDate(date);
+                                    setSelectedTimeFrom(null);
+                                  }}
                                   generateTimeSlots={generateTimeSlots}
                                   selectedTimeFrom={selectedTimeFrom}
-                                  handleTimeSelect={handleTimeSelect}
+                                  handleTimeSelect={(type, time) => {
+                                    if (type === 'from') {
+                                      setSelectedTimeFrom(time);
+                                    }
+                                  }}
+                                  onScheduleSelect={onScheduleSelect}
                                   bookedAppointments={bookedAppointments}
                                 />
                               )}
@@ -488,14 +512,20 @@ function SuperViewAppointment() {
                                 <button
                                   key={status}
                                   className="AdminAppointmentStatusButton"
-                                  onClick={() => updateAppointmentStatus(appointment._id, status)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateAppointmentStatus(appointment._id, status);
+                                  }}
                                 >
                                   {status}
                                 </button>
                               ))}
                             </div>
                             <div className="AdminAppointmentActionButtons">
-                              <button className="AdminAppointmentButton UpdateButton" onClick={handleUpdateAppointment}>
+                              <button className="AdminAppointmentButton UpdateButton" onClick={(e) => {
+                                e.stopPropagation();
+                                updateBookedAppointment(appointment._id, selectedDate, selectedTimeFrom);
+                              }}>
                                 Update Appointment
                               </button>
                             </div>
