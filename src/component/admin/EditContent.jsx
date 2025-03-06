@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../styles/EditContent.css';
 import servicesImage from '../../uploads/services0.png'
+import e from 'express';
 
 const EditContent = () => {
     const [nameOne, setNameOne] = useState('');
@@ -19,11 +20,23 @@ const EditContent = () => {
     const [signupDescription, setSignupDescription] = useState('');
     const [responsiveBg, setResponsiveBg] = useState(null); // For storing the file
     const [responsiveBgPreview, setResponsiveBgPreview] = useState(''); // For previewing the image
+    const [gcashQR, setGcashQR] = useState(null);
+    const [gcashQrPreview, setGcashQRPreview] = useState('');
     const [clinicLogo, setClinicLogo] = useState (null);
     const [clinicLogoPreview, setClinicLogoPreview] = useState ('');
     const [nameOnePhone, setNameOnePhone] = useState('null');
     const [nameTwoPhone, setNameTwoPhone] = useState('null');
     const[termsAndConditions, setTermsAndConditions] = useState('null');
+    const[questionOne, setQuestionOne] = useState(null);
+    const[questionTwo, setQuestionTwo] = useState(null);
+    const[questionThree, setQuestionThree] = useState(null);
+    const[questionFour, setQuestionFour] = useState(null);
+    const[questionFive, setQuestionFive] = useState(null);
+    const[questionSix, setQuestionSix] = useState(null);
+    const[questionSeven, setQuestionSeven] = useState(null);
+    const[questionEight, setQuestionEight] = useState(null);
+    const[questionNine, setQuestionNine] = useState(null);
+    const[questionTen, setQuestionTen] = useState(null);
     
 
   // Fetches existing clinic data from the backend when the component mounts
@@ -51,6 +64,16 @@ const EditContent = () => {
             nameOnePhone,
             nameTwoPhone,
             termsAndConditions,
+            questionOne,
+            questionTwo,
+            questionThree,
+            questionFour,
+            questionFive,
+            questionSix,
+            questionSeven,
+            questionEight,
+            questionNine,
+            questionTen,
           } = response.data;
   
           console.log('Fetched Clinic Data:', response.data);
@@ -69,7 +92,17 @@ const EditContent = () => {
           setNameOnePhone(nameOnePhone || '');
           setNameTwoPhone(nameTwoPhone || '');
           setTermsAndConditions(termsAndConditions || '');
-  
+          setQuestionOne(questionOne || '');
+          setQuestionTwo(questionTwo || '');
+          setQuestionThree(questionThree || '');
+          setQuestionFour(questionFour || '');
+          setQuestionFive(questionFive || '');
+          setQuestionSix(questionSix || '');
+          setQuestionSeven(questionSeven || '');
+          setQuestionEight(questionEight || '');
+          setQuestionNine(questionNine || '');
+          setQuestionTen(questionTen || '');
+            
           // Set services with default "both" for clinic
           setServices(
             (fetchedServices || []).map((service, index) => ({
@@ -163,6 +196,20 @@ const EditContent = () => {
     }
   };
 
+  const handleGcashQRchange = (e) =>{
+    const file = e.target.file[0];
+    setGcashQR(flle);
+    
+    // preview image
+    const reader = new FileReader();
+    reader.onload = () =>{
+      setGcashQRPreview(reader.result);
+    }
+    if (file){
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleClinicImageChange = (e) => {
     const file = e.target.files[0];
     setClinicLogo(file);
@@ -200,6 +247,18 @@ const EditContent = () => {
     formData.append('nameOnePhone', nameOnePhone || '');
     formData.append('nameTwoPhone', nameTwoPhone || '');
     formData.append('termsAndConditions', termsAndConditions || '');
+    formData.append('questionOne', questionOne || '');
+    formData.append('questionTwo', questionTwo || '');
+    formData.append('questionThree', questionThree || '');
+    formData.append('questionFour', questionFour || '');
+    formData.append('questionFive', questionFive || '');
+    formData.append('questionSix', questionSix || '');
+    formData.append('questionSeven', questionSeven || '');
+    formData.append('questionEight', questionEight || '');
+    formData.append('questionNine', questionNine || '');
+    formData.append('questionTen', questionTen || '');
+
+
 
   
     // Append services to form data
@@ -229,6 +288,13 @@ const EditContent = () => {
       formData.append('responsiveBg', responsiveBg);
     } else {
       console.log('No responsiveBg provided');
+    }
+
+    if (gcashQR){
+      console.log('adding gcashQR to form data');
+      formData.append('gcashQR', gcashQR);
+    } else {
+      console.log('no gcashQR provided');
     }
 
     // Append clinicLogo to form data
@@ -393,6 +459,26 @@ const EditContent = () => {
     </div>
   )}
 </div>
+<div>
+  <label htmlFor="gcashQR">gcashQR:</label>
+  <input
+  type="file"
+  id="gcashQR"
+  name="gcashQR" // This must match the expected field name
+  accept="image/png"
+  onChange={handleGcashQRchange}
+/>
+  {gcashQrPreview && (
+    <div>
+      <p>Preview:</p>
+      <img
+        src={gcashQrPreview}
+        alt="Gcash QR code Preview"
+        style={{ width: '100%', maxWidth: '300px', height: 'auto' }}
+      />
+    </div>
+  )}
+</div>
         <div className="servicesSection">
           <h3>Clinic Services</h3>
           {services.map((service, index) => (
@@ -477,11 +563,111 @@ const EditContent = () => {
                 Remove Service
               </button>
             </div>
+            
           ))}
           <button type="button" onClick={addService}>
             Add Service
           </button>
         </div>
+        <label>
+  Question 1: Health Record Question 1
+  <input
+    type="text"
+    name="questionOne"
+    value={questionOne}
+    onChange={(e) => setQuestionOne(e.target.value)}
+  />
+</label>
+
+<label>
+  Question 2: Health Record Question 2
+  <input
+    type="text"
+    name="questionTwo"
+    value={questionTwo}
+    onChange={(e) => setQuestionTwo(e.target.value)}
+  />
+</label>
+
+<label>
+  Question 3: Health Record Question 3
+  <input
+    type="text"
+    name="questionThree"
+    value={questionThree}
+    onChange={(e) => setQuestionThree(e.target.value)}
+  />
+</label>
+
+<label>
+  Question 4: Health Record Question 4
+  <input
+    type="text"
+    name="questionFour"
+    value={questionFour}
+    onChange={(e) => setQuestionFour(e.target.value)}
+  />
+</label>
+
+<label>
+  Question 5: Health Record Question 5
+  <input
+    type="text"
+    name="questionFive"
+    value={questionFive}
+    onChange={(e) => setQuestionFive(e.target.value)}
+  />
+</label>
+
+<label>
+  Question 6: Health Record Question 6
+  <input
+    type="text"
+    name="questionSix"
+    value={questionSix}
+    onChange={(e) => setQuestionSix(e.target.value)}
+  />
+</label>
+
+<label>
+  Question 7: Health Record Question 7
+  <input
+    type="text"
+    name="questionSeven"
+    value={questionSeven}
+    onChange={(e) => setQuestionSeven(e.target.value)}
+  />
+</label>
+
+<label>
+  Question 8: Health Record Question 8
+  <input
+    type="text"
+    name="questionEight"
+    value={questionEight}
+    onChange={(e) => setQuestionEight(e.target.value)}
+  />
+</label>
+
+<label>
+  Question 9: Health Record Question 9
+  <input
+    type="text"
+    name="questionNine"
+    value={questionNine}
+    onChange={(e) => setQuestionNine(e.target.value)}
+  />
+</label>
+
+<label>
+  Question 10: Health Record Question 10
+  <input
+    type="text"
+    name="questionTen"
+    value={questionTen}
+    onChange={(e) => setQuestionTen(e.target.value)}
+  />
+</label>
 
         <input type="submit" value="Update" />
       </form>

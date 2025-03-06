@@ -27,7 +27,11 @@ const storage = multer.diskStorage({
       cb(null, 'responsiveBg.png');
     } else if (file.fieldname === 'clinicLogo') {
         cb(null, 'clinicLogo.png');
-    } else {
+    } 
+      else if (file.fieldname === 'gcashQR'){
+        cb(null, 'gcashQR.png')
+      }
+    else {
       const match = file.fieldname.match(/service_image_(\d+)/);
       const index = match ? parseInt(match[1], 10) : 'unknown';
       cb(null, `services${index}.png`);
@@ -37,7 +41,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 3 * 1024 * 1024 }, // Limit to 3MB
+  limits: { fileSize: 5 * 1024 * 1024 }, // Limit to 5MB
 });
 
 
@@ -75,6 +79,18 @@ router.get('/clinic', async (req, res) => {
       signupMessage: clinic?.signupMessage || null,
       signupDescription: clinic?.signupDescription || null,
       services: clinic?.services || [],
+
+      questionOne: clinic?.questionOne || null,
+      questionTwo: clinic?.questionTwo || null,
+      questionThree: clinic?.questionThree || null,
+      questionFour: clinic?.questionFour || null,
+      questionFive: clinic?.questionFive || null,
+      questionSix: clinic?.questionSix || null,
+      questionSeven: clinic?.questionSeven || null,
+      questionEight: clinic?.questionEight || null,
+      questionNine: clinic?.questionNine || null,
+      questionTen: clinic?.questionTen || null,
+
     });
   } catch (err) {
     console.error('Error fetching clinic data:', err);
@@ -116,6 +132,19 @@ router.put('/clinic', upload.any(), async (req, res) => {
     clinic.signupMessage = req.body.signupMessage || clinic.signupMessage;
     clinic.signupDescription = req.body.signupDescription || clinic.signupDescription;
 
+    // questionaire questions
+    clinic.questionOne = req.body.questionOne || clinic.questionOne;
+    clinic.questionTwo = req.body.questionTwo || clinic.questionTwo;
+    clinic.questionThree = req.body.questionThree || clinic.questionThree;
+    clinic.questionFour = req.body.questionFour || clinic.questionFour;
+    clinic.questionFive = req.body.questionFive || clinic.questionFive;
+    clinic.questionSix = req.body.questionSix || clinic.questionSix;
+    clinic.questionSeven = req.body.questionSeven || clinic.questionSeven;
+    clinic.questionEight = req.body.questionEight || clinic.questionEight;
+    clinic.questionNine = req.body.questionNine || clinic.questionNine;
+    clinic.questionTen = req.body.questionTen || clinic.questionTen;
+
+
     // Handle clinicLogo image
     const clinicLogoImage = req.files.find(file => file.fieldname === 'clinicLogo');
     if (clinicLogoImage) {
@@ -130,6 +159,21 @@ router.put('/clinic', upload.any(), async (req, res) => {
       }
       clinic.clinicLogo = fs.readFileSync(clinicLogoImage.path); // Save as Buffer
     }
+
+    const gcashQRImage = req.fields.find(file => file.fieldname === 'gcashQR');
+if (gcashQRImage) {
+  const gcashQRPath = path.join(uploadDir, 'gcashQR.png');
+  try {
+    await fs.unlink(gcashQRPath);
+    console.log(`replaced Existing Gcash QR code Image: ${gcashQRPath}`);
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      console.error(`Error deleting Gcash QR code file: ${gcashQRPath}`);
+    }
+  }
+  clinic.gcashQR = fs.readFileSync(gcashQRImage.path);
+}
+
 
     // Handle responsiveBg image
     const responsiveBgImage = req.files.find(file => file.fieldname === 'responsiveBg');

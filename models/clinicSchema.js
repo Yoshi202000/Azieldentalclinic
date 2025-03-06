@@ -16,6 +16,7 @@ const clinicSchema = new mongoose.Schema({
   addressTwo: { type: String, required: true, default: null }, // Additional address field
   responsiveBg: {type: Buffer, required: true, default: null },
   clinicLogo: {type: Buffer, required: true, default: null},
+  gcashQR: {type: String, default: null},
 
   nameOnePhone: { type: String, required: true, default: null },
   nameTwoPhone: { type: String, required: true, default: null }, // New field
@@ -34,6 +35,19 @@ const clinicSchema = new mongoose.Schema({
   welcomeMessage: { type: String, required: true, default: null }, // Welcome message for signup page
   signupMessage: { type: String, required: true, default: null }, // Signup message for signup page
   signupDescription: { type: String, required: true, default: null }, // Signup description for signup page
+
+  // health record questionaire
+  questionOne: { type: String, required: false, default: null },
+  questionTwo: { type: String, required: false, default: null },
+  questionThree: { type: String, required: false, default: null },
+  questionFour: { type: String, required: false, default: null },
+  questionFive: { type: String, required: false, default: null },
+  questionSix: { type: String, required: false, default: null },
+  questionSeven: { type: String, required: false, default: null },
+  questionEight: { type: String, required: false, default: null },
+  questionNine: { type: String, required: false, default: null },
+  questionTen: { type: String, required: false, default: null },
+
 });
 
 export default mongoose.model('Clinic', clinicSchema);

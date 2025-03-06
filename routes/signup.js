@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
 });
 
 router.post('/signup', async (req, res) => {
-    const { firstName, lastName, email, phoneNumber, password, clinic = 'both', role = 'patient', services = [] } = req.body;
+    const { firstName, lastName, email, phoneNumber, password, clinic = 'both', role = 'patient', services = [], termsCondition } = req.body;
 
     // Basic validation
     if (!firstName || !lastName || !email || !phoneNumber || !password) {
@@ -45,6 +45,11 @@ router.post('/signup', async (req, res) => {
         return res.status(400).json({ message: 'Invalid email format' });
     }
 
+    if (termsCondition === false){
+        console.error('please agree to terms and condition to create an account');
+        return res.status(400).json({ message: 'terms and condition not agreed'});
+    }
+
     try {
         // Check if email already exists
         const existingUser = await User.findOne({ email });
@@ -68,6 +73,7 @@ router.post('/signup', async (req, res) => {
             role,
             clinic,
             services,
+            termscondition: true,
         });
 
         await newUser.save();

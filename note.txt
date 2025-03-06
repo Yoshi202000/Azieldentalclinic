@@ -7,8 +7,6 @@
 
    
    add feature
-    Privacy Policy before sign up
-
     payment with gcash that doctor will aprove when the patient pay the reservation fee
     health record questions to clinic database
 

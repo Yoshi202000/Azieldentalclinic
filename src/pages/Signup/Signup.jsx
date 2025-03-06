@@ -4,11 +4,15 @@ import HomeButton from '../../component/HomeButton';
 import './Signup.css';
 import axios from 'axios';
 import { Home } from '@mui/icons-material';
+import TermsAndConditions from '../../component/TermsCondition.jsx'
+
 
 function Signup() {
     const [signupMessage, setSignupMessage] = useState('');
     const [signupDescription, setSignupDescription] = useState('');
-
+    const [terms, setTerms] = useState(""); // Store terms
+    const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility
+  
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -17,12 +21,13 @@ function Signup() {
         phoneNumber: '',
         password: '',
         confirmPassword: '',
+        termscondition: false,
     });
-    
+        
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`)
       .then(response => {
-        if (response.data) {
+        if (response.data && response.data.termsAndConditions) {
           const {
             signupMessage,
             signupDescription,
@@ -30,7 +35,7 @@ function Signup() {
           console.log('Clinic data received:', response.data); 
           setSignupMessage(signupMessage);
           setSignupDescription(signupDescription);
-
+          setTerms(response.data.termsAndConditions);
         }
       })
       .catch(error => {
@@ -51,16 +56,23 @@ function Signup() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(''); // Clear any previous error message
-        setSuccessMessage(''); // Clear any previous success message
-
+        setError('');
+        setSuccessMessage('');
+    
+        if (!formData.termscondition) {
+            setError('You must accept the Terms & Conditions before signing up.');
+            return;
+        }
+    
         if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match');
             return;
         }
-
-        const { firstName, lastName, email, phoneNumber, password } = formData;
-
+    
+        console.log('Submitting data:', formData); // Debugging log
+    
+        const { firstName, lastName, email, phoneNumber, password, termscondition } = formData;
+    
         try {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/signup`, {
                 method: 'POST',
@@ -75,15 +87,18 @@ function Signup() {
                     password,
                     role: 'patient',
                     clinic: 'both',
+                    termscondition,
                 }),
             });
-
+    
             const result = await response.json();
+            console.log('Server Response:', result); // Debugging log
+    
             if (response.ok) {
                 setSuccessMessage(result.message);
-                alert('Signup successful. Please verify your email by clicking the link sent to your email address.');
-                await handleSendVerification(); // Send verification link after successful signup
-                navigate('/login'); // Redirect to login page on successful registration
+                alert('Signup successful. Please verify your email.');
+                await handleSendVerification();
+                navigate('/login');
             } else {
                 setError(result.message || 'Signup failed');
             }
@@ -92,6 +107,8 @@ function Signup() {
             setError('An error occurred while signing up.');
         }
     };
+    
+    
 
     // Function to send verification link
     const handleSendVerification = async () => {
@@ -197,6 +214,33 @@ function Signup() {
                                 onChange={handleChange}
                             />
                         </div>
+                        <div className="radio-form-group">
+                        <label htmlFor="termscondition">
+                            <input
+                            type="checkbox"
+                            id="termscondition"
+                            checked={formData.termscondition}
+                            onChange={handleChange}
+                            />
+                        </label>
+                        <span
+                            onClick={(e) => {
+                                e.stopPropagation(); // Prevent checkbox from being toggled
+                                setIsModalOpen(true); // Open the modal
+                            }}
+                            >
+                            View Terms & Conditions
+                            </span>
+                        </div>
+
+
+                    
+
+                    <TermsAndConditions 
+                        isOpen={isModalOpen} 
+                        onClose={() => setIsModalOpen(false)} 
+                        terms={terms} 
+                    />
                         <button type="submit" className="signup-button">
                             Sign Up
                         </button>

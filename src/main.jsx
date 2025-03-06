@@ -23,7 +23,7 @@ import SuccessVerify from './pages/SuccessVerify/SuccessVerify.jsx';
 // import pages not yet done section
 // Test components (for testing purposes)
 import Chat from './component/chat.jsx'
-import EditContent from './component/admin/EditContent.jsx';
+// import EditContent from './component/admin/EditContent.jsx';
 import TestPreview from './test/TestPreview.jsx';
 import DoctorSignup from './component/admin/AddUser.jsx';
 import ManageSchedule from './component/profile/manageSchedule.jsx'
@@ -33,9 +33,9 @@ import TeststepTwo from './test/TestStepTwo.jsx'
 import UpdateFee from './test/UpdateFee.jsx';
 import DoctorDashboard from './doctor/DoctorDashboard/DoctorDashboard.jsx';
 import DentalChartForm from './component/DentalChart.jsx';
-import ViewDentalChart from './component/ViewDentalChart.jsx';
+import ViewDentalChart from './component/viewDentalChart.jsx';
 import SuperDashboard from './SuperAdmin/superDasboard/SuperDashboard.jsx';
-
+import TermsAndConditions from './component/TermsCondition.jsx';
 
 
 const ProtectedVerificationRoute = ({ children }) => {
@@ -66,13 +66,13 @@ createRoot(document.getElementById('root')).render(
         <Route path='/fee' element={<UpdateFee/>}/>
         <Route path='/dentalchart' element={<DentalChartForm/>}/>
         <Route path='/viewdental' element={<ViewDentalChart/>}/>
-        
+        <Route path='/terms' element={<TermsAndConditions/>}/>
 
 
 
 
         {/* editContent by super admin */}
-        <Route path="/editContent" element={<EditContent />} />
+        {/* <Route path="/editContent" element={<EditContent />} /> */}
         <Route path="/testPreview" element={<TestPreview />} />
 
 
