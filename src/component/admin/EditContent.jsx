@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../styles/EditContent.css';
 import servicesImage from '../../uploads/services0.png'
-import e from 'express';
 
 const EditContent = () => {
     const [nameOne, setNameOne] = useState('');
@@ -21,7 +20,7 @@ const EditContent = () => {
     const [responsiveBg, setResponsiveBg] = useState(null); // For storing the file
     const [responsiveBgPreview, setResponsiveBgPreview] = useState(''); // For previewing the image
     const [gcashQR, setGcashQR] = useState(null);
-    const [gcashQrPreview, setGcashQRPreview] = useState('');
+    const [gcashQRPreview, setGcashQRPreview] = useState('');
     const [clinicLogo, setClinicLogo] = useState (null);
     const [clinicLogoPreview, setClinicLogoPreview] = useState ('');
     const [nameOnePhone, setNameOnePhone] = useState('null');
@@ -196,16 +195,16 @@ const EditContent = () => {
     }
   };
 
-  const handleGcashQRchange = (e) =>{
-    const file = e.target.file[0];
-    setGcashQR(flle);
+  const handleGcashQRChange = (e) => {
+    const file = e.target.files[0];
+    setGcashQR(file);
     
     // preview image
     const reader = new FileReader();
-    reader.onload = () =>{
+    reader.onload = () => {
       setGcashQRPreview(reader.result);
     }
-    if (file){
+    if (file) {
       reader.readAsDataURL(file);
     }
   };
@@ -291,7 +290,7 @@ const EditContent = () => {
     }
 
     if (gcashQR){
-      console.log('adding gcashQR to form data');
+      console.log('Adding gcashQR to form data');
       formData.append('gcashQR', gcashQR);
     } else {
       console.log('no gcashQR provided');
@@ -442,12 +441,12 @@ const EditContent = () => {
         <div>
   <label htmlFor="responsiveBg">Responsive Background:</label>
   <input
-  type="file"
-  id="responsiveBg"
-  name="responsiveBg" // This must match the expected field name
-  accept="image/png"
-  onChange={handleResponsiveBgChange}
-/>
+    type="file"
+    id="responsiveBg"
+    name="responsiveBg" // Must match the expected field name
+    accept="image/png, image/jpeg, image/jpg"
+    onChange={handleResponsiveBgChange}
+  />
   {responsiveBgPreview && (
     <div>
       <p>Preview:</p>
@@ -459,26 +458,28 @@ const EditContent = () => {
     </div>
   )}
 </div>
+
 <div>
-  <label htmlFor="gcashQR">gcashQR:</label>
+  <label htmlFor="gcashQR">Gcash QR Code:</label>
   <input
-  type="file"
-  id="gcashQR"
-  name="gcashQR" // This must match the expected field name
-  accept="image/png"
-  onChange={handleGcashQRchange}
-/>
-  {gcashQrPreview && (
+    type="file"
+    id="gcashQR"
+    name="gcashQR" // Must match the expected field name
+    accept="image/png, image/jpeg, image/jpg"
+    onChange={handleGcashQRChange}
+  />
+  {gcashQRPreview && (
     <div>
       <p>Preview:</p>
       <img
-        src={gcashQrPreview}
-        alt="Gcash QR code Preview"
+        src={gcashQRPreview}
+        alt="Gcash QR Code Preview"
         style={{ width: '100%', maxWidth: '300px', height: 'auto' }}
       />
     </div>
   )}
 </div>
+
         <div className="servicesSection">
           <h3>Clinic Services</h3>
           {services.map((service, index) => (

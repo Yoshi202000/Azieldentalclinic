@@ -25,12 +25,12 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     if (file.fieldname === 'responsiveBg') {
       cb(null, 'responsiveBg.png');
-    } else if (file.fieldname === 'clinicLogo') {
+    }  else if (file.fieldname === 'gcashQR'){
+      cb(null, 'gcashQR.png')
+    }else if (file.fieldname === 'clinicLogo') {
         cb(null, 'clinicLogo.png');
     } 
-      else if (file.fieldname === 'gcashQR'){
-        cb(null, 'gcashQR.png')
-      }
+     
     else {
       const match = file.fieldname.match(/service_image_(\d+)/);
       const index = match ? parseInt(match[1], 10) : 'unknown';
@@ -160,19 +160,19 @@ router.put('/clinic', upload.any(), async (req, res) => {
       clinic.clinicLogo = fs.readFileSync(clinicLogoImage.path); // Save as Buffer
     }
 
-    const gcashQRImage = req.fields.find(file => file.fieldname === 'gcashQR');
-if (gcashQRImage) {
-  const gcashQRPath = path.join(uploadDir, 'gcashQR.png');
-  try {
-    await fs.unlink(gcashQRPath);
-    console.log(`replaced Existing Gcash QR code Image: ${gcashQRPath}`);
-  } catch (err) {
-    if (err.code !== 'ENOENT') {
-      console.error(`Error deleting Gcash QR code file: ${gcashQRPath}`);
+    const gcashQRImage = req.files.find(file => file.fieldname === 'gcashQR');
+    if (gcashQRImage) {
+      const gcashQRPath = path.join(uploadDir, 'gcashQR.png');
+      try {
+        await fs.unlink(gcashQRPath);
+        console.log(`Replaced existing Gcash QR code image: ${gcashQRPath}`);
+      } catch (err) {
+        if (err.code !== 'ENOENT') {
+          console.error(`Error deleting Gcash QR code file: ${gcashQRPath}`);
+        }
+      }
+      clinic.gcashQR = fs.readFileSync(gcashQRImage.path);
     }
-  }
-  clinic.gcashQR = fs.readFileSync(gcashQRImage.path);
-}
 
 
     // Handle responsiveBg image

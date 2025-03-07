@@ -16,7 +16,7 @@ const clinicSchema = new mongoose.Schema({
   addressTwo: { type: String, required: true, default: null }, // Additional address field
   responsiveBg: {type: Buffer, required: true, default: null },
   clinicLogo: {type: Buffer, required: true, default: null},
-  gcashQR: {type: String, default: null},
+  gcashQR: {type: Buffer, default: null},
 
   nameOnePhone: { type: String, required: true, default: null },
   nameTwoPhone: { type: String, required: true, default: null }, // New field
