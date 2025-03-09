@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import AppointmentStepOne from '../appointmentPage/AppointmentStepOne';
-import AppointmentStepTwo from '../appointmentPage/AppointmentStepTwo';
+import TestStepTwo from '../../test/TestStepTwo';
 import { generateAvailableDates } from '../../utils/appDate';
 import UpdateFee from '../../test/UpdateFee.jsx';
 import './ViewAppointment.css';
@@ -27,6 +27,9 @@ function ViewAppointment() {
   const [typeFilter, setTypeFilter] = useState('');
   const [dateSortOrder, setDateSortOrder] = useState('');
   const [doctors, setDoctors] = useState([]);
+  const [doctorEmailFilter, setDoctorEmailFilter] = useState('');
+  const [selectedTimeTo, setSelectedTimeTo] = useState(null);
+
 
   const editSectionRef = useRef(null);
   const navigate = useNavigate();
@@ -60,6 +63,13 @@ function ViewAppointment() {
     appointmentTimeFrom: '',
   });
 
+  const [nameOne, setNameOne] = useState('Default Clinic 1'); // ✅ Add a fallback name
+  const [nameTwo, setNameTwo] = useState('Default Clinic 2'); // ✅ Add a fallback name
+  
+  const [selectedDoctor, setSelectedDoctor] = useState(''); // State to hold the selected doctor
+
+  const [currentStep, setCurrentStep] = useState(1); // State to track the current step
+
   useEffect(() => {
     fetchDoctors();
     fetchServicesData();
@@ -76,18 +86,37 @@ function ViewAppointment() {
     fetchSchedules();
   }, [navigate]);
 
+  
+  const handleClinicSelect = (selectedClinic) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      bookedClinic: selectedClinic,
+      selectedDoctor: '', // Reset doctor when clinic changes
+    }));
+  };
+  
+
   const fetchServicesData = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
-      if (response.data && response.data.services) {
-        setServices(response.data.services);
-      } else {
-        console.error('Failed to fetch services data');
-      }
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
+        if (response.data && response.data.services) {
+            setServices(response.data.services);
+
+            // Ensure nameOne and nameTwo are correctly extracted from the response
+            if (response.data.nameOne && response.data.nameTwo) {
+                setNameOne(response.data.nameOne);
+                setNameTwo(response.data.nameTwo);
+            } else {
+                console.error('Clinic names missing in API response');
+            }
+        } else {
+            console.error('Failed to fetch services data');
+        }
     } catch (error) {
-      console.error('Error fetching services data:', error);
+        console.error('Error fetching services data:', error);
     }
-  }; 
+};
+ 
 
   const fetchUserInfo = async (token) => {
     try {
@@ -101,7 +130,11 @@ function ViewAppointment() {
       const { firstName, lastName, email, phoneNumber, dob, clinic } = response.data.user;
       setUser({ firstName, lastName, email, phoneNumber, dob, clinic });
 
+      // Set the selectedDoctor to the logged-in user's email
+      setSelectedDoctor(email); // Assuming email is used to identify the doctor
+
       fetchAppointments(token, clinic);
+
     } catch (error) {
       console.error('Error fetching user info:', error);
       setError('Failed to fetch user information');
@@ -146,18 +179,18 @@ function ViewAppointment() {
     setShowDentalChart(true);
   };
 
-  const fetchAppointments = async (token, clinic) => {
+  const fetchAppointments = async (clinic) => {
     try {
+      const token = localStorage.getItem('token');
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
+  
       const filteredAppointments = response.data.filter(
         appointment =>
-          (appointment.appointmentStatus === 'pending' || appointment.appointmentStatus === 'Rebooked') &&
-          appointment.bookedClinic === clinic 
+          (appointment.appointmentStatus === 'pending' || appointment.appointmentStatus === 'Rebooked')
       );
+  
       setAppointments(filteredAppointments);
       setBookedAppointments(filteredAppointments);
       setLoading(false);
@@ -167,6 +200,7 @@ function ViewAppointment() {
       setLoading(false);
     }
   };
+  
 
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
     try {
@@ -208,12 +242,10 @@ function ViewAppointment() {
       setShowDateTimeChange(false);
       setSelectedCard(appointment.appointmentType);
       setSelectedDate(appointment.appointmentDate);
-      setSelectedTimeFrom(appointment.appointmentTimeFrom);
-      const dates = generateAvailableDates();
-      setAvailableDates(dates);
+      setSelectedTimeFrom(appointment.appointmentTimeFrom);  // ✅ Ensure time is set
     }
   };
-
+  
   const handleCardSelect = (cardName) => setSelectedCard(cardName);
 
   const handleDateSelect = (date) => {
@@ -226,44 +258,51 @@ function ViewAppointment() {
   };
 
   const handleUpdateAppointment = async () => {
-    
     try {
-      const token = localStorage.getItem('token');
-      const updatedAppointment = {
-        appointmentType: selectedCard,
-        appointmentDate: selectedDate,
-        appointmentTimeFrom: selectedTimeFrom || editingAppointment.appointmentTimeFrom,
-      };
+        const token = localStorage.getItem('token');
+        const updatedAppointment = {
+            appointmentType: selectedCard,
+            appointmentDate: selectedDate,
+            appointmentTimeFrom: selectedTimeFrom || editingAppointment.appointmentTimeFrom,
+            appointmentTimeTo: selectedTimeTo || editingAppointment.appointmentTimeTo,
+        };
 
-      if (selectedDate !== editingAppointment.appointmentDate) {
-        updatedAppointment.appointmentStatus = 'Rebooked';
-      }
+        if (selectedDate !== editingAppointment.appointmentDate) {
+            updatedAppointment.appointmentStatus = 'Rebooked';
+        }
 
-      const response = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/updateAppointment/${editingAppointment._id}`,
-        updatedAppointment,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+        const response = await axios.put(
+            `${import.meta.env.VITE_BACKEND_URL}/api/updateAppointment/${editingAppointment._id}`,
+            updatedAppointment,
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
 
-      setAppointments(prevAppointments =>
-        prevAppointments.map(app =>
-          app._id === response.data._id ? {
-            ...app,
-            appointmentDate: response.data.appointmentDate,
-            appointmentTimeFrom: response.data.appointmentTimeFrom,
-            appointmentType: response.data.appointmentType,
-            appointmentStatus: response.data.appointmentStatus
-          } : app
-        )
-      );
+        if (response.status === 200) {
+            alert('Appointment updated successfully');
+            await updateSlotToUnavailable(formData.mainID, formData.slotID);
+        } else {
+            alert(`Error: ${response.data.message}`);
+        }
 
-      setEditingAppointmentId(null);
-      setEditingAppointment(null);
-      setShowTypeChange(false);
-      setShowDateTimeChange(false);
+        setAppointments(prevAppointments =>
+            prevAppointments.map(app =>
+                app._id === response.data._id ? {
+                    ...app,
+                    appointmentDate: response.data.appointmentDate,
+                    appointmentTimeFrom: response.data.appointmentTimeFrom,
+                    appointmentType: response.data.appointmentType,
+                    appointmentStatus: response.data.appointmentStatus
+                } : app
+            )
+        );
+
+        setEditingAppointmentId(null);
+        setEditingAppointment(null);
+        setShowTypeChange(false);
+        setShowDateTimeChange(false);
     } catch (error) {
-      console.error('Error updating appointment:', error);
-      setError('Failed to update appointment');
+        console.error('Error updating appointment:', error);
+        setError('Failed to update appointment');
     }
   };
 
@@ -360,6 +399,38 @@ function ViewAppointment() {
       alert('An error occurred while updating the appointment.');
     }
   };
+
+  // teststep two constsssss
+  const handleScheduleSelect = (scheduleInfo) => {
+    setSelectedSchedule(scheduleInfo);
+    setSelectedTimeFrom(`${scheduleInfo.timeFrom} → ${scheduleInfo.timeTo}`); // Ensure proper format
+  
+    setFormData((prev) => ({
+      ...prev,
+      appointmentTimeFrom: `${scheduleInfo.timeFrom} → ${scheduleInfo.timeTo}`, // Ensure correct format
+      doctorEmail: scheduleInfo.doctorEmail,
+      doctorFirstName: scheduleInfo.doctorFirstName,
+      doctorLastName: scheduleInfo.doctorLastName,
+      mainID: scheduleInfo.mainID, // Store mainID
+      slotID: scheduleInfo.slotID, // Store slotID
+    }));
+  
+    console.log('Selected Schedule:', scheduleInfo);
+  };
+  
+  const updateSlotToUnavailable = async (mainID, slotID) => {
+    try {
+        const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/update-slot-status/${mainID}/${slotID}`);
+        
+        if (response.status === 200) {
+            console.log('Slot updated successfully:', response.data);
+        } else {
+            console.error('Failed to update slot:', response.data.message);
+        }
+    } catch (error) {
+        console.error('Error updating slot status:', error);
+    }
+  };
   
 
   const handleInputChange = (e) => {
@@ -400,6 +471,12 @@ function ViewAppointment() {
           <option value="asc">Date Ascending</option>
           <option value="desc">Date Descending</option>
         </select>
+        <input
+          type="email"
+          placeholder="Filter by doctor email"
+          value={doctorEmailFilter}
+          onChange={(e) => setDoctorEmailFilter(e.target.value)}
+        />
       </div>
       {displayedAppointments.length === 0 ? (
         <p>No pending or rebooked appointments found.</p>
@@ -446,42 +523,64 @@ function ViewAppointment() {
                           >
                             <h2>Edit Appointment</h2>
                             <div className="AdminAppointmentEditButtons">
-                              <button className="AdminAppointmentButton" onClick={() => {
-                                setShowTypeChange(!showTypeChange);
-                                setShowDateTimeChange(false);
-                              }}>
-                                Change Appointment Type
-                              </button>
-                              <button className="AdminAppointmentButton" onClick={() => {
-                                setShowDateTimeChange(!showDateTimeChange);
-                                setShowTypeChange(false);
-                              }}>
-                                Change Date and Time
+                              <button 
+                                className="AdminAppointmentButton" 
+                                onClick={() => setShowDateTimeChange(true)}
+                              >
+                                Edit Appointment Details
                               </button>
                             </div>
 
                             <div className="AdminAppointmentEditContent">
-                              {showTypeChange && (
+                              {currentStep === 1 && showDateTimeChange && (
                                 <AppointmentStepOne 
-                                formData={formData}
-                                handleInputChange={handleInputChange}
-                                selectedCard={selectedCard} 
-                                handleCardSelect={handleCardSelect}
-                                services={services}
-                                doctors={doctors}
-                              />
+                                  formData={formData}
+                                  handleInputChange={handleInputChange}
+                                  selectedCard={selectedCard} 
+                                  handleCardSelect={handleCardSelect}
+                                  services={services}
+                                  doctors={doctors}
+                                  nameOne={nameOne} 
+                                  nameTwo={nameTwo} 
+                                  handleClinicSelect={handleClinicSelect}
+                                />                                                         
                               )}
 
-                              {showDateTimeChange && (
-                                <AppointmentStepTwo
-                                  availableDates={availableDates}
-                                  selectedDate={selectedDate}
-                                  handleDateSelect={handleDateSelect}
-                                  generateTimeSlots={generateTimeSlots}
-                                  selectedTimeFrom={selectedTimeFrom}
-                                  handleTimeSelect={handleTimeSelect}
-                                  bookedAppointments={bookedAppointments}
+                              {currentStep === 2 && showDateTimeChange && (
+                                <TestStepTwo
+                                  selectedDoctor={formData.selectedDoctor}
+                                  onScheduleSelect={handleScheduleSelect}
+                                  filterEmail={doctorEmailFilter}
                                 />
+                              )}
+                            </div>
+
+                            <div className="AdminAppointmentNavigationButtons">
+                              {currentStep > 1 && (
+                                <button 
+                                  className="AdminAppointmentButton" 
+                                  onClick={() => setCurrentStep(currentStep - 1)}
+                                >
+                                  Previous
+                                </button>
+                              )}
+                              {currentStep < 2 && (
+                                <button 
+                                  className="AdminAppointmentButton" 
+                                  onClick={() => setCurrentStep(currentStep + 1)}
+                                >
+                                  Next
+                                </button>
+                              )}
+                              {currentStep === 2 && (
+                                <button 
+                                  className="AdminAppointmentButton" 
+                                  onClick={() => {
+                                    console.log("Completing edit for doctor:", selectedDoctor);
+                                  }}
+                                >
+                                  Complete Edit
+                                </button>
                               )}
                             </div>
                             <div className="AdminAppointmentStatusButtons">

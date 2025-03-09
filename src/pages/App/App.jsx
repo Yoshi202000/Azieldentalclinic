@@ -35,7 +35,7 @@ function App() {
       {/* Wrap First and Card components in a main content container for better layout control */}
       <div className="main-content">
         <First />
-        <div className="card-container">
+        <div className="app-card-container">
           {services.map((service, index) => (
             <Card
               key={index}

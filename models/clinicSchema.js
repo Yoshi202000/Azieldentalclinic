@@ -10,6 +10,7 @@ const serviceSchema = new mongoose.Schema({
 const clinicSchema = new mongoose.Schema({
   nameOne: { type: String, required: true, default: null }, // Renamed from "name"
   nameTwo: { type: String, required: true, default: null }, // New field
+  loginMessage: { type: String, required: true, default: null }, // New field
   description: { type: String, required: true, default: null },
   services: { type: [serviceSchema], required: true, default: [] },
   address: { type: String, required: true, default: null },
@@ -17,6 +18,7 @@ const clinicSchema = new mongoose.Schema({
   responsiveBg: {type: Buffer, required: true, default: null },
   clinicLogo: {type: Buffer, required: true, default: null},
   gcashQR: {type: Buffer, default: null},
+  mainImg: {type: Buffer, required: true, default: null },
 
   nameOnePhone: { type: String, required: true, default: null },
   nameTwoPhone: { type: String, required: true, default: null }, // New field

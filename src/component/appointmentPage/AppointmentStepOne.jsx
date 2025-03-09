@@ -1,107 +1,115 @@
-import React from 'react';
-import Card from '../Card';
+  import React, { useEffect, useState } from 'react';
+  import Card from '../Card';
 
-const AppointmentStepOne = ({ 
-  selectedCard, 
-  handleCardSelect, 
-  handleClinicSelect, 
-  formData, 
-  handleInputChange,
-  services, // Services passed from Appointment component
-  doctors,
-  nameOne,
-  nameTwo
-}
-) => {
-  // Add this function to filter services based on selected doctor
-  const getFilteredServices = () => {
-    if (!formData.selectedDoctor) return services;
+  const AppointmentStepOne = ({ 
+    selectedCard, 
+    handleCardSelect, 
+    handleClinicSelect, 
+    formData, 
+    handleInputChange,
+    services, 
+    doctors,
+    nameOne,
+    nameTwo
+  }) => {
+    const [filteredDoctors, setFilteredDoctors] = useState([]);
+
+
     
-    const selectedDoctor = doctors.find(doctor => doctor.email === formData.selectedDoctor);
-    return services.filter(service => 
-      selectedDoctor?.services.some(doctorService => doctorService.name === service.name)
-    );
-  };
+    // Filter doctors based on selected clinic
+    useEffect(() => {
+      if (formData.bookedClinic) {
+        const filtered = doctors.filter(doctor =>
+          doctor.clinic === formData.bookedClinic // Assuming doctor has a clinic property
+        );
+        setFilteredDoctors(filtered);
+      } else {
+        setFilteredDoctors([]);
+      }
+    }, [formData.bookedClinic, doctors]);
 
-  // Add this function to filter doctors based on selected service
-  const getFilteredDoctors = () => {
-    if (!selectedCard) return doctors;
-    
-    return doctors.filter(doctor =>
-      doctor.services.some(service => service.name === selectedCard)
-    );
-  };
+    // Function to get filtered services based on selected doctor
+    const getFilteredServices = () => {
+      if (!formData.selectedDoctor) return [];
 
-  return (
-    <div className="appointment-type">
-      <h2>Schedule Your Appointment</h2>
-      
-      {/* Clinic Selection */}
-      <h2>Choose Your Clinic</h2>
-      <select 
-        name="bookedClinic" 
-        value={formData.bookedClinic} 
-        onChange={(e) => {
-          const selectedClinic = e.target.value;
-          handleInputChange(e); // Call the existing input change handler
-          // Call handleClinicSelect to pass the selected clinic to the parent component
-          handleClinicSelect(selectedClinic);
-        }}
-        required
-      >
-        <option value="" disabled>Choose your clinic</option>
-        <option value={nameOne}>{nameOne}</option>
-        <option value={nameTwo}>{nameTwo}</option>
-      </select>
+      const selectedDoctor = doctors.find(doctor => doctor.email === formData.selectedDoctor);
+      return services.filter(service => 
+        selectedDoctor?.services.some(doctorService => doctorService.name === service.name)
+      );
+    };
 
-      {/* Doctor Selection */}
-      <h2>Choose Your Doctor</h2>
-      <select
-        name="selectedDoctor"
-        value={formData.selectedDoctor || ''}
-        onChange={(e) => {
-          handleInputChange(e);
-          // Reset service selection if doctor changes
-          if (selectedCard) {
-            handleCardSelect(null);
-          }
-        }}
-        required
-      >
-        <option value="" disabled>Select a doctor</option>
-        {getFilteredDoctors().map((doctor) => (
-          <option key={doctor._id} value={doctor.email}>
-            Dr. {doctor.firstName} {doctor.lastName}
-          </option>
-        ))}
-      </select>
+    // Get available services based on the selected doctor
+    const availableServices = getFilteredServices();
 
-      {/* Services Selection */}
-      <h2>Choose Your Service</h2>
-      <div className="app-card-container">
-        {getFilteredServices().map((service, index) => (
-          <label key={index}>
-            <Card
-              name={service.name}
-              description={service.description}
-              image={service.image ? `src${service.image}` : null}
-              isSelected={selectedCard === service.name}
-              onClick={() => {
-                handleCardSelect(service.name);
-                // Reset doctor selection if service changes and doctor doesn't offer this service
-                if (formData.selectedDoctor) {
-                  const currentDoctor = doctors.find(doc => doc.email === formData.selectedDoctor);
-                  if (!currentDoctor.services.some(s => s.name === service.name)) {
-                    handleInputChange({ target: { name: 'selectedDoctor', value: '' } });
-                  }
-                }
-              }}
-            />
-          </label>
-        ))}
+    return (
+      <div className="appointment-type">
+        <h2>Schedule Your Appointment</h2>
+        
+        {/* Clinic Selection */}
+        <h4>Choose Your Clinic</h4>
+        <select 
+          name="bookedClinic" 
+          class="form-select form-select-lg mb-3"
+          value={formData.bookedClinic} 
+          onChange={(e) => {
+            const selectedClinic = e.target.value;
+            handleInputChange(e); // Call the existing input change handler
+            handleClinicSelect(selectedClinic);
+          }}
+          required
+        >
+          <option value=""  disabled>Choose your clinic</option>
+          <option value={nameOne}>{nameOne}</option>
+          <option value={nameTwo}>{nameTwo}</option>
+        </select>
+
+        {/* Doctor Selection */}
+        <h4>Choose Your Doctor</h4>
+        <select
+          name="selectedDoctor"
+          class="form-select form-select-lg mb-3"
+          value={formData.selectedDoctor || ''}
+          onChange={(e) => {
+            handleInputChange(e);
+            // Reset service selection if doctor changes
+            if (selectedCard) {
+              handleCardSelect(null);
+            }
+          }}
+          required
+          disabled={!formData.bookedClinic} // Disable if no clinic is selected
+        >
+          <option value="" disabled>Select a doctor</option>
+          {filteredDoctors.map((doctor) => (
+            <option key={doctor._id} value={doctor.email}>
+              Dr. {doctor.firstName} {doctor.lastName}
+            </option>
+          ))}
+        </select>
+
+        {/* Services Selection */}
+        {formData.selectedDoctor && ( // Only show services if a doctor is selected
+          <>
+            <h3>Choose Your Service</h3>
+            <div className="app-card-container">
+              {availableServices.map((service, index) => (
+                <label key={index}>
+                  <Card
+                    name={service.name}
+                    description={service.description}
+                    image={service.image ? `src${service.image}` : null}
+                    isSelected={selectedCard === service.name}
+                    onClick={() => {
+                      handleCardSelect(service.name);
+                    }}
+                  />
+                </label>
+              ))}
+            </div>
+          </>
+        )}
       </div>
-    </div>
-  );
-};
+    );
+  };
 
-export default AppointmentStepOne;
+  export default AppointmentStepOne;

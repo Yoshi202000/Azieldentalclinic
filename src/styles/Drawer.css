@@ -4,7 +4,7 @@ body, html {
   overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
-.navcontainer {
+.Aziel-navcontainer {
   width: 100%;
   display: flex;
   position: fixed;
@@ -15,7 +15,7 @@ body, html {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
 }
 
-.navbar {
+.Aziel-navbar {
   display: flex; /* Ensure flex display */
   justify-content: space-between;
   align-items: center;
@@ -168,7 +168,7 @@ body, html {
 
 /* Responsive styles */
 @media (max-width: 980px) {
-  .navbar {
+  .Aziel-navbar {
     display: none; /* Hide the navbar on smaller screens */
   }
   .drawer {

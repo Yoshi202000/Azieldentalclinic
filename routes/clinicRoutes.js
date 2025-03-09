@@ -27,6 +27,8 @@ const storage = multer.diskStorage({
       cb(null, 'responsiveBg.png');
     }  else if (file.fieldname === 'gcashQR'){
       cb(null, 'gcashQR.png')
+    }  else if (file.fieldname === 'mainImg'){
+      cb(null, 'mainImg.png')
     }else if (file.fieldname === 'clinicLogo') {
         cb(null, 'clinicLogo.png');
     } 
@@ -188,6 +190,20 @@ router.put('/clinic', upload.any(), async (req, res) => {
         }
       }
       clinic.responsiveBg = fs.readFileSync(responsiveBgImage.path); // Save as Buffer
+    }
+
+    const mainImgImage = req.files.find(file => file.fieldname === 'mainImg');
+    if (mainImgImage) {
+      const mainImgPath = path.join(uploadDir, 'mainImg.png');
+      try {
+        await fs.unlink(mainImgPath); // Delete existing background if it exists
+        console.log(`Replaced existing mainImg image: ${mainImgPath}`);
+      } catch (err) {
+        if (err.code !== 'ENOENT') {
+          console.error(`Error deleting mainImg file: ${mainImgPath}`, err);
+        }
+      }
+      clinic.mainImgImage = fs.readFileSync(mainImgImage.path); // Save as Buffer
     }
 
     // Handle services

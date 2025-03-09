@@ -25,6 +25,7 @@ const generateToken = (user) => {
         doctorGreeting: user.doctorGreeting, // Updated here
         doctorDescription: user.doctorDescription, // Updated here
         services: user.services, 
+        termscondition: user.termscondition
       },
       process.env.JWT_SECRET,
       { expiresIn }
@@ -49,7 +50,7 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
         
-        if (!user.emailVerified) {
+        if (!user.emailVerified ) { //add this when deploy || !user.termscondition
             return res.status(400).json({ message: 'Please verify your email before logging in.' });
         }
 
@@ -81,6 +82,7 @@ router.post('/login', async (req, res) => {
                 services: user.services,
                 doctorGreeting: user.doctorGreeting, 
                 doctorDescription: user.doctorDescription,
+                // emailVerified: user.emailVerified,
             },
             token: token, // Include the token in the response
             expirationTime: expirationTime // Include expiration time

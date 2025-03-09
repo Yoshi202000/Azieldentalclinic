@@ -19,6 +19,8 @@ const EditContent = () => {
     const [signupDescription, setSignupDescription] = useState('');
     const [responsiveBg, setResponsiveBg] = useState(null); // For storing the file
     const [responsiveBgPreview, setResponsiveBgPreview] = useState(''); // For previewing the image
+    const [mainImg, setMainImg] = useState(null); // For storing the file
+    const [mainImgPreview, setMainImgPreview] = useState(''); // For previewing the image
     const [gcashQR, setGcashQR] = useState(null);
     const [gcashQRPreview, setGcashQRPreview] = useState('');
     const [clinicLogo, setClinicLogo] = useState (null);
@@ -194,6 +196,20 @@ const EditContent = () => {
       reader.readAsDataURL(file);
     }
   };
+  
+  const handlemainImgChange = (e) => {
+    const file = e.target.files[0];
+    setMainImg(file);
+
+    // Preview the image
+    const reader = new FileReader();
+    reader.onload = () => {
+      setMainImgPreview(reader.result);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleGcashQRChange = (e) => {
     const file = e.target.files[0];
@@ -289,6 +305,13 @@ const EditContent = () => {
       console.log('No responsiveBg provided');
     }
 
+    if (mainImg) {
+      console.log('Adding mainImg to form data');
+      formData.append('mainImg', mainImg);
+    } else {
+      console.log('No mainImg provided');
+    }
+
     if (gcashQR){
       console.log('Adding gcashQR to form data');
       formData.append('gcashQR', gcashQR);
@@ -325,13 +348,14 @@ const EditContent = () => {
   
 
   return (
-    <div className="editContentContainer">
+    <div  className='edit-content-container'>
       <h2>Edit Clinic Content</h2>
       <form onSubmit={handleSubmit}>
         <label>
           Clinic Name One:
           <input
             type="text"
+            className='form-control-plaintext'
             name="nameOne"
             value={nameOne}
             onChange={(e) => setNameOne(e.target.value)}
@@ -341,6 +365,7 @@ const EditContent = () => {
           Clinic One PhoneNumber
           <input
             type="text"
+            className='form-control-plaintext'
             name="nameOnePhone"
             value={nameOnePhone}
             onChange={(e) => setNameOnePhone(e.target.value)}
@@ -349,6 +374,7 @@ const EditContent = () => {
         <label>
           Clinic Name Two:
           <input
+            className='form-control-plaintext'
             type="text"
             name="nameTwo"
             value={nameTwo}
@@ -359,6 +385,7 @@ const EditContent = () => {
           Clinic Two PhoneNumber
           <input
             type="text"
+            className='form-control-plaintext'
             name="nameTwoePhone"
             value={nameTwoPhone}
             onChange={(e) => setNameTwoPhone(e.target.value)}
@@ -368,6 +395,7 @@ const EditContent = () => {
           Address:
           <input
             type="text"
+            className='form-control-plaintext'
             name="clinicAddress"
             value={clinicAddress}
             onChange={(e) => setClinicAddress(e.target.value)}
@@ -377,6 +405,7 @@ const EditContent = () => {
           Address Two:
           <input
             type="text"
+            className='form-control-plaintext'
             name="clinicAddressTwo"
             value={clinicAddressTwo}
             onChange={(e) => setClinicAddressTwo(e.target.value)}
@@ -385,6 +414,7 @@ const EditContent = () => {
         <label>
           Terms and Conditions:
           <textarea
+          class="form-control"  
             name="termsAndConditions"
             rows="5"
             cols="30"
@@ -395,6 +425,7 @@ const EditContent = () => {
         <label>
           Clinic Description:
           <textarea
+          class="form-control"
             name="clinicDescription"
             rows="5"
             cols="30"
@@ -403,8 +434,31 @@ const EditContent = () => {
           ></textarea>
         </label>
         <label>
+          Home Page Welcome Message:
+          <textarea
+          class="form-control"
+            type="text"
+            name="welcomeMessage"
+            value={welcomeMessage}
+            onChange={(e) => setWelcomeMessage(e.target.value)}
+          ></textarea>
+        </label>
+        {/* <label>
+          Clinic Description:
+          <textarea
+          class="form-control"
+            name="clinicDescription"
+            rows="5"
+            cols="30"
+            value={clinicDescription}
+            onChange={(e) => setClinicDescription(e.target.value)}
+          ></textarea>
+        </label> */}
+        <label>
           Clinic Catch Line:
           <input
+                      className='form-control-plaintext'
+
             type="text"
             name="clinicCatchLine"
             value={clinicCatchLine}
@@ -412,8 +466,54 @@ const EditContent = () => {
           />
         </label>
         <label>
+          Login Message:
+          <input
+                      className='form-control-plaintext'
+
+            type="text"
+            name="loginMessage"
+            value={loginMessage}
+            onChange={(e) => setLoginMessage(e.target.value)}
+          />
+        </label>
+        <label>
+          Login Description:
+          <input
+                      className='form-control-plaintext'
+
+            type="text"
+            name="LoginDescription"
+            value={loginDescription}
+            onChange={(e) => setLoginDescription(e.target.value)}
+          />
+        </label>
+        <label>
+          Signup Message:
+          <input
+                      className='form-control-plaintext'
+
+            type="text"
+            name="signupMessage"
+            value={signupMessage}
+            onChange={(e) => setSignupMessage(e.target.value)}
+          />
+        </label>
+        <label>
+          Signup Description:
+          <input
+                      className='form-control-plaintext'
+
+            type="text"
+            name="SignupDescription"
+            value={signupDescription}
+            onChange={(e) => setSignupDescription(e.target.value)}
+          />
+        </label>
+        <label>
           Clinic Header:
           <input
+                      className='form-control-plaintext'
+
             type="text"
             name="clinicHeader"
             value={clinicHeader}
@@ -460,6 +560,27 @@ const EditContent = () => {
 </div>
 
 <div>
+  <label htmlFor="mainImg">Main Small Image:</label>
+  <input
+    type="file"
+    id="mainImg"
+    name="mainImg" // Must match the expected field name
+    accept="image/png, image/jpeg, image/jpg"
+    onChange={handlemainImgChange}
+  />
+  {mainImgPreview && (
+    <div>
+      <p>Preview:</p>
+      <img
+        src={mainImgPreview}
+        alt="mainImg preview"
+        style={{ width: '100%', maxWidth: '300px', height: 'auto' }}
+      />
+    </div>
+  )}
+</div>
+
+<div>
   <label htmlFor="gcashQR">Gcash QR Code:</label>
   <input
     type="file"
@@ -487,6 +608,7 @@ const EditContent = () => {
               <label>
                 Clinic Service {index + 1}:
                 <input
+                            className='form-control-plaintext'
                   type="text"
                   value={service.name}
                   onChange={(e) => handleServiceChange(index, 'name', e.target.value)}
@@ -495,6 +617,7 @@ const EditContent = () => {
               <label>
                 Service Description:
                 <textarea
+                class="form-control"
                   value={service.description}
                   onChange={(e) => handleServiceChange(index, 'description', e.target.value)}
                 ></textarea>
@@ -502,6 +625,7 @@ const EditContent = () => {
               <label>
                 Clinic:
                 <select
+                  class="form-select"
                   value={service.clinic}
                   onChange={(e) => handleServiceChange(index, 'clinic', e.target.value)}
                 >
@@ -515,6 +639,7 @@ const EditContent = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 {/* Input for file upload */}
                 <input
+                class="form-control"
                   type="file"
                   onChange={(e) => handleServiceImageChange(index, e.target.files[0])}
                   style={{ flex: '1' }}
@@ -522,17 +647,12 @@ const EditContent = () => {
                 {/* Display existing image if available */}
                 {service.image && (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                   <img
-                    src={
-                      typeof service.image === 'string'
-                        ? service.image // Existing image URL
-                        : service.image instanceof File
-                        ? URL.createObjectURL(service.image) // Preview for newly selected files
-                        : servicesImage // Fallback image
-                    }                    
-                    alt={`Service ${index + 1}`}
-                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                  />
+                    <img
+                      class="img-thumbnail"
+                      src={service.image ? `src${service.image}` : servicesImage}
+                      alt={`Service ${index + 1}`}
+                      style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                    />
                     <button
                       type="button"
                       onClick={() => {
@@ -540,15 +660,7 @@ const EditContent = () => {
                         handleServiceChange(index, 'image', null);
                         handleServiceChange(index, 'imageUpdated', true); // Mark as updated
                       }}
-                      style={{
-                        marginTop: '5px',
-                        padding: '5px',
-                        backgroundColor: '#ff4d4d',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '3px',
-                        cursor: 'pointer',
-                      }}
+                      class="btn btn-primary btn-sm"
                     >
                       Remove Image
                     </button>
@@ -558,7 +670,7 @@ const EditContent = () => {
             </label>
 
               <button
-                type="button"
+                type="button" class="btn btn-primary btn-sm"
                 onClick={() => removeService(index, service._id)}
               >
                 Remove Service
@@ -566,7 +678,7 @@ const EditContent = () => {
             </div>
             
           ))}
-          <button type="button" onClick={addService}>
+          <button type="button" class="btn btn-primary btn-sm" onClick={addService}>
             Add Service
           </button>
         </div>
@@ -672,7 +784,6 @@ const EditContent = () => {
 
         <input type="submit" value="Update" />
       </form>
-      <button>Cancel</button>
     </div>
   );
 };

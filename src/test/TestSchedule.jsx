@@ -29,12 +29,13 @@ const TestSchedule = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showSlots, setShowSlots] = useState(false); // State to track visibility of slots
-  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState(null);
   const [editedSlots, setEditedSlots] = useState([]);
   const [previewSlots, setPreviewSlots] = useState([]);
   const [isGeneratingSlots, setIsGeneratingSlots] = useState(true); // Toggle between generating and editing
   const [nextAvailableDate, setNextAvailableDate] = useState(null);
   const [maxEndDate, setMaxEndDate] = useState(null);
+  const [visibleSlots, setVisibleSlots] = useState({});
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -44,29 +45,21 @@ const TestSchedule = () => {
         navigate('/login');
         return;
       }
-
+  
       try {
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
           method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
           credentials: 'include',
         });
-
+  
         if (!response.ok) {
           throw new Error('Failed to fetch user data.');
         }
-
+  
         const userData = await response.json();
-        const {
-          firstName,
-          lastName,
-          email,
-          clinic,
-          services,
-        } = userData.user || {};
-
+        const { firstName, lastName, email, clinic, services } = userData.user || {};
+  
         setFormData((prevData) => ({
           ...prevData,
           firstName: firstName || '',
@@ -75,105 +68,104 @@ const TestSchedule = () => {
           clinic: clinic || '',
           services: Array.isArray(services) ? services.map((service) => service.name) : [],
         }));
-
-        // Fetch user's schedules after verifying token
-        const schedulesResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/schedules`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!schedulesResponse.ok) {
-          throw new Error('Failed to fetch user schedules.');
-        }
-
-        const userSchedules = await schedulesResponse.json();
-        setSchedule(userSchedules); // Set the fetched schedules to state
-
-        // Determine the next available date
-        const today = new Date();
-        const nextDay = new Date(today);
-        nextDay.setDate(today.getDate() + 1);
-        const nextAvailable = userSchedules.find(day => new Date(day.date) >= nextDay);
-        setNextAvailableDate(nextAvailable ? nextAvailable.date : nextDay.toISOString().split('T')[0]);
-
-        // Set maximum end date to 60 days from today
-        const maxDate = new Date(today);
-        maxDate.setDate(today.getDate() + 60);
-        setMaxEndDate(maxDate.toISOString().split('T')[0]);
-
       } catch (error) {
         console.error('Error fetching user data:', error);
         alert(error.message || 'An unexpected error occurred.');
         navigate('/login');
       }
     };
-
+  
     const fetchSchedules = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
         setErrorMessage('Please log in to continue.');
+        navigate('/login'); // Redirect to login if no token
         return;
       }
-
+  
       setLoading(true);
       try {
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/schedules`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
-
+  
         if (response.status === 200) {
-          setSchedule(response.data); // Set the fetched schedules to state
-        } else {
-          setErrorMessage('Failed to fetch schedules.');
+          const fetchedSchedules = response.data.length > 0 ? response.data : [];
+          setSchedule(fetchedSchedules);
+  
+          // Determine the latest scheduled date
+          if (fetchedSchedules.length > 0) {
+            const latestDate = new Date(
+              Math.max(...fetchedSchedules.map(s => new Date(s.date).getTime()))
+            );
+  
+            // Set the next available start date (day after latest schedule)
+            const nextAvailableDate = new Date(latestDate);
+            nextAvailableDate.setDate(latestDate.getDate() + 1);
+  
+            setFormData(prevData => ({
+              ...prevData,
+              startDate: nextAvailableDate.toISOString().split('T')[0], // Format YYYY-MM-DD
+            }));
+          } else {
+            // If no schedules exist, allow scheduling from tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+  
+            setFormData(prevData => ({
+              ...prevData,
+              startDate: tomorrow.toISOString().split('T')[0],
+            }));
+          }
         }
       } catch (error) {
         console.error('Error fetching schedules:', error);
-        // Check if the error response exists and log the message
-        if (error.response) {
-          setErrorMessage('Failed to fetch schedules: ' + (error.response.data.message || error.message));
+  
+        if (error.response?.status === 401) {
+          alert('Session expired. Please log in again.');
+          localStorage.removeItem('token');
+          navigate('/login');
         } else {
-          setErrorMessage('Failed to fetch schedules: ' + error.message);
+          setErrorMessage('Failed to fetch schedules: ' + (error.response?.data?.message || error.message));
         }
       } finally {
         setLoading(false);
       }
     };
-
+  
+    // Ensure max end date is 60 days from today
+    const today = new Date();
+    const futureDate = new Date();
+    futureDate.setDate(today.getDate() + 60);
+  
+    setMaxEndDate(futureDate); // Save max end date
+  
+    // Set the endDate in formData (forces it to stay at 60 days from today)
+    setFormData((prevData) => ({
+      ...prevData,
+      endDate: futureDate.toISOString().split('T')[0], // Format YYYY-MM-DD
+    }));
+  
     fetchUserData();
     fetchSchedules();
   }, [navigate]);
-
+  
+  
   useEffect(() => {
-    if (formData.startDate) {
-      const endDate = new Date(formData.startDate);
-      endDate.setDate(endDate.getDate() + 59); // 60 days total
-      setFormData((prevData) => ({
-        ...prevData,
-        endDate: endDate.toISOString().split('T')[0],
-      }));
-    }
-  }, [formData.startDate]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const today = new Date();
+  
+    // Set maxEndDate to 60 days from today
+    const futureDate = new Date();
+    futureDate.setDate(today.getDate() + 60);
+  
+    setMaxEndDate(futureDate); // Save max end date
+  
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      endDate: futureDate.toISOString().split('T')[0], // Set fixed end date
     }));
-  };
-
-  const handleServiceChange = (service) => {
-    setFormData((prevData) => {
-      const services = prevData.services.includes(service)
-        ? prevData.services.filter((s) => s !== service)
-        : [...prevData.services, service];
-      return { ...prevData, services };
-    });
-  };
+  }, []); // Runs only once on mount
+  
 
   const generateSlotsForDay = (date) => {
     const slots = [];
@@ -201,8 +193,8 @@ const TestSchedule = () => {
     const endDate = new Date(formData.endDate);
 
     // Check if the end date is within the maximum allowed range
-    if (endDate > new Date(maxEndDate)) {
-      alert(`You can only create slots up to ${maxEndDate}`);
+    if (maxEndDate && endDate > maxEndDate) {
+      alert(`You can only create slots up to ${maxEndDate.toDateString()}`);
       return;
     }
 
@@ -214,36 +206,49 @@ const TestSchedule = () => {
       const slotsForDate = generateSlotsForDay(dateString); // Generate slots for the specific date
       newSlots.push({ date: dateString, slots: slotsForDate }); // Push an object with date and slots
     }
-
+    console.log(newSlots);
     setPreviewSlots(newSlots); // Set the generated slots for preview
   };
 
   const handleSlotStatusChange = (dateIndex, slotIndex, status) => {
-    // Check if editedSlots and the specific slot exist
-    if (editedSlots[slotIndex]) {
-      const updatedEditedSlots = [...editedSlots];
-      updatedEditedSlots[slotIndex].status = status; // Update the status of the selected slot
-      setEditedSlots(updatedEditedSlots);
-    } else {
-      console.error('Invalid slot index or slots not found:', slotIndex, editedSlots);
-    }
+    console.log('Date index' + dateIndex);
+    console.log('slotIndex ' + slotIndex);
+    console.log('status' + status);
+
+    setPreviewSlots((prevSlots) =>
+      prevSlots.map((dateSlots, idx) =>
+        idx === dateIndex
+          ? {
+              ...dateSlots,
+              slots: dateSlots.slots.map((slot, sIdx) =>
+                sIdx === slotIndex ? { ...slot, status } : slot
+              ),
+            }
+          : dateSlots
+      )
+    );
   };
+  
 
   const makeAllAvailable = (dateIndex) => {
-    const updatedSlots = previewSlots[dateIndex].slots.map(slot => ({ ...slot, status: 'Available' }));
-    setPreviewSlots(prev => {
-      const newPreview = [...prev];
-      newPreview[dateIndex].slots = updatedSlots;
-      return newPreview;
+    setPreviewSlots((prev) => {
+      const newPreview = [...prev]; // Create a copy of the current state
+      newPreview[dateIndex].slots = newPreview[dateIndex].slots.map(slot => ({
+        ...slot,
+        status: 'Available', // Set all slots to Available
+      }));
+      return newPreview; // Return the updated state
     });
   };
 
   const makeAllUnavailable = (dateIndex) => {
-    const updatedSlots = previewSlots[dateIndex].slots.map(slot => ({ ...slot, status: 'Unavailable' }));
-    setPreviewSlots(prev => {
-      const newPreview = [...prev];
-      newPreview[dateIndex].slots = updatedSlots;
-      return newPreview;
+    setPreviewSlots((prev) => {
+      const newPreview = [...prev]; // Create a copy of the current state
+      newPreview[dateIndex].slots = newPreview[dateIndex].slots.map(slot => ({
+        ...slot,
+        status: 'Unavailable', // Set all slots to Unavailable
+      }));
+      return newPreview; // Return the updated state
     });
   };
 
@@ -306,12 +311,6 @@ const TestSchedule = () => {
     } else {
       console.error('No slots found for the selected date:', date);
     }
-  };
-
-  const handleSlotEditStatusChange = (index, status) => {
-    const updatedSlots = [...editedSlots];
-    updatedSlots[index].status = status; // Update the status of the selected slot
-    setEditedSlots(updatedSlots);
   };
 
   const makeAllEditAvailable = () => {
@@ -384,124 +383,73 @@ const TestSchedule = () => {
     }
   };
 
-  const handleDateChange = (e) => {
-    const selectedDate = e.target.value;
-    setEditDate(selectedDate);
-    const daySchedule = schedule.find(day => day.date === selectedDate);
-    setSelectedDay(daySchedule || null); // Set selected day schedule or null if not found
+  const availableDates = previewSlots.map(slot => new Date(slot.date));
+
+  const toggleSlotsVisibility = (date) => {
+    const formattedDate = date.toISOString().split("T")[0];
+    setVisibleSlots((prev) => ({ ...prev, [formattedDate]: !prev[formattedDate] }));
+    setSelectedDate(date);
   };
 
-  const bulkUpdateSlots = (status) => {
-    if (selectedDay) {
-      setSelectedDay((prevDay) => {
-        const updatedSlots = prevDay.slots.map(slot => ({
-          ...slot,
-          status,
-        }));
-        return { ...prevDay, slots: updatedSlots };
-      });
-    }
-  };
+  const handleDateChange = (date) => {
+    console.log('Raw selected date:', date); // Debugging: Log the input
 
-  const handleSaveSchedule = async () => {
-    setLoading(true);
-    const token = localStorage.getItem('token');
-    if (!token) {
-      showError('Please log in to continue.');
-      navigate('/login');
+    // Ensure date is valid
+    if (!date) {
+      console.error('Date is null or undefined');
+      setSelectedDate(null);
       return;
     }
-
-    const scheduleData = {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      clinic: formData.clinic,
-      services: formData.services,
-      date: formData.startDate, // Assuming you want to save the schedule for the start date
-      slots: generateSlotsForDay(), // Call your function to generate slots for the day
-    };
-
-    console.log('Schedule Data:', scheduleData); // Log the schedule data
-
-    try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/schedule`, scheduleData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.status === 201) {
-        alert('Schedule saved successfully!');
-      }
-    } catch (error) {
-      showError('Failed to save schedule: ' + (error.response?.data?.message || error.message));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleUpdateSchedule = async (scheduleId, updatedSlots) => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      showError('Please log in to continue.');
-      navigate('/login');
+  
+    let parsedDate;
+  
+    // Check if date is a string (e.g., "2025-03-12")
+    if (typeof date === 'string') {
+      parsedDate = new Date(date);
+      console.log('1');
+    } else if (date instanceof Date) {
+      parsedDate = date;
+      console.log('2');
+    } else {
+      console.error('Invalid date format:', date);
+      setSelectedDate(null);
       return;
     }
-
-    try {
-      // Prepare the data to send only the updated slots
-      const updatedData = {
-        slots: updatedSlots, // Send only the updated slots
-      };
-
-      const response = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/${scheduleId}`, updatedData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.status === 200) {
-        alert('Schedule updated successfully!');
-        // Optionally refresh the schedule data or update the state
-      }
-    } catch (error) {
-      showError('Failed to update schedule: ' + (error.response?.data?.message || error.message));
+  
+    // Ensure the date is valid (not "Invalid Date")
+    if (isNaN(parsedDate.getTime())) {
+      console.error('Invalid Date object:', parsedDate);
+      setSelectedDate(null);
+      return;
     }
-  };
+  
+    // Adjust for timezone properly
+    const adjustedDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
 
-  // Call this function when you want to update the schedule
-  const saveUpdatedSchedule = (dayIndex) => {
-    const daySchedule = schedule[dayIndex];
-    const updatedSlots = daySchedule.slots; // Get the updated slots for this day
-    handleUpdateSchedule(daySchedule.id, updatedSlots); // Assuming each daySchedule has an id
-  };
+    setSelectedDate(adjustedDate);
+    console.log( adjustedDate); // Debugging: Log the fixed date]
 
-  // Function to show user-friendly error messages
-  const showError = (message) => {
-    setErrorMessage(message);
-    setTimeout(() => setErrorMessage(''), 5000); // Clear message after 5 seconds
+    console.log('-----'); 
   };
-
-  const handleLoadSchedule = async () => {
-    // Your existing logic to load the schedule
-    // After loading the schedule, toggle the visibility
-    setShowSlots(!showSlots);
-  };
+  
+  
 
   return (
     <div className="test-schedule">
       {loading && <Spinner />} {/* Show loading spinner */}
-      {errorMessage && <div className="error-message">{errorMessage}</div>} {/* Display error messages */}
-      <h1>{isGeneratingSlots ? 'Generate Slots' : 'Edit Schedule'}</h1>
-      <button onClick={() => setIsGeneratingSlots(true)}>Generate Slots</button>
-      <button onClick={() => setIsGeneratingSlots(false)}>Edit Schedule</button>
+      {errorMessage && <div class="alert alert-danger">{errorMessage}</div>} {/* Display error messages */}
+      <button class= "btn btn-primary me-2" onClick={() => setIsGeneratingSlots(true)}>Generate Slots</button>
+      <button class= "btn btn-primary me-2" onClick={() => setIsGeneratingSlots(false)}>Edit Schedule</button>
+
+      <h1 class="text-center">{isGeneratingSlots ? 'Generate Slots' : 'Edit Schedule'}</h1>
+
 
       {isGeneratingSlots ? (
-        <div>
+        <div class="row">
           <label>
             Start Date:
             <input
+              class="form-control"
               type="date"
               value={formData.startDate}
               onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
@@ -509,15 +457,14 @@ const TestSchedule = () => {
             />
           </label>
           <label>
-            End Date:
-            <input
-              type="date"
-              value={formData.endDate}
-              onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-              min={formData.startDate} // Set minimum date to the calculated start date
-              max={maxEndDate} // Set maximum date to 60 days from today
-            />
-          </label>
+          End Date:
+          <input
+            type="date"
+            className="form-control-plaintext"
+            value={formData.endDate}
+            readOnly // Prevent manual edits
+          />
+        </label>
           <label>
             Start Time:
             <input
@@ -534,32 +481,72 @@ const TestSchedule = () => {
               onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
             />
           </label>
-          <button onClick={handleGenerateSlots}>Generate Slots</button>
+          <button class= "btn btn-primary me-2" onClick={handleGenerateSlots}>Generate Slots</button>
 
           {/* Preview of generated slots */}
           {previewSlots.length > 0 && (
-            <div>
+            <div class="justify-content-center">
+              <div>
               <h3>Preview Slots</h3>
-              {previewSlots.map((dateSlots, dateIndex) => (
-                <div key={dateIndex}>
-                  <h4>Slots for {dateSlots.date}</h4>
-                  {dateSlots.slots.map((slot, slotIndex) => (
-                    <div key={slotIndex}>
-                      <span>{slot.timeFrom} - {slot.timeTo}</span>
-                      <select
-                        value={slot.status}
-                        onChange={(e) => handleSlotStatusChange(dateIndex, slotIndex, e.target.value)}
-                      >
-                        <option value="Available">Available</option>
-                        <option value="Unavailable">Unavailable</option>
-                      </select>
-                    </div>
-                  ))}
-                  <button onClick={() => makeAllAvailable(dateIndex)}>Make All Available</button>
-                  <button onClick={() => makeAllUnavailable(dateIndex)}>Make All Unavailable</button>
+              {/* Calendar for Selecting Dates */}
+      <div className="d-flex justify-content-center">
+        <DatePicker
+          selected={selectedDate}
+          onChange={handleDateChange}
+          dateFormat="yyyy-MM-dd"
+          class="form-control text-center w-50"
+          placeholderText="Pick a date"
+          inline
+          highlightDates={availableDates} 
+        />
+      </div></div>
+
+      {/* Display Slots for the Selected Date */}
+      {selectedDate && (
+        <>
+          <h4 className="text-center mt-3">
+            Available Slots for {selectedDate.toISOString().split("T")[0]}
+          </h4>
+          {previewSlots.map((dateSlots, dateIndex) => {
+            // Check if the date matches the selected date
+            if (dateSlots.date === selectedDate.toISOString().split("T")[0]) {
+              return (
+                <div key={dateIndex} className="">
+                  <div className="card-body">
+                    {dateSlots.slots.map((slot, slotIndex) => (
+                      <div key={slotIndex} className="d-flex justify-content-between align-items-center mb-2">
+                        <span className="fw-bold">{slot.timeFrom} - {slot.timeTo}</span>
+                        <select
+                          className="form-select w-100"
+                          value={slot.status}
+                          onChange={(e) => handleSlotStatusChange(dateIndex, slotIndex, e.target.value)}
+                        >
+                          <option value="Available">Available</option>
+                          <option value="Unavailable">Unavailable</option>
+                        </select>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Buttons to make all slots available/unavailable */}
+                  <div className="d-flex justify-content-center gap-3 mt-3">
+                    <button type="button" className="btn btn-success btn-lg px-4 py-2" onClick={() => makeAllAvailable(dateIndex)}>
+                      Make All Available
+                    </button>
+                    <button type="button" className="btn btn-danger btn-lg px-4 py-2" onClick={() => makeAllUnavailable(dateIndex)}>
+                      Make All Unavailable
+                    </button>
+                  </div>
                 </div>
-              ))}
-              <button onClick={finalizeSlots}>Save Slots</button>
+              );
+            }
+            return null; // Return null for dates that do not match
+          })}
+        </>
+      )}
+                          <div className="d-flex justify-content-center gap-3 mt-3">
+
+                  <button class="btn btn-primary me-2" onClick={finalizeSlots}>Save Slots</button>
+                  </div>
             </div>
           )}
         </div>
@@ -569,7 +556,8 @@ const TestSchedule = () => {
           {schedule.map((day, index) => (
             <div key={index}>
               <span>{day.date}</span>
-              <button onClick={() => handleEditSchedule(day.date)}>Edit</button>
+              <button type="button" class="btn btn-primary btn-sm"
+                 onClick={() => handleEditSchedule(day.date)}>Edit</button>
             </div>
           ))}
 
@@ -581,17 +569,19 @@ const TestSchedule = () => {
                 <div key={index}>
                   <span>{slot.timeFrom} - {slot.timeTo}</span>
                   <select
-                    value={slot.status}
-                    onChange={(e) => handleSlotStatusChange(0, index, e.target.value)} // Use 0 or the appropriate index for edited slots
-                  >
-                    <option value="Available">Available</option>
-                    <option value="Unavailable">Unavailable</option>
-                  </select>
+                  class="form-select w-100"
+                  value={slot.status}
+                  onChange={(e) => handleSlotStatusChange(dateIndex, slotIndex, e.target.value)}
+                >
+                  <option value="Available">Available</option>
+                  <option value="Unavailable">Unavailable</option>
+                </select>
+                
                 </div>
               ))}
-              <button onClick={makeAllEditAvailable}>Make All Available</button>
-              <button onClick={makeAllEditUnavailable}>Make All Unavailable</button>
-              <button onClick={saveEditedSchedule}>Save Changes</button>
+              <button class="btn btn-primary me-2" onClick={makeAllEditAvailable}>Make All Available</button>
+              <button class="btn btn-primary me-2" onClick={makeAllEditUnavailable}>Make All Unavailable</button>
+              <button class="btn btn-primary me-2"onClick={saveEditedSchedule}>Save Changes</button>
             </div>
           )}
         </div>

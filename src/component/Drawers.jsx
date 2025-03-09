@@ -85,39 +85,81 @@ const DrawerComponent = () => {
       </button>
 
       {/* Navigation bar for larger screens */}
-      <nav className="navcontainer">
-        <nav className="navbar">
+      <nav className="Aziel-navcontainer">
+        <nav className="Aziel-navbar">
           <div className="logo-container">
             <img src="src/uploads/clinicLogo.png" alt="Logo" className="logo" />
           </div>
           <ul className="navbar-menu">
-            {userRole !== 'admin' && (
+          {isLoggedIn ? (
+              <>
+                {userRole === 'superAdmin' && (
+                  <li className="navbar-item">
+                    <a href="/superDashboard" className="navbar-link">Dashboard (Super)</a>
+                  </li>
+                )}
+                {userRole === 'admin' && (
+                  <li className="navbar-item">
+                    <a href="/dashboard" className="navbar-link">Dashboard</a>
+                  </li>
+                )}
+                {userRole === 'doctor' && (
+                  <li className="navbar-item">
+                    <a href="/doctorDashboard" className="navbar-link">Dashboard</a>
+                  </li>
+                )}
+              </>
+            ) : (
               <>
                 <li className="navbar-item">
-                  <a href="/home" className="navbar-link">Home</a>
+                  <a href="/" className="navbar-link">Home</a>
+                  <a href="/feedback" className="navbar-link">Feedback</a>
                 </li>
                 <li className="navbar-item">
-                  <a href="/services" className="navbar-link">Services</a>
-                </li>
-                <li className="navbar-item">
-                  <a href={isLoggedIn ? "/appointment" : "#"} className="navbar-link" onClick={handleAppointmentClick}>Appointment</a>
+                  <a href="/Services" className="navbar-link">Services</a>
                 </li>
               </>
             )}
+            
             <li className="navbar-item">
               <a 
-                href={userRole === 'admin' ? '/dashboard' : userRole === 'patient' ? '/profile' : '#'} 
+                href={ userRole === 'patient' ? '/' : '#'} 
                 className="navbar-link"
               >
-                {userRole === 'admin' ? 'Dashboard' : userRole === 'patient' ? 'Profile' : ''}
+                {userRole === 'patient' ? 'Home' : ''}
+              </a>
+            </li>
+            
+            <li className="navbar-item">
+              <a 
+                href={ userRole === 'patient' ? '/appointment' : '#'} 
+                className="navbar-link"
+              >
+                {userRole === 'patient' ? 'appointment' : ''}
               </a>
             </li>
             <li className="navbar-item">
               <a 
-                href={userRole === 'admin' ? '/' : userRole === 'patient' ? '/feedback' : '#'} 
+                href={ userRole === 'patient' ? '/feedback' : '#'} 
                 className="navbar-link"
               >
-                {userRole === 'admin' ? '' : userRole === 'patient' ? 'Feedback' : ''}
+                {userRole === 'patient' ? 'Feedback' : ''}
+              </a>
+            </li>
+            <li className="navbar-item">
+              <a 
+                href={ userRole === 'patient' ? '/Services' : '#'} 
+                className="navbar-link"
+              >
+                {userRole === 'patient' ? 'Services' : ''}
+              </a>
+            </li>
+            <li className="navbar-item">
+              <a 
+                href={ userRole === 'patient' ? '/profile' : '#'} 
+                className="navbar-link"
+              >
+                {userRole === 'patient' ? 'Profile' : ''}
               </a>
             </li>
             {isLoggedIn && (
@@ -135,70 +177,67 @@ const DrawerComponent = () => {
               </>
             ) : (
               <li className="navbar-item">
-                <button onClick={handleLogout} className="navbar-link">Logout</button>
+                <button onClick={handleLogout} type="button" class="btn btn-primary btn-primary">Logout</button>
               </li>
             )}
           </ul>
         </nav>
       </nav>
-
-      {/* Drawer for smaller screens */}
-      <div className={`drawer ${open ? 'open' : ''}`}>
+{/* Drawer for smaller screens */}
+<div className={`drawer ${open ? 'open' : ''}`}>
         <button className="close-btn" onClick={toggleDrawer(false)}>
           &times; {/* Unicode for close icon */}
         </button>
-        <div className="drawer-content">
-          <ul>
-            {userRole !== 'admin' && (
-              <>
-                <li className="drawer-item">
-                  <a href="/home" className="drawer-link">Home</a>
-                </li>
-                <li className="drawer-item">
-                  <a href="/services" className="drawer-link">Services</a>
-                </li>
-                <li className="drawer-item">
-                  <a href="/appointment" className="drawer-link">Appointment</a>
-                </li>
-              </>
-            )}
+  <div className="drawer-content">
+    <ul>
+      {isLoggedIn ? (
+        <>
+          {userRole === 'superAdmin' && (
             <li className="drawer-item">
-              <a 
-                href={userRole === 'admin' ? '/dashboard' : userRole === 'patient' ? '/profile' : '#'} 
-                className="drawer-link"
-              >
-                {userRole === 'admin' ? 'Dashboard' : userRole === 'patient' ? 'Profile' : ''}
-              </a>
+              <a href="/superDashboard" className="drawer-link">Dashboard (Super)</a>
             </li>
+          )}
+          {userRole === 'admin' && (
             <li className="drawer-item">
-              <a 
-                href={userRole === 'admin' ? '/' : userRole === 'patient' ? '/feedback' : '#'} 
-                className="drawer-link"
-              >
-                {userRole === 'admin' ? '' : userRole === 'patient' ? 'Feedback' : ''}
-              </a>
+              <a href="/dashboard" className="drawer-link">Dashboard</a>
             </li>
-            {isLoggedIn && (
-              <li className="drawer-item">
-                <Notification />
-              </li>
-            )}
+          )}
+          {userRole === 'doctor' && (
+            <li className="drawer-item">
+              <a href="/doctorDashboard" className="drawer-link">Dashboard</a>
+            </li>
+          )}
+          {userRole === 'patient' && (
+            <>
+              <li className="drawer-item"><a href="/" className="drawer-link">Home</a></li>
+              <li className="drawer-item"><a href="/appointment" className="drawer-link">Appointment</a></li>
+              <li className="drawer-item"><a href="/feedback" className="drawer-link">Feedback</a></li>
+              <li className="drawer-item"><a href="/services" className="drawer-link">Services</a></li>
+              <li className="drawer-item"><a href="/profile" className="drawer-link">Profile</a></li>
+            </>
+          )}
+          <li className="drawer-item">
+            <Notification />
+          </li>
+          <li className="drawer-item">
+            <button onClick={handleLogout} type="button" class="btn btn-primary btn-sm"
+            >
+              Logout
+            </button>
+          </li>
+        </>
+      ) : (
+        <>
+          <li className="drawer-item"><a href="/" className="drawer-link">Home</a></li>
+          <li className="drawer-item"><a href="/services" className="drawer-link">Services</a></li>
+          <li className="drawer-item"><a href="/feedback" className="drawer-link">Feedback</a></li>
+          <li className="drawer-item"><a href="/login" className="drawer-link">Login</a></li>
+        </>
+      )}
+    </ul>
+  </div>
+</div>
 
-            {/* Conditionally render the Login/Logout link in the drawer */}
-            {!isLoggedIn ? (
-              <>
-                <li className="drawer-item">
-                  <a href="/login" className="drawer-link">Login</a>
-                </li>
-              </>
-            ) : (
-              <li className="drawer-item">
-                <button onClick={handleLogout} className="drawer-link">Logout</button>
-              </li>
-            )}
-          </ul>
-        </div>
-      </div>
     </>
   );
 };

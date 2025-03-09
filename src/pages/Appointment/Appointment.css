@@ -108,7 +108,7 @@ html, body {
 }
 
 /* Progress bar */
-.progress-bar {
+.appointment-progress-bar {
   display: flex;
   flex-direction: row;
   justify-content: space-between;

@@ -8,7 +8,7 @@ import AccountSettings from '../../component/profile/AccountSettings'
 import DrawerComponent from '../../component/Drawers';
 import Footer from '../../component/Footer';
 import Chat from '../../component/chat';
-
+import TestSchedule from '../../test/TestSchedule.jsx'
 
 function DoctorDashboard() {
   const [activeComponent, setActiveComponent] = useState('AccountSettings');
@@ -25,6 +25,8 @@ function DoctorDashboard() {
         return <DoctorCompletedAppointment />;
       case 'ViewFeedback':
         return <ViewFeedback />;
+      case 'TestSchedule':
+        return <TestSchedule />;
       default:
         return <h2>Select an option</h2>;
     }
@@ -62,9 +64,10 @@ function DoctorDashboard() {
             Completed Appointments
           </button>
 
-          <button>
-            edit schedule
-          </button>
+          <button
+            className={activeComponent === 'TestSchedule'? 'active' : ''}
+            onClick={() => setActiveComponent('TestSchedule')}
+          >Edit Schedule</button>
 
           <button
             className={activeComponent === 'ViewFeedback' ? 'active' : ''}

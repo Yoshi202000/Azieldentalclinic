@@ -8,7 +8,8 @@
    
    add feature
     payment with gcash that doctor will aprove when the patient pay the reservation fee
-    health record questions to clinic database
+
+    monthly reminder for the patient to book an appointment with brace
 
 
   Need some adjustment 
@@ -76,7 +77,11 @@
         - if the reminder is on then check the date
 
 
+
+
     more convenient manage scheduling for doctor
+
+
 
     appointmentStepTwo
     - next problem is to make unavailable the taken schedule for appoinemtn slot 
@@ -87,8 +92,15 @@
         - need an health record before proceed to fee
 
 
+
+
+
     on process
     notification error that the logic cannot fetch the user role. if statement is not identifying the user role(wag nalang pansinin)
+
+
+
+
 
 
 
@@ -107,6 +119,13 @@
         - next is to create a backend that can pull the record of the health record of the patient with email address
         - next is to create an page that can view the health record of the patient with the dashboard patient information
         - next is to import to the edit appointment page that when the doctor update the appointment the dental record will be created at the same time 
+
+
+
+
+
+
+
 
 
 

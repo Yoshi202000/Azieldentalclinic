@@ -8,7 +8,8 @@ export const generateToken = (user) => {
       firstName: user.firstName,
       lastName: user.lastName,
       phoneNumber: user.phoneNumber,
-      role: user.role // Make sure this is included
+      role: user.role, // Make sure this is included
+      // termscondition: user.termscondition //
     },
     process.env.JWT_SECRET,
     { expiresIn: '1d' }

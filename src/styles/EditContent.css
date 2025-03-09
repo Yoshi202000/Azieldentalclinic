@@ -1,0 +1,162 @@
+/* Main Container - Fixed Size & Scrollable */
+.edit-content-container {
+    width: 900px; /* Set a fixed width */
+    height: 600px; /* Set a fixed height */
+    overflow-y: auto; /* Enable vertical scrolling when content exceeds */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin: 20px auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Ensure form content does not exceed container */
+  .edit-content-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Labels */
+  .edit-content-container label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  /* Inputs */
+  .edit-content-container input,
+  .edit-content-container textarea,
+  .edit-content-container select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    background: #f9f9f9;
+  }
+  
+ 
+  /* Textarea */
+  .edit-content-container textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+  
+  /* Services Section */
+  .servicesSection {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f1f3f5;
+    border-radius: 10px;
+  }
+  
+  /* Service Input */
+  .serviceInput {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* File Upload Inputs */
+  .edit-content-container input[type="file"] {
+    padding: 5px;
+  }
+  
+  /* Image Preview */
+  .image-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+  }
+  
+  .image-preview img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  
+  /* Buttons */
+  .edit-content-container .btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+  
+  .edit-content-container .btn-primary {
+    background: #007bff;
+    color: white;
+  }
+  
+  .edit-content-container .btn-primary:hover {
+    background: #0056b3;
+  }
+  
+  .edit-content-container .btn-danger {
+    background: #dc3545;
+    color: white;
+  }
+  
+  .edit-content-container .btn-danger:hover {
+    background: #a71d2a;
+  }
+  
+  .edit-content-container .btn-secondary {
+    background: #6c757d;
+    color: white;
+  }
+  
+  .edit-content-container .btn-secondary:hover {
+    background: #545b62;
+  }
+  
+  /* Submit Button */
+  .edit-content-container input[type="submit"] {
+    background: #28a745;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .edit-content-container input[type="submit"]:hover {
+    background: #218838;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .edit-content-container {
+      width: 100%;
+      height: 80vh; /* Adjust height for smaller screens */
+      padding: 10px;
+    }
+  
+    .edit-content-container form {
+      padding: 15px;
+    }
+  
+    .serviceInput {
+      padding: 10px;
+    }
+  
+    .edit-content-container .btn {
+      width: 100%;
+    }
+  }
+  

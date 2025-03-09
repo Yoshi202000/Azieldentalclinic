@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/First.css';
-import dentist from '../assets/dentist.png';
+import dentist from '../uploads/mainImg.png';
 import axios from 'axios';
 
 

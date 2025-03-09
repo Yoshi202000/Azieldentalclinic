@@ -79,6 +79,7 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
 
   return (
     <div className="appointment-details">
+
       <h2>Patient Details</h2>
 
       <label>
@@ -87,7 +88,7 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
           checked={isForOther}
           onChange={handleCheckboxChange}
         />
-        Appointment is for someone else
+        Appointment is for someone else?
       </label>
 
       <div className="stepthree">

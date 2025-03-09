@@ -3,10 +3,9 @@ import moment from 'moment';
 import { authenticateUser } from "./middleware/authMiddleware.js";
 import Schedule from "../models/ManageSchedule.js";
 
+import User from '../models/User.js'; // Ensure correct path to User model
 
 const router = express.Router();
-
-
 
 // Generate and add daily slots for a doctor
 router.post('/schedule/generate', authenticateUser, async (req, res) => {
@@ -37,11 +36,28 @@ router.post('/schedule/generate', authenticateUser, async (req, res) => {
 // Get all schedules
 router.get('/schedules', authenticateUser, async (req, res) => {
   try {
-    const userEmail = req.user.email; // Get the email from the verified token
-    const schedules = await Schedule.find({ email: userEmail }); // Filter schedules by email
-    if (!schedules) {
+    console.log("Authenticated User ID:", req.userId); // Debug log
+
+    if (!req.userId) {
+      return res.status(400).json({ message: 'Invalid user data. Please log in again.' });
+    }
+
+    // Fetch user details using userId
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    console.log("Fetching schedules for:", user.email);
+
+    // Fetch schedules using the user's email
+    const schedules = await Schedule.find({ email: user.email });
+
+    if (!schedules || schedules.length === 0) {
       return res.status(404).json({ message: 'No schedules found for this user.' });
     }
+
+    console.log("Schedules found:", schedules.length);
     res.status(200).json(schedules);
   } catch (error) {
     console.error('Error fetching schedules:', error);
@@ -409,5 +425,64 @@ router.put('/update-slot-status', authenticateUser, async (req, res) => {
     res.status(500).json({ message: 'Failed to update slot status', error: error.message });
   }
 });
+
+
+
+
+// Route to check slot status
+router.get('/schedule/check-slot-status/:mainID/:slotID', async (req, res) => {
+  const { mainID, slotID } = req.params;
+
+  try {
+    // Find the schedule by mainID
+    const schedule = await Schedule.findById(mainID);
+    if (!schedule) {
+      return res.status(404).json({ message: 'Schedule not found.' });
+    }
+
+    // Find the slot by slotID
+    const slot = schedule.slots.find(s => s._id.toString() === slotID);
+    if (!slot) {
+      return res.status(404).json({ message: 'Slot not found.' });
+    }
+
+    // Return the status of the slot
+    res.status(200).json({ status: slot.status });
+  } catch (error) {
+    console.error('Error checking slot status:', error);
+    res.status(500).json({ message: 'Error checking slot status.', error: error.message });
+  }
+});
+
+// Route to update slot status to "Unavailable"
+router.put('/schedule/update-slot-status/:mainID/:slotID', async (req, res) => {
+  const { mainID, slotID } = req.params;
+
+  try {
+    // Find the schedule by mainID
+    const schedule = await Schedule.findById(mainID);
+    if (!schedule) {
+      return res.status(404).json({ message: 'Schedule not found.' });
+    }
+
+    // Find the slot by slotID
+    const slotIndex = schedule.slots.findIndex(s => s._id.toString() === slotID);
+    if (slotIndex === -1) {
+      return res.status(404).json({ message: 'Slot not found.' });
+    }
+
+    // Update the slot status to "Unavailable"
+    schedule.slots[slotIndex].status = "Unavailable";
+
+    // Save the updated schedule
+    await schedule.save();
+
+    res.status(200).json({ message: 'Slot status updated to Unavailable.', updatedSlot: schedule.slots[slotIndex] });
+  } catch (error) {
+    console.error('Error updating slot status:', error);
+    res.status(500).json({ message: 'Error updating slot status.', error: error.message });
+  }
+});
+
 
 export default router;

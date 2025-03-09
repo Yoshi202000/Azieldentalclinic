@@ -4,7 +4,6 @@ import AppointmentStepOne from '../appointmentPage/AppointmentStepOne';
 import AppointmentStepTwo from '../appointmentPage/AppointmentStepTwo';
 import { generateAvailableDates } from '../../utils/appDate';
 import './ViewAppointment.css'
-import ViewDentalChart from '../../component/viewDentalChart.jsx';
 
 const PatientsInformation = () => {
   const [users, setUsers] = useState([]);
@@ -12,8 +11,6 @@ const PatientsInformation = () => {
   const [error, setError] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showAppointments, setShowAppointments] = useState(true);
-  const [showHealthRecord, setShowHealthRecord] = useState(true);
-  const [showDentalChart, setShowDentalChart] = useState(true);
   const [searchTerm, setSearchTerm] = useState(''); // New state for search term
 
   // New state variables for editing appointments
@@ -28,6 +25,25 @@ const PatientsInformation = () => {
 
   const [isContainerExpanded, setIsContainerExpanded] = useState(false);
   const editSectionRef = useRef(null);
+
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    dob: '',
+    phoneNumber: '',
+    bookedClinic: '',
+    email: '',
+    selectedDoctor: '',
+    doctorEmail: '',
+    doctorFirstName: '',
+    doctorLastName: '',
+    appointmentTimeFrom: '',
+  });
+
+  const [doctors, setDoctors] = useState([]);
+  const [services, setServices] = useState([]);
+  const [nameOne, setNameOne] = useState('');
+  const [nameTwo, setNameTwo] = useState('');
 
   const generateTimeSlots = (start, end) => {
     const timeSlots = [];
@@ -46,6 +62,20 @@ const PatientsInformation = () => {
     
     return timeSlots;
   };
+
+  const appointmentDetails = {
+    patientFirstName: formData.firstName,
+    patientLastName: formData.lastName,
+    patientEmail: formData.email,
+    patientPhone: formData.phoneNumber,
+    patientDOB: formData.dob,
+    bookedClinic: formData.bookedClinic,
+    appointmentDate: selectedDate,
+    appointmentTimeFrom: formData.appointmentTimeFrom,
+    appointmentType: selectedCard,
+    fee: null, 
+    doctor: formData.doctorEmail,
+};
 
   // Function to fetch users from the backend
   const fetchUsers = async () => {
@@ -88,8 +118,6 @@ const PatientsInformation = () => {
   const handleUserClick = (user) => {
     setSelectedUser(user);
     setShowAppointments(true);
-    setShowHealthRecord(true);
-    setShowDentalChart(true);
   };
 
   const toggleAppointments = () => {
@@ -104,22 +132,23 @@ const PatientsInformation = () => {
       )
     : [];
 
-  const handleEditAppointment = (appointment) => {
-    if (editingAppointment && editingAppointment._id === appointment._id) {
-      setEditingAppointment(null);
-      setIsContainerExpanded(false);
-      setShowTypeChange(false);
-      setShowDateTimeChange(false);
-    } else {
-      setEditingAppointment(appointment);
-      setIsContainerExpanded(true);
-      setShowTypeChange(false);
-      setShowDateTimeChange(false);
-      setSelectedCard(appointment.appointmentType);
-      setSelectedDate(appointment.appointmentDate);
-      setSelectedTimeFrom(appointment.appointmentTimeFrom);
-    }
-  };
+    const handleEditAppointment = (appointment) => {
+      if (editingAppointment && editingAppointment._id === appointment._id) {
+        setEditingAppointment(null);
+        setIsContainerExpanded(false); // Ensure the container collapses
+        setShowTypeChange(false);
+        setShowDateTimeChange(false);
+      } else {
+        setEditingAppointment(appointment);
+        setIsContainerExpanded(true); // Ensure the container expands when editing starts
+        setShowTypeChange(false);
+        setShowDateTimeChange(false);
+        setSelectedCard(appointment.appointmentType);
+        setSelectedDate(appointment.appointmentDate);
+        setSelectedTimeFrom(appointment.appointmentTimeFrom);
+      }
+    };
+    
 
   const handleCardSelect = (cardName) => setSelectedCard(cardName);
   const handleDateSelect = (date) => {
@@ -167,6 +196,61 @@ const PatientsInformation = () => {
     }
   };
 
+  useEffect(() => {
+    const dates = generateAvailableDates();
+    setAvailableDates(dates);
+    fetchBookedAppointments();
+    fetchDoctors();
+  }, []);
+  
+  useEffect(() => {
+    fetchServicesData();
+  }, []); // Run once on mount
+  
+
+  const fetchBookedAppointments = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/booked-appointments`);
+      if (response.status === 200) {
+        setBookedAppointments(response.data.bookedAppointments);
+      } else {
+        console.error('Failed to fetch booked appointments');
+      }
+    } catch (error) {
+      console.error('Error fetching booked appointments:', error);
+    }
+  };
+
+  const fetchDoctors = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/doctor-info`);
+      if (response.status === 200) {
+        setDoctors(response.data.doctors);
+      } else {
+        console.error('Failed to fetch doctors');
+      }
+    } catch (error) {
+      console.error('Error fetching doctors:', error);
+    }
+  };
+
+  const fetchServicesData = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
+      if (response.data && response.data.services) {
+        const { nameOne, nameTwo } = response.data; 
+        setServices(response.data.services);
+        setNameOne(nameOne);
+        setNameTwo(nameTwo);
+      } else {
+        console.error('Failed to fetch services data');
+      }
+    } catch (error) {
+      console.error('Error fetching services data:', error);
+    }
+  }; 
+  
+
   const handleCancelAppointment = async (appointmentId) => {
     // Logic to cancel the appointment (API call to update the status to 'Cancelled')
     try {
@@ -195,6 +279,28 @@ const PatientsInformation = () => {
     `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Function to handle input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // Function to handle clinic selection
+  const handleClinicSelect = (selectedClinic) => {
+    console.log("Selected Clinic:", selectedClinic); // Debugging
+    setFormData((prevData) => ({
+      ...prevData,
+      bookedClinic: selectedClinic,
+      selectedDoctor: '', // Reset doctor when clinic changes
+    }));
+    setSelectedCard(null); // Reset selected card when clinic changes
+  };
+  
+
+
   return (
     <div className="PIContainer">
       <h1 className="PITitle">Patients Information</h1>
@@ -216,7 +322,6 @@ const PatientsInformation = () => {
                 <th>Last Name</th>
                 <th>Email</th>
                 <th>Phone Number</th>
-                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -226,16 +331,6 @@ const PatientsInformation = () => {
                   <td>{user.lastName}</td>
                   <td>{user.email}</td>
                   <td>{user.phoneNumber}</td>
-                  <td>
-                    <button onClick={() => {
-                      setSelectedUser(user);
-                      setShowAppointments(true);
-                      setShowHealthRecord(true); // New state for showing health record
-                      setShowDentalChart(true); // New state for showing dental chart
-                    }}>
-                      Show All
-                    </button>
-                  </td>
                 </tr>
               ))}
             </tbody>
@@ -249,8 +344,8 @@ const PatientsInformation = () => {
                     <h2 className="PIAppointmentsTitle">
                       Appointments for {selectedUser.firstName} {selectedUser.lastName}
                     </h2>
-                    <button className="PIHideButton" onClick={() => setShowAppointments(false)}>
-                      Hide Appointments
+                    <button className="PIHideButton" onClick={toggleAppointments}>
+                      Hide Appointments & Health Record
                     </button>
                   </div>
                   {filteredAppointments.length > 0 ? (
@@ -304,9 +399,16 @@ const PatientsInformation = () => {
                                     <div className="PIEditContent">
                                       {showTypeChange && (
                                         <AppointmentStepOne
-                                          selectedCard={selectedCard}
-                                          handleCardSelect={handleCardSelect}
-                                        />
+                                        selectedCard={selectedCard}
+                                        handleCardSelect={handleCardSelect}
+                                        handleClinicSelect={handleClinicSelect}
+                                        formData={formData}
+                                        handleInputChange={handleInputChange}
+                                        services={services}
+                                        doctors={doctors}
+                                        nameOne={nameOne}
+                                        nameTwo={nameTwo}
+                                      />                                      
                                       )}
 
                                       {showDateTimeChange && (
@@ -350,7 +452,7 @@ const PatientsInformation = () => {
                 </>
               )}
 
-              {showHealthRecord && (
+              {showAppointments && (
                 <div className="PIQuestionsHeader">
                   <h2 className="PIQuestionsTitle">
                     Health Record for {selectedUser.firstName} {selectedUser.lastName}
@@ -399,18 +501,6 @@ const PatientsInformation = () => {
                       </tr>
                     </tbody>
                   </table>
-                  <button className="PIHideButton" onClick={() => setShowHealthRecord(false)}>
-                    Hide Health Record
-                  </button>
-                </div>
-              )}
-
-              {showDentalChart && (
-                <div>
-                  <ViewDentalChart userId={selectedUser._id} />
-                  <button className="PIHideButton" onClick={() => setShowDentalChart(false)}>
-                    Hide Dental Chart
-                  </button>
                 </div>
               )}
             </>
