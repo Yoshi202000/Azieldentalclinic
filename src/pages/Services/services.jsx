@@ -54,14 +54,15 @@ const Services = () => {
               <div key={index} className="service-card">
                 {service.image && (
                   <img
-                  src={service.image ? `src${service.image}` : null} // Updated image logic
-                  alt={service.name}
-                  className="doctor-image"
-                />
+                    src={service.image ? `${import.meta.env.VITE_BACKEND_URL}${service.image}` : null}
+                    alt={service.name}
+                    className="doctor-image"
+                  />
                 )}
                 <div className="doctor-info">
                   <h3 className="doctor-name">{service.name}</h3>
                   <p className="doctor-description">{service.description}</p>
+                  <p className="service-fee">Fee: ₱{service.fee?.toLocaleString()}</p>
                 </div>
               </div>
             ))

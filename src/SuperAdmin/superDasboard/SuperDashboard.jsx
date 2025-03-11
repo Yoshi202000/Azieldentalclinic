@@ -13,6 +13,7 @@ import Chat from '../../component/chat';
 import SuperDoctorSignup from '../superComponent/SuperAddUser';
 import SuperViewAdminDoctor from '../superComponent/SuperViewAdminDoctor';
 import EditContent from '../../component/admin/EditContent.jsx'
+import DoctorServices from '../../component/admin/DoctorServices';
 
 function SuperDashboard() {
   const [activeComponent, setActiveComponent] = useState('AccountSettings');
@@ -31,14 +32,16 @@ function SuperDashboard() {
         return <SuperViewFeedback />;
       case 'ToAdmin':
         return <SuperApproveToAdmin/>
-        case 'AdminSales':
-          return <SuperAdminSales/>
+      case 'AdminSales':
+        return <SuperAdminSales/>
       case 'DoctorSignup':
         return <SuperDoctorSignup/>
       case 'ViewAdminDoctor':
         return <SuperViewAdminDoctor/>
       case 'EditContent':
         return <EditContent/>
+      case 'DoctorServices':
+        return <DoctorServices/>
       default:
         return <h2>Select an option</h2>;
     }
@@ -87,7 +90,12 @@ function SuperDashboard() {
           >
             View Admin Doctor
           </button>
-          
+          <button
+            className={activeComponent === 'DoctorServices' ? 'active' : ''}
+            onClick={() => setActiveComponent('DoctorServices')}
+          >
+            Manage Doctor Services
+          </button>
           <button
             className={activeComponent === 'AdminSales' ? 'active' : ''}
             onClick={() => setActiveComponent('AdminSales')}

@@ -1,16 +1,15 @@
 import mongoose from 'mongoose';
 
-const servicesFee = new mongoose.Schema({
-  fee: { type: String, required: true }
-});
+// const servicesFee = new mongoose.Schema({
+//   fee: { type: String, required: true }
+// });
 
 const serviceSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
   image: { type: String, default: null },
   clinic: { type: String, required: true, default: 'both' }, 
-  serviceDetails: [servicesFee], 
-  price: { type: String, required: false },
+  fee: { type: Number, required: true, default: 0 },
   duration: { type: String, required: false }
 });
 

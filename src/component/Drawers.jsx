@@ -135,7 +135,7 @@ const DrawerComponent = () => {
                 href={ userRole === 'patient' ? '/appointment' : '#'} 
                 className="navbar-link"
               >
-                {userRole === 'patient' ? 'appointment' : ''}
+                {userRole === 'patient' ? 'Appointment' : ''}
               </a>
             </li>
             <li className="navbar-item">

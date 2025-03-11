@@ -1,0 +1,117 @@
+.doctor-services-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.error-message {
+  color: #dc3545;
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+}
+
+.success-message {
+  color: #28a745;
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+}
+
+.doctors-list {
+  margin-bottom: 20px;
+}
+
+.doctor-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  margin: 5px 0;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.doctor-item:hover {
+  background-color: #e9ecef;
+}
+
+.doctor-item.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+.clinic-tag {
+  font-size: 0.9em;
+  padding: 2px 8px;
+  background-color: #6c757d;
+  color: white;
+  border-radius: 12px;
+}
+
+.services-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.service-item {
+  position: relative;
+  padding: 15px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.service-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.service-item.assigned {
+  border-color: #28a745;
+  background-color: #f8fff9;
+}
+
+.service-info h4 {
+  margin: 0 0 10px 0;
+  color: #343a40;
+}
+
+.service-info p {
+  margin: 5px 0;
+  color: #6c757d;
+}
+
+.service-fee {
+  font-weight: bold;
+  color: #28a745 !important;
+}
+
+.service-status {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #28a745;
+  color: white;
+  font-weight: bold;
+}
+
+.service-item:not(.assigned) .service-status {
+  background-color: #6c757d;
+} 

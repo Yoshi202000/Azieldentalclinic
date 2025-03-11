@@ -12,6 +12,7 @@ import Footer from '../../component/Footer';
 import Chat from '../../component/chat'
 import DoctorSignup from '../../component/admin/AddUser';
 import ViewAdminDoctor from '../../component/admin/ViewAdminDoctor';
+import DoctorServices from '../../component/admin/DoctorServices';
 
 function Dashboard() {
   const [activeComponent, setActiveComponent] = useState('AccountSettings');
@@ -30,12 +31,14 @@ function Dashboard() {
         return <ViewFeedback />;
       case 'ToAdmin':
         return <ApproveToAdmin/>
-        case 'AdminSales':
-          return <AdminSales/>
+      case 'AdminSales':
+        return <AdminSales/>
       case 'DoctorSignup':
         return <DoctorSignup/>
-        case 'ViewAdminDoctor':
+      case 'ViewAdminDoctor':
         return <ViewAdminDoctor/>
+      case 'DoctorServices':
+        return <DoctorServices/>
       default:
         return <h2>Select an option</h2>;
     }
@@ -84,19 +87,18 @@ function Dashboard() {
           >
             View Admin Doctor
           </button>
-          
-           <button
+          <button
+            className={activeComponent === 'DoctorServices' ? 'active' : ''}
+            onClick={() => setActiveComponent('DoctorServices')}
+          >
+            Manage Doctor Services
+          </button>
+          <button
             className={activeComponent === 'AdminSales' ? 'active' : ''}
             onClick={() => setActiveComponent('AdminSales')}
           >
             Total Sales
-          </button> 
-          {/* <button
-            className={activeComponent === 'ToAdmin' ? 'active' : ''}
-            onClick={() => setActiveComponent('ToAdmin')}
-          >
-            Approve User to Admin
-          </button> */}
+          </button>
           <button
             className={activeComponent === 'ViewFeedback' ? 'active' : ''}
             onClick={() => setActiveComponent('ViewFeedback')}

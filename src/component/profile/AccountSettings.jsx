@@ -127,6 +127,7 @@ const AccountSettings = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
+        credentials: 'include',
         body: JSON.stringify(requestData),
       });
 
@@ -136,6 +137,10 @@ const AccountSettings = () => {
 
       if (!response.ok) {
         throw new Error(data.message || 'Failed to update information');
+      }
+
+      if (data.token) {
+        localStorage.setItem('token', data.token);
       }
 
       if (data.user) {

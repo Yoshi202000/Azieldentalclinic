@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../styles/EditContent.css';
-import servicesImage from '../../uploads/services0.png'
 
 const EditContent = () => {
     const [nameOne, setNameOne] = useState('');
@@ -104,14 +103,18 @@ const EditContent = () => {
           setQuestionNine(questionNine || '');
           setQuestionTen(questionTen || '');
             
-          // Set services with default "both" for clinic
+          // Set services with proper image handling
           setServices(
-            (fetchedServices || []).map((service, index) => ({
-              ...service,
-              image: service.image || `../../uploads/services${index}.png`, // Use relative path for the image
-              imageUpdated: false, // Track whether the image has been updated
-              clinic: service.clinic || 'both',
-            }))
+            (fetchedServices || []).map(service => {
+              const feeValue = service.fee !== undefined ? parseFloat(service.fee) : 0;
+              return {
+                ...service,
+                image: service.image || null, // Don't construct path here, just store the path or null
+                imageUpdated: false,
+                clinic: service.clinic || 'both',
+                fee: isNaN(feeValue) ? 0 : feeValue,
+              };
+            })
           );          
         }
       })
@@ -124,7 +127,7 @@ const EditContent = () => {
 
   // Adds a new service to the services array with default values for name, description, image, and clinic.
   const addService = () => {
-    setServices(prev => [...prev, { name: '', description: '', image: null, clinic: 'both' }]);
+    setServices(prev => [...prev, { name: '', description: '', image: null, clinic: 'both', fee: 0 }]);
   };
 
   // Removes a service from the services array by its index.
@@ -164,20 +167,20 @@ const EditContent = () => {
 
   // Updates the image of a specific service at a given index in the services array.
   const handleServiceImageChange = (index, file) => {
-    console.log(`Updating image for service at index ${index}`);
-    setServices((prevServices) => {
-      if (index < 0 || index >= prevServices.length) {
-        console.error(`Invalid index ${index} for services array`);
-        return prevServices;
-      }
-  
+    console.log(`Updating image for service at index ${index}`, file);
+    if (!file) {
+      console.log('No file provided');
+      return;
+    }
+
+    setServices(prevServices => {
       const updatedServices = [...prevServices];
       updatedServices[index] = {
         ...updatedServices[index],
-        image: file, // Store the file temporarily
-        imageUpdated: true, // Mark image as updated
+        image: file,
+        imageUpdated: true,
+        imagePreview: URL.createObjectURL(file)
       };
-  
       return updatedServices;
     });
   };   
@@ -185,71 +188,61 @@ const EditContent = () => {
   // Function to handle responsiveBg file selection
   const handleResponsiveBgChange = (e) => {
     const file = e.target.files[0];
-    setResponsiveBg(file);
-
-    // Preview the image
-    const reader = new FileReader();
-    reader.onload = () => {
-      setResponsiveBgPreview(reader.result);
-    };
     if (file) {
-      reader.readAsDataURL(file);
+      setResponsiveBg(file);
+      setResponsiveBgPreview(URL.createObjectURL(file));
     }
   };
   
   const handlemainImgChange = (e) => {
     const file = e.target.files[0];
-    setMainImg(file);
-
-    // Preview the image
-    const reader = new FileReader();
-    reader.onload = () => {
-      setMainImgPreview(reader.result);
-    };
     if (file) {
-      reader.readAsDataURL(file);
+      setMainImg(file);
+      setMainImgPreview(URL.createObjectURL(file));
     }
   };
 
   const handleGcashQRChange = (e) => {
     const file = e.target.files[0];
-    setGcashQR(file);
-    
-    // preview image
-    const reader = new FileReader();
-    reader.onload = () => {
-      setGcashQRPreview(reader.result);
-    }
     if (file) {
-      reader.readAsDataURL(file);
+      setGcashQR(file);
+      setGcashQRPreview(URL.createObjectURL(file));
     }
   };
 
   const handleClinicImageChange = (e) => {
     const file = e.target.files[0];
-    setClinicLogo(file);
-    
-    const reader = new FileReader();
-    reader.onload = () => {
-      setClinicLogoPreview(reader.result);
-    };
     if (file) {
-      reader.readAsDataURL(file);
+      setClinicLogo(file);
+      setClinicLogoPreview(URL.createObjectURL(file));
     }
   }
 
-  // Handles form submission by sending clinic data to the backend.
+  // Update the getServiceImageUrl function to handle paths correctly
+  const getServiceImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    if (imagePath.startsWith('blob:')) return imagePath;
+    if (imagePath.startsWith('/uploads/')) {
+      return `${import.meta.env.VITE_BACKEND_URL}${imagePath}`;
+    }
+    // Handle both old and new format service image paths
+    if (imagePath.startsWith('Service')) {
+      return `${import.meta.env.VITE_BACKEND_URL}/uploads/${imagePath}`;
+    }
+    // For any other case, assume it's a relative path and construct the URL
+    return `${import.meta.env.VITE_BACKEND_URL}/uploads/${imagePath}`;
+  };
+
+  // Update handleSubmit to properly handle image uploads
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Submitting form data');
     const formData = new FormData();
-  
-    // Append required fields
+
+    // Append all text fields first
     formData.append('nameOne', nameOne || '');
     formData.append('nameTwo', nameTwo || '');
     formData.append('description', clinicDescription || '');
-  
-    // Append optional fields
     formData.append('address', clinicAddress || '');
     formData.append('addressTwo', clinicAddressTwo || '');
     formData.append('clinicCatchLine', clinicCatchLine || '');
@@ -273,63 +266,37 @@ const EditContent = () => {
     formData.append('questionNine', questionNine || '');
     formData.append('questionTen', questionTen || '');
 
+    // Handle main images
+    if (clinicLogo instanceof File) {
+      formData.append('clinicLogo', clinicLogo);
+    }
+    if (responsiveBg instanceof File) {
+      formData.append('responsiveBg', responsiveBg);
+    }
+    if (mainImg instanceof File) {
+      formData.append('mainImg', mainImg);
+    }
+    if (gcashQR instanceof File) {
+      formData.append('gcashQR', gcashQR);
+    }
 
-
-  
-    // Append services to form data
+    // Handle services
     services.forEach((service, index) => {
-      console.log(`Adding service to form data: Index ${index}`, service);
-  
       formData.append(`service_name_${index}`, service.name || '');
       formData.append(`service_description_${index}`, service.description || '');
       formData.append(`service_clinic_${index}`, service.clinic || 'both');
-  
-      // Check if image was updated
-      if (service.imageUpdated && !(typeof service.image === 'string')) {
-        // Change the filename before appending
-        const newFileName = `service_image_${index}.png`; // Change the filename as needed
-        formData.append(`service_image_${index}`, service.image, newFileName); // Append new image with new filename
-      } else if (!service.imageUpdated && typeof service.image === 'string') {
-        // Use the existing image path
-        formData.append(`service_image_${index}`, service.image); // Append existing image path
-      } else {
-        console.log(`No image provided for service at index ${index}`);
+      formData.append(`service_fee_${index}`, service.fee || 0);
+
+      if (service.imageUpdated && service.image instanceof File) {
+        formData.append(`service_image_${index}`, service.image);
+      } else if (service.image && typeof service.image === 'string') {
+        formData.append(`service_image_${index}`, service.image);
       }
     });
-  
-    // Append responsiveBg to form data
-    if (responsiveBg) {
-      console.log('Adding responsiveBg to form data');
-      formData.append('responsiveBg', responsiveBg);
-    } else {
-      console.log('No responsiveBg provided');
-    }
 
-    if (mainImg) {
-      console.log('Adding mainImg to form data');
-      formData.append('mainImg', mainImg);
-    } else {
-      console.log('No mainImg provided');
-    }
-
-    if (gcashQR){
-      console.log('Adding gcashQR to form data');
-      formData.append('gcashQR', gcashQR);
-    } else {
-      console.log('no gcashQR provided');
-    }
-
-    // Append clinicLogo to form data
-    if (clinicLogo) {
-      console.log('Adding clinicLogo to form data');
-      formData.append('clinicLogo', clinicLogo);
-    } else {
-      console.log('No clinicLogo provided');
-    }
-  
-    // Log the form data for debugging
+    // Log formData contents for debugging
     for (let pair of formData.entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
+      console.log(`${pair[0]}: ${typeof pair[1] === 'object' ? 'File' : pair[1]}`);
     }
 
     axios
@@ -338,6 +305,19 @@ const EditContent = () => {
       })
       .then((response) => {
         console.log('Clinic data saved successfully:', response.data);
+        // Clean up any preview URLs
+        services.forEach(service => {
+          if (service.imagePreview) {
+            URL.revokeObjectURL(service.imagePreview);
+          }
+        });
+        if (clinicLogoPreview) URL.revokeObjectURL(clinicLogoPreview);
+        if (responsiveBgPreview) URL.revokeObjectURL(responsiveBgPreview);
+        if (mainImgPreview) URL.revokeObjectURL(mainImgPreview);
+        if (gcashQRPreview) URL.revokeObjectURL(gcashQRPreview);
+        
+        // Refresh the page to show updated images
+        window.location.reload();
       })
       .catch((error) => {
         console.error('Error saving clinic data:', error.response || error.message);
@@ -414,7 +394,7 @@ const EditContent = () => {
         <label>
           Terms and Conditions:
           <textarea
-          class="form-control"  
+          className="form-control"  
             name="termsAndConditions"
             rows="5"
             cols="30"
@@ -425,7 +405,7 @@ const EditContent = () => {
         <label>
           Clinic Description:
           <textarea
-          class="form-control"
+          className="form-control"
             name="clinicDescription"
             rows="5"
             cols="30"
@@ -436,7 +416,7 @@ const EditContent = () => {
         <label>
           Home Page Welcome Message:
           <textarea
-          class="form-control"
+          className="form-control"
             type="text"
             name="welcomeMessage"
             value={welcomeMessage}
@@ -617,15 +597,31 @@ const EditContent = () => {
               <label>
                 Service Description:
                 <textarea
-                class="form-control"
+                className="form-control"
                   value={service.description}
                   onChange={(e) => handleServiceChange(index, 'description', e.target.value)}
                 ></textarea>
               </label>
               <label>
+                Fee:
+                <input
+                  type="number"
+                  className="form-control-plaintext"
+                  value={service.fee || ''}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const numValue = value === '' ? 0 : parseFloat(value);
+                    handleServiceChange(index, 'fee', numValue);
+                  }}
+                  placeholder="Enter service fee"
+                  min="0"
+                  step="0.01"
+                />
+              </label>
+              <label>
                 Clinic:
                 <select
-                  class="form-select"
+                  className="form-select"
                   value={service.clinic}
                   onChange={(e) => handleServiceChange(index, 'clinic', e.target.value)}
                 >
@@ -639,7 +635,7 @@ const EditContent = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 {/* Input for file upload */}
                 <input
-                class="form-control"
+                className="form-control"
                   type="file"
                   onChange={(e) => handleServiceImageChange(index, e.target.files[0])}
                   style={{ flex: '1' }}
@@ -648,19 +644,22 @@ const EditContent = () => {
                 {service.image && (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <img
-                      class="img-thumbnail"
-                      src={service.image ? `src${service.image}` : servicesImage}
+                      className="img-thumbnail"
+                      src={service.imagePreview || getServiceImageUrl(service.image)}
                       alt={`Service ${index + 1}`}
                       style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                     />
                     <button
                       type="button"
                       onClick={() => {
-                        // Clear the existing image in the state
+                        if (service.imagePreview) {
+                          URL.revokeObjectURL(service.imagePreview); // Clean up the preview URL
+                        }
                         handleServiceChange(index, 'image', null);
-                        handleServiceChange(index, 'imageUpdated', true); // Mark as updated
+                        handleServiceChange(index, 'imagePreview', null);
+                        handleServiceChange(index, 'imageUpdated', true);
                       }}
-                      class="btn btn-primary btn-sm"
+                      className="btn btn-primary btn-sm"
                     >
                       Remove Image
                     </button>
@@ -670,7 +669,7 @@ const EditContent = () => {
             </label>
 
               <button
-                type="button" class="btn btn-primary btn-sm"
+                type="button" className="btn btn-primary btn-sm"
                 onClick={() => removeService(index, service._id)}
               >
                 Remove Service
@@ -678,7 +677,7 @@ const EditContent = () => {
             </div>
             
           ))}
-          <button type="button" class="btn btn-primary btn-sm" onClick={addService}>
+          <button type="button" className="btn btn-primary btn-sm" onClick={addService}>
             Add Service
           </button>
         </div>

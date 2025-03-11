@@ -40,9 +40,8 @@ function App() {
             <Card
               key={index}
               name={service.name}
-              description={service.image}
-              image={service.image ? `src${service.image}` : null}
-
+              description={service.description}
+              image={service.image ? `${import.meta.env.VITE_BACKEND_URL}${service.image}` : null}
             />
           ))}
         </div>

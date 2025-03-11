@@ -32,8 +32,12 @@ const userSchema = new mongoose.Schema({
     // Array of services
     services: [
         {
-            name: { type: String, default: '' },
-        },
+            serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Clinic.services' },
+            name: { type: String, required: true },
+            description: { type: String },
+            fee: { type: Number },
+            isActive: { type: Boolean, default: true }
+        }
     ],
 }, { timestamps: true });
 

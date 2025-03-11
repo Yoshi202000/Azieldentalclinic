@@ -33,8 +33,18 @@
       if (!formData.selectedDoctor) return [];
 
       const selectedDoctor = doctors.find(doctor => doctor.email === formData.selectedDoctor);
+      
+      // If no doctor is found or doctor has no services defined, return all services
+      if (!selectedDoctor || !selectedDoctor.services) {
+        return services;
+      }
+
+      // Filter services based on doctor's services
       return services.filter(service => 
-        selectedDoctor?.services.some(doctorService => doctorService.name === service.name)
+        selectedDoctor.services.some(doctorService => 
+          doctorService.name === service.name || 
+          doctorService === service.name // Handle case where doctor's service might be just the name
+        )
       );
     };
 
@@ -49,7 +59,7 @@
         <h4>Choose Your Clinic</h4>
         <select 
           name="bookedClinic" 
-          class="form-select form-select-lg mb-3"
+          className="form-select form-select-lg mb-3"
           value={formData.bookedClinic} 
           onChange={(e) => {
             const selectedClinic = e.target.value;
@@ -67,7 +77,7 @@
         <h4>Choose Your Doctor</h4>
         <select
           name="selectedDoctor"
-          class="form-select form-select-lg mb-3"
+          className="form-select form-select-lg mb-3"
           value={formData.selectedDoctor || ''}
           onChange={(e) => {
             handleInputChange(e);
@@ -97,11 +107,12 @@
                   <Card
                     name={service.name}
                     description={service.description}
-                    image={service.image ? `src${service.image}` : null}
+                    image={service.image ? `${import.meta.env.VITE_BACKEND_URL}${service.image}` : null}
                     isSelected={selectedCard === service.name}
                     onClick={() => {
                       handleCardSelect(service.name);
                     }}
+                    fee={service.fee}
                   />
                 </label>
               ))}
