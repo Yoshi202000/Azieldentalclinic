@@ -3,8 +3,7 @@ import Clinic from '../models/clinicSchema.js';
 import multer from 'multer';
 import mongoose from 'mongoose';
 import path from 'path';
-
-import fs from 'fs'; // For synchronous file operations
+import fs from 'fs'; 
 
 const uploadDir = path.join(process.cwd(), 'src', 'uploads');
 if (!fs.existsSync(uploadDir)) {

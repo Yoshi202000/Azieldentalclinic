@@ -72,8 +72,6 @@ router.post('/api/verify-code', async (req, res) => {
   res.json({ success: true });
 });
 
-  
-
 // Change password
 router.post('/api/change-password', async (req, res) => {
   const { email, newPassword } = req.body;

@@ -17,11 +17,11 @@ html, body {
 .DashContainer {
   display: flex;
   flex-direction: row;
-  width: 90%;
+  width: 100%;
   min-height: 80vh;
   margin: 20px auto;
   margin-top: 100px;
-  padding: 25px;
+  padding: 15px;
   background-color: #f9f9f9;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -30,13 +30,13 @@ html, body {
 
 /* Sidebar Content */
 .DashContent {
-  width: 25%;
+  width: 15%;
   min-height: 100%;
   background-color: #339999;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 25px;
+  padding: 10px;
   border-radius: 10px 0 0 10px;
 }
 

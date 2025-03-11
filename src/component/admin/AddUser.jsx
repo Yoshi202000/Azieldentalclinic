@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import '../../styles/AddUser.css';
+
 function DoctorSignup() {
     const [formData, setFormData] = useState({
         firstName: '',
@@ -9,13 +11,53 @@ function DoctorSignup() {
         phoneNumber: '',
         password: '',
         confirmPassword: '',
-        clinic: 'Arts of Millennials Dental Clinic', // Default selection
-        role: 'doctor', // Default role
+        clinic: '', // Remove default value
+        role: 'doctor',
     });
 
-    const [error, setError] = useState(''); // State to hold the error message
-    const [successMessage, setSuccessMessage] = useState(''); // State to hold the success message
-    const navigate = useNavigate(); // Initialize useNavigate
+    const [user, setUser] = useState(null);
+    const [error, setError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Please log in to continue.');
+            navigate('/login');
+            return;
+        }
+
+        fetchUserInfo(token);
+    }, [navigate]);
+
+    const fetchUserInfo = async (token) => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                withCredentials: true,
+            });
+
+            const userData = response.data.user;
+            setUser(userData);
+            
+            // Set the clinic in formData to match the user's clinic
+            setFormData(prev => ({
+                ...prev,
+                clinic: userData.clinic
+            }));
+
+        } catch (error) {
+            console.error('Error fetching user info:', error);
+            setError('Failed to fetch user information');
+            if (error.response && error.response.status === 401) {
+                alert('Session expired or invalid. Please log in again.');
+                navigate('/login');
+            }
+        }
+    };
 
     const handleChange = (e) => {
         setFormData({
@@ -123,17 +165,15 @@ function DoctorSignup() {
                             />
                         </div>
                         <div className="adduserFormGroup">
-                            <label htmlFor="clinic">Select Clinic</label>
-                            <select
+                            <label htmlFor="clinic">Clinic</label>
+                            <input
+                                type="text"
                                 id="clinic"
                                 name="clinic"
                                 value={formData.clinic}
-                                onChange={handleChange}
-                                required
-                            >
-                                <option value="Arts of Millennials Dental Clinic">Arts of Millennials Dental Clinic</option>
-                                <option value="Aziel Dental Clinic">Aziel Dental Clinica</option>
-                            </select>
+                                readOnly // Make it read-only since it should match the user's clinic
+                                className="readOnlyInput"
+                            />
                         </div>
                         <div className="adduserFormGroup">
                             <label htmlFor="role">Role</label>

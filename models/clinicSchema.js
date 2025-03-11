@@ -1,10 +1,17 @@
 import mongoose from 'mongoose';
 
+const servicesFee = new mongoose.Schema({
+  fee: { type: String, required: true }
+});
+
 const serviceSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
   image: { type: String, default: null },
-  clinic: { type: String, required: true, default: 'both' }, // New field for specifying clinic
+  clinic: { type: String, required: true, default: 'both' }, 
+  serviceDetails: [servicesFee], 
+  price: { type: String, required: false },
+  duration: { type: String, required: false }
 });
 
 const clinicSchema = new mongoose.Schema({
@@ -18,7 +25,7 @@ const clinicSchema = new mongoose.Schema({
   responsiveBg: {type: Buffer, required: true, default: null },
   clinicLogo: {type: Buffer, required: true, default: null},
   gcashQR: {type: Buffer, default: null},
-  mainImg: {type: Buffer, required: true, default: null },
+  mainImg: {type: Buffer, required: false, default: null },
 
   nameOnePhone: { type: String, required: true, default: null },
   nameTwoPhone: { type: String, required: true, default: null }, // New field
@@ -34,9 +41,9 @@ const clinicSchema = new mongoose.Schema({
   loginDescription: { type: String, required: true, default: null },
 
   // Signup page
-  welcomeMessage: { type: String, required: true, default: null }, // Welcome message for signup page
-  signupMessage: { type: String, required: true, default: null }, // Signup message for signup page
-  signupDescription: { type: String, required: true, default: null }, // Signup description for signup page
+  welcomeMessage: { type: String, required: true, default: null }, 
+  signupMessage: { type: String, required: true, default: null }, 
+  signupDescription: { type: String, required: true, default: null }, 
 
   // health record questionaire
   questionOne: { type: String, required: false, default: null },

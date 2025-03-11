@@ -70,6 +70,9 @@ function ViewAppointment() {
 
   const [currentStep, setCurrentStep] = useState(1); // State to track the current step
 
+  const [showStatusButtons, setShowStatusButtons] = useState(true);
+  const [showNavigationButtons, setShowNavigationButtons] = useState(true);
+
   useEffect(() => {
     fetchDoctors();
     fetchServicesData();
@@ -189,6 +192,7 @@ function ViewAppointment() {
       const filteredAppointments = response.data.filter(
         appointment =>
           (appointment.appointmentStatus === 'pending' || appointment.appointmentStatus === 'Rebooked')
+       
       );
   
       setAppointments(filteredAppointments);
@@ -202,9 +206,38 @@ function ViewAppointment() {
   };
   
 
+  // Function to check slot status before updating
+  const checkSlotStatus = async (mainID, slotID) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/check-slot-status/${mainID}/${slotID}`);
+      const result = await response.json();
+
+      if (response.ok) {
+        console.log('Slot Status:', result.status); // Log the slot status
+        return result.status; // Return the slot status
+      } else {
+        console.error('Error checking slot status:', result.message);
+        return null; // Return null in case of error
+      }
+    } catch (error) {
+      console.error('Error checking slot status:', error);
+      return null; // Return null in case of error
+    }
+  };
+
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
     try {
       const token = localStorage.getItem('token');
+      const appointment = appointments.find(app => app._id === appointmentId); // Find the appointment to get its details
+
+      // Check the slot status before updating
+      const slotStatus = await checkSlotStatus(appointment.mainID, appointment.slotID); // Assuming mainID and slotID are available in appointment
+
+      if (slotStatus === "Unavailable") {
+        alert("The selected slot is unavailable. Cannot update appointment status.");
+        return; // Stop execution if the slot is unavailable
+      }
+
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment/updateStatus`, 
         { appointmentId, newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -313,7 +346,7 @@ function ViewAppointment() {
   const filteredAppointments = appointments.filter(appointment => {
     const nameMatch = `${appointment.patientFirstName} ${appointment.patientLastName}`.toLowerCase().includes(nameFilter.toLowerCase());
     const typeMatch = !typeFilter || appointment.appointmentType.toLowerCase() === typeFilter.toLowerCase();
-    return nameMatch && typeMatch;
+    return nameMatch && typeMatch && appointment.bookedClinic === user.clinic;
   }).sort((a, b) => {
     if (dateSortOrder === 'asc') {
       return new Date(a.appointmentDate) - new Date(b.appointmentDate);
@@ -429,8 +462,7 @@ function ViewAppointment() {
         }
     } catch (error) {
         console.error('Error updating slot status:', error);
-    }
-  };
+    }};
   
 
   const handleInputChange = (e) => {
@@ -459,9 +491,11 @@ function ViewAppointment() {
           onChange={(e) => setTypeFilter(e.target.value)}
         >
           <option value="">All Appointment Types</option>
-          <option value="Braces & Orthodontics">Braces & Orthodontics</option>
-          <option value="Tooth Extractions">Tooth Extractions</option>
-          <option value="Dental cleaning">Dental cleaning</option>
+          {services.map((service) => (
+            <option key={service.id} value={service.name}>
+              {service.name}
+            </option>
+          ))}
         </select>
         <select
           value={dateSortOrder}
@@ -471,12 +505,6 @@ function ViewAppointment() {
           <option value="asc">Date Ascending</option>
           <option value="desc">Date Descending</option>
         </select>
-        <input
-          type="email"
-          placeholder="Filter by doctor email"
-          value={doctorEmailFilter}
-          onChange={(e) => setDoctorEmailFilter(e.target.value)}
-        />
       </div>
       {displayedAppointments.length === 0 ? (
         <p>No pending or rebooked appointments found.</p>
@@ -500,7 +528,7 @@ function ViewAppointment() {
                   <React.Fragment key={appointment._id}>
                     <tr>
                       <td>{`${appointment.patientFirstName} ${appointment.patientLastName}`}</td>
-                      <td>{appointment.appointmentDate}</td>
+                      <td>{new Date(appointment.appointmentDate).toLocaleDateString('en-CA')}</td>
                       <td>{appointment.appointmentTimeFrom}</td>
                       <td>{appointment.appointmentType}</td>
                       <td>{appointment.bookedClinic}</td>
@@ -525,75 +553,96 @@ function ViewAppointment() {
                             <div className="AdminAppointmentEditButtons">
                               <button 
                                 className="AdminAppointmentButton" 
-                                onClick={() => setShowDateTimeChange(true)}
+                                onClick={() => {
+                                  setShowDateTimeChange(true);
+                                  setShowStatusButtons(false);
+                                  setShowNavigationButtons(true);
+                                }}
                               >
                                 Edit Appointment Details
                               </button>
+                              <button 
+                                className="AdminAppointmentButton" 
+                                onClick={() => {
+                                  setShowDateTimeChange(false);
+                                  setShowStatusButtons(true);
+                                  setShowNavigationButtons(false);
+                                }}
+                              >
+                                Cancel Editing
+                              </button>
                             </div>
 
-                            <div className="AdminAppointmentEditContent">
-                              {currentStep === 1 && showDateTimeChange && (
-                                <AppointmentStepOne 
-                                  formData={formData}
-                                  handleInputChange={handleInputChange}
-                                  selectedCard={selectedCard} 
-                                  handleCardSelect={handleCardSelect}
-                                  services={services}
-                                  doctors={doctors}
-                                  nameOne={nameOne} 
-                                  nameTwo={nameTwo} 
-                                  handleClinicSelect={handleClinicSelect}
-                                />                                                         
-                              )}
+                            {showDateTimeChange && (
+                              <div className="AdminAppointmentEditContent">
+                                {currentStep === 1 && (
+                                  <AppointmentStepOne 
+                                    formData={formData}
+                                    handleInputChange={handleInputChange}
+                                    selectedCard={selectedCard} 
+                                    handleCardSelect={handleCardSelect}
+                                    services={services}
+                                    doctors={doctors}
+                                    nameOne={nameOne} 
+                                    nameTwo={nameTwo} 
+                                    handleClinicSelect={handleClinicSelect}
+                                  />                                                         
+                                )}
 
-                              {currentStep === 2 && showDateTimeChange && (
-                                <TestStepTwo
-                                  selectedDoctor={formData.selectedDoctor}
-                                  onScheduleSelect={handleScheduleSelect}
-                                  filterEmail={doctorEmailFilter}
-                                />
-                              )}
-                            </div>
+                                {currentStep === 2 && (
+                                  <TestStepTwo
+                                    selectedDoctor={formData.selectedDoctor}
+                                    onScheduleSelect={handleScheduleSelect}
+                                    filterEmail={doctorEmailFilter}
+                                  />
+                                )}
+                              </div>
+                            )}
 
-                            <div className="AdminAppointmentNavigationButtons">
-                              {currentStep > 1 && (
-                                <button 
-                                  className="AdminAppointmentButton" 
+                            {showNavigationButtons && (
+                              <div className="AdminAppointmentNavigationButtons">
+                                {currentStep > 1 && (
+                                  <button 
+                                  type="button" class="btn btn-primary btn-sm"
                                   onClick={() => setCurrentStep(currentStep - 1)}
-                                >
-                                  Previous
-                                </button>
-                              )}
-                              {currentStep < 2 && (
-                                <button 
-                                  className="AdminAppointmentButton" 
+                                  >
+                                    Previous
+                                  </button>
+                                )}
+                                {currentStep === 1 && showDateTimeChange && (
+                                  <button 
+                                  type="button" class="btn btn-primary btn-sm"
                                   onClick={() => setCurrentStep(currentStep + 1)}
-                                >
-                                  Next
-                                </button>
-                              )}
-                              {currentStep === 2 && (
-                                <button 
-                                  className="AdminAppointmentButton" 
+                                  >
+                                    Next
+                                  </button>
+                                )}
+                                {currentStep === 2 && (
+                                  <button 
+                                  type="button" class="btn btn-primary btn-sm"
                                   onClick={() => {
-                                    console.log("Completing edit for doctor:", selectedDoctor);
-                                  }}
-                                >
-                                  Complete Edit
-                                </button>
-                              )}
-                            </div>
-                            <div className="AdminAppointmentStatusButtons">
-                              {['Cancelled', 'Completed', 'No Show'].map(status => (
-                                <button
-                                  key={status}
-                                  className="AdminAppointmentStatusButton"
-                                  onClick={() => updateAppointmentStatus(appointment._id, status)}
-                                >
-                                  {status}
-                                </button>
-                              ))}
-                            </div>
+                                      console.log("Completing edit for doctor:", selectedDoctor);
+                                    }}
+                                  >
+                                    Complete Edit
+                                  </button>
+                                )}
+                              </div>
+                            )}
+
+                            {showStatusButtons && (
+                              <div className="AdminAppointmentStatusButtons">
+                                {['Cancelled', 'Completed', 'No Show'].map(status => (
+                                  <button
+                                    key={status}
+                                    className="AdminAppointmentStatusButton"
+                                    onClick={() => updateAppointmentStatus(appointment._id, status)}
+                                  >
+                                    {status}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
                             <div className="AdminAppointmentActionButtons">
                               <button className="AdminAppointmentButton UpdateButton" onClick={handleUpdateAppointment}>
                                 Update Appointment

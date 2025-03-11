@@ -10,6 +10,10 @@ const CompletedAppointment = () => {
   const [user, setUser] = useState(null); // New state for user info
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('All');
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: 'ascending'
+  });
   const navigate = useNavigate();
 
   // Effect to fetch user info and appointments
@@ -82,6 +86,45 @@ const CompletedAppointment = () => {
     }
   };
 
+  // Add sorting function
+  const sortAppointments = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+
+    const sortedAppointments = [...filteredAppointments].sort((a, b) => {
+      if (key === 'date') {
+        const dateA = new Date(a.appointmentDate);
+        const dateB = new Date(b.appointmentDate);
+        return direction === 'ascending' ? dateA - dateB : dateB - dateA;
+      }
+      if (key === 'time') {
+        const timeA = a.appointmentTimeFrom;
+        const timeB = b.appointmentTimeFrom;
+        return direction === 'ascending' 
+          ? timeA.localeCompare(timeB) 
+          : timeB.localeCompare(timeA);
+      }
+      return 0;
+    });
+
+    setFilteredAppointments(sortedAppointments);
+  };
+
+  // Add sort indicator component
+  const SortIndicator = ({ columnKey }) => {
+    if (sortConfig.key !== columnKey) {
+      return <span className="sort-indicator">↕️</span>;
+    }
+    return (
+      <span className="sort-indicator">
+        {sortConfig.direction === 'ascending' ? '↑' : '↓'}
+      </span>
+    );
+  };
+
   return (
     <div className="completed-appointments-container">
       <h1>Completed, No Show, and Cancelled Appointments</h1>
@@ -103,8 +146,12 @@ const CompletedAppointment = () => {
                 <tr>
                   <th>Patient First Name</th>
                   <th>Patient Last Name</th>
-                  <th>Date</th>
-                  <th>Appointment Time</th>
+                  <th onClick={() => sortAppointments('date')} style={{ cursor: 'pointer' }}>
+                    Date <SortIndicator columnKey="date" />
+                  </th>
+                  <th onClick={() => sortAppointments('time')} style={{ cursor: 'pointer' }}>
+                    Appointment Time <SortIndicator columnKey="time" />
+                  </th>
                   <th>Clinic</th>
                   <th>Status</th>
                 </tr>
