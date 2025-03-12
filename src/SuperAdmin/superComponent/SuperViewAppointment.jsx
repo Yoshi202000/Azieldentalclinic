@@ -172,14 +172,15 @@ function SuperViewAppointment() {
   };
   
   const handleComplete = (appointment) => {
-    setSelectedAppointment(appointment);
-    const { patientFirstName, patientLastName, patientEmail } = appointment;
-    setDentalChartData({ 
-      firstName: patientFirstName, 
-      lastName: patientLastName, 
-      email: patientEmail 
+    setSelectedAppointment({
+      ...appointment,
+      // Include patient information from the appointment
+      userId: appointment.userId, // Patient's user ID
+      patientFirstName: appointment.patientFirstName,
+      patientLastName: appointment.patientLastName,
+      patientEmail: appointment.patientEmail
     });
-    setShowDentalChart(true);
+    setShowUpdateFee(true);
   };
 
   const fetchAppointments = async (clinic) => {
@@ -533,6 +534,7 @@ function SuperViewAppointment() {
                       <td>{appointment.appointmentType}</td>
                       <td>{appointment.bookedClinic}</td>
                       <td>{appointment.appointmentStatus}</td>
+                      <td>{appointment.userId}</td>
                       <td>
                         <button className="AdminAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}
@@ -655,7 +657,12 @@ function SuperViewAppointment() {
         <span>Page {currentPage} of {totalPages}</span>
         <button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
       </div>
-      {showUpdateFee && <UpdateFee selectedAppointment={selectedAppointment} onClose={() => setShowUpdateFee(false)} />}
+      {showUpdateFee && (
+        <UpdateFee 
+          selectedAppointment={selectedAppointment}
+          onClose={() => setShowUpdateFee(false)} 
+        />
+      )}
       {showDentalChart && (
         <DentalChartForm 
           initialFirstName={dentalChartData.firstName}

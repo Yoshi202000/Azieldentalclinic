@@ -8,6 +8,11 @@ const userSchema = new mongoose.Schema({
     phoneNumber: { type: String, required: true },
     password: { type: String, required: true }, // Store hashed password
     emailVerified: { type: Boolean, default: false },
+    discountId: {
+        type: String,
+        default: null,
+        required: false
+    },
     
 }, { timestamps: true }); // Automatically adds createdAt and updatedAt fields
 

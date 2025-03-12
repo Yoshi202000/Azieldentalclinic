@@ -43,4 +43,42 @@ router.put('/update-health-record', authenticateUser, async (req, res) => {
         res.status(500).json({ message: 'An error occurred while updating the health record' });
     }
 });
+
+// Route to update discount ID, protected by authentication middleware
+router.put('/update-discount-id', authenticateUser, async (req, res) => {
+    console.log("route hit update-discount-id");
+    const { discountId, userId } = req.body; // Get userId from request body
+    // Not using req.userId from token anymore
+    console.log("discountId", discountId);
+    console.log("userId", userId);
+
+    try {
+        // Validate request
+        if (!discountId || !userId) {
+            return res.status(400).json({ message: 'Discount ID and User ID are required' });
+        }
+        // Update the patient's discount ID using the userId from request body
+        const updatedUser = await User.findByIdAndUpdate(
+            userId, // Using userId from request body (patient's ID) instead of token
+            { discountId: discountId },
+            { new: true }
+        );
+        console.log("updatedUserkjhgkjhgk", updatedUser);
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ 
+            message: 'Discount ID updated successfully', 
+            user: updatedUser 
+        });
+    } catch (error) {
+        console.error('Error updating discount ID:', error);
+        res.status(500).json({ 
+            message: 'An error occurred while updating the discount ID',
+            error: error.message 
+        });
+    }
+});
+
 export default router;

@@ -18,6 +18,9 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
   const [discount, setDiscount] = useState(0);
   const [discountType, setDiscountType] = useState(null);
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
+  const [discountId, setDiscountId] = useState('');
+  const [showDiscountIdField, setShowDiscountIdField] = useState(false);
+  const [discountIdError, setDiscountIdError] = useState('');
   const navigate = useNavigate();
 
   // Fetch services with fees
@@ -81,6 +84,48 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
     }
   };
 
+  // Fetch user's discount ID and apply discount if exists
+  useEffect(() => {
+    const fetchUserDiscountId = async () => {
+      if (selectedAppointment?.userId) {
+        try {
+          const token = localStorage.getItem('token');
+          const response = await axios.get(
+            `${import.meta.env.VITE_BACKEND_URL}/UserInformation/${selectedAppointment.userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            }
+          );
+          
+          if (response.data.discountId) {
+            setDiscountId(response.data.discountId);
+            setDiscount(0.20); // Apply discount if ID exists
+            setShowDiscountIdField(true);
+            // Determine discount type from the ID format or prefix if possible
+            if (response.data.discountId.startsWith('PWD')) {
+              setDiscountType('PWD');
+            } else if (response.data.discountId.startsWith('SC')) {
+              setDiscountType('Senior');
+            }
+          } else {
+            setDiscount(0); // No discount if no ID
+            setDiscountType(null);
+          }
+          // Recalculate total fee after setting discount
+          calculateTotalFee(selectedMedicines, selectedFee?.amount || 0);
+        } catch (error) {
+          console.error('Error fetching user discount ID:', error);
+          setDiscount(0);
+          setDiscountType(null);
+        }
+      }
+    };
+
+    fetchUserDiscountId();
+  }, [selectedAppointment]);
+
   // Handle fee update
   const handleUpdateFee = async () => {
     const token = localStorage.getItem('token');
@@ -121,7 +166,7 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
     onClose(); // Close the UpdateFee dialog
   };
 
-  // Update total fee calculation to always include service fees in discountable items
+  // Calculate total fee with discount
   const calculateTotalFee = (selectedMeds, serviceFee = 0) => {
     const medicineFees = selectedMeds.reduce((sum, medicine) => 
       sum + (parseFloat(medicine.medicineAmount) || 0), 0
@@ -136,10 +181,11 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
 
     // Always make service fee discountable
     const discountableServiceFee = parseFloat(serviceFee) || 0;
-    const nonDiscountableServiceFee = 0; // No non-discountable service fee
+    const nonDiscountableServiceFee = 0;
 
     const discountableSubtotal = discountableMedicineFees + discountableServiceFee;
-    const discountAmount = discount ? (discountableSubtotal * 0.20) : 0;
+    // Only apply discount if there's a discount ID
+    const discountAmount = discountId ? (discountableSubtotal * (discount || 0)) : 0;
 
     const total = (discountableSubtotal - discountAmount) + nonDiscountableMedicineFees + nonDiscountableServiceFee;
     setTotalFee(total);
@@ -181,17 +227,61 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
     calculateTotalFee(selectedMedicines, selectedFee.amount);
   };
 
-  // Add discount handlers
+  // Handle discount selection
   const handleDiscount = (type) => {
     if (discountType === type) {
       // Remove discount if same button is clicked
       setDiscount(0);
       setDiscountType(null);
-      calculateTotalFee(selectedMedicines, selectedFee?.amount || 0);
+      setShowDiscountIdField(false);
+      setDiscountId('');
+      setDiscountIdError('');
     } else {
-      // Apply discount
-      setDiscount(0.20);
+      // Show discount ID field when selecting a discount type
       setDiscountType(type);
+      setShowDiscountIdField(true);
+      // Only apply discount if there's an existing discount ID
+      if (discountId) {
+        setDiscount(0.20);
+      }
+    }
+    calculateTotalFee(selectedMedicines, selectedFee?.amount || 0);
+  };
+
+  // Handle discount ID change and update
+  const handleDiscountIdChange = async (e) => {
+    const newDiscountId = e.target.value;
+    setDiscountId(newDiscountId);
+    setDiscountIdError('');
+
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Update the discount ID for the patient
+      await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/update-discount-id`,
+        { 
+          discountId: newDiscountId,
+          userId: selectedAppointment.userId
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      // Apply or remove discount based on whether ID exists
+      if (newDiscountId) {
+        setDiscount(0.20);
+      } else {
+        setDiscount(0);
+      }
+      calculateTotalFee(selectedMedicines, selectedFee?.amount || 0);
+    } catch (error) {
+      console.error('Error updating discount ID:', error);
+      setDiscountIdError(error.response?.data?.message || 'Invalid discount ID');
+      setDiscount(0);
       calculateTotalFee(selectedMedicines, selectedFee?.amount || 0);
     }
   };
@@ -225,6 +315,7 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
               <Typography variant="h6" gutterBottom>
                 Selected Appointment
               </Typography>
+              <p>{selectedAppointment.userId}</p>
               <Typography>
                 Patient: {selectedAppointment.patientFirstName} {selectedAppointment.patientLastName}
               </Typography>
@@ -253,6 +344,16 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
               value={selectedFee || ''}
               onChange={(e) => handleFeeSelection(e.target.value)}
               label="Select Service Fee"
+              renderValue={(selected) => (
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  {selected.feeType} - ₱{selected.amount} ({selected.description})
+                  {selected.discountApplicable && (
+                    <Typography variant="caption" color="success.main" sx={{ ml: 1 }}>
+                      (Discountable)
+                    </Typography>
+                  )}
+                </Box>
+              )}
             >
               {services
                 .find(service => service.name === selectedAppointment.appointmentType)
@@ -328,6 +429,7 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
           {/* Medicine Selection with Discountable Information */}
           <FormControl fullWidth sx={{ mb: 2 }}>
             <InputLabel>Select Medicines</InputLabel>
+            <p>{}</p>
             <Select
               multiple
               value={selectedMedicines}
@@ -361,34 +463,54 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
             </Select>
           </FormControl>
 
-          {/* Discount Buttons */}
-          <Box sx={{ mb: 2, display: 'flex', gap: 2 }}>
-            <Button
-              variant={discountType === 'PWD' ? 'contained' : 'outlined'}
-              onClick={() => handleDiscount('PWD')}
-              sx={{
-                bgcolor: discountType === 'PWD' ? 'primary.main' : 'transparent',
-                color: discountType === 'PWD' ? 'primary.contrastText' : 'primary.main',
-                '&:hover': {
-                  bgcolor: discountType === 'PWD' ? 'primary.dark' : 'primary.light',
-                }
-              }}
-            >
-              PWD Discount (20%)
-            </Button>
-            <Button
-              variant={discountType === 'Senior' ? 'contained' : 'outlined'}
-              onClick={() => handleDiscount('Senior')}
-              sx={{
-                bgcolor: discountType === 'Senior' ? 'primary.main' : 'transparent',
-                color: discountType === 'Senior' ? 'primary.contrastText' : 'primary.main',
-                '&:hover': {
-                  bgcolor: discountType === 'Senior' ? 'primary.dark' : 'primary.light',
-                }
-              }}
-            >
-              Senior Citizen Discount (20%)
-            </Button>
+          {/* Discount Buttons and ID Field */}
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Apply Discount
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+              <Button
+                variant={discountType === 'PWD' ? 'contained' : 'outlined'}
+                onClick={() => handleDiscount('PWD')}
+                sx={{
+                  bgcolor: discountType === 'PWD' ? 'primary.main' : 'transparent',
+                  color: discountType === 'PWD' ? 'primary.contrastText' : 'primary.main',
+                  '&:hover': {
+                    bgcolor: discountType === 'PWD' ? 'primary.dark' : 'primary.light',
+                  }
+                }}
+              >
+                PWD Discount (20%)
+              </Button>
+              <Button
+                variant={discountType === 'Senior' ? 'contained' : 'outlined'}
+                onClick={() => handleDiscount('Senior')}
+                sx={{
+                  bgcolor: discountType === 'Senior' ? 'primary.main' : 'transparent',
+                  color: discountType === 'Senior' ? 'primary.contrastText' : 'primary.main',
+                  '&:hover': {
+                    bgcolor: discountType === 'Senior' ? 'primary.dark' : 'primary.light',
+                  }
+                }}
+              >
+                Senior Citizen Discount (20%)
+              </Button>
+            </Box>
+
+            {/* Discount ID Field */}
+            {showDiscountIdField && (
+              <Box sx={{ mt: 2 }}>
+                <TextField
+                  fullWidth
+                  label={`${discountType} ID Number`}
+                  value={discountId}
+                  onChange={handleDiscountIdChange}
+                  error={!!discountIdError}
+                  helperText={discountIdError || `Please enter valid ${discountType} ID`}
+                  sx={{ mb: 2 }}
+                />
+              </Box>
+            )}
           </Box>
 
           {/* Fee Update Form */}

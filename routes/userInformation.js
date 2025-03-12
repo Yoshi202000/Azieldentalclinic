@@ -38,6 +38,7 @@ router.put('/api/UserInformation/:doctorId/addService', async (req, res) => {
 });
 
 router.get('/clinic/:clinicId/services', async (req, res) => {
+  console.log("clinicId", req.params.clinicId);
   try {
     const { clinicId } = req.params;
     const clinic = await Clinic.findById(clinicId); // Replace with actual DB schema
@@ -48,6 +49,27 @@ router.get('/clinic/:clinicId/services', async (req, res) => {
   } catch (err) {
     console.error('Error fetching clinic services:', err);
     res.status(500).json({ error: 'Failed to fetch clinic services' });
+  }
+});
+
+// Get user information by userId
+router.get('/UserInformation/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.status(200).json({
+      discountId: user.discountId,
+      firstName: user.firstName,
+      lastName: user.lastName
+    });
+  } catch (err) {
+    console.error('Error fetching user information:', err);
+    res.status(500).json({ error: 'Failed to fetch user information' });
   }
 });
 
