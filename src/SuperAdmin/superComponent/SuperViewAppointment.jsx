@@ -617,16 +617,7 @@ function SuperViewAppointment() {
                                     Next
                                   </button>
                                 )}
-                                {currentStep === 2 && (
-                                  <button 
-                                  type="button" class="btn btn-primary btn-sm"
-                                  onClick={() => {
-                                      console.log("Completing edit for doctor:", selectedDoctor);
-                                    }}
-                                  >
-                                    Complete Edit
-                                  </button>
-                                )}
+                                
                               </div>
                             )}
 

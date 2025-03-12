@@ -77,10 +77,7 @@ async function safeDeleteFile(filePath) {
   }
 }
 
-// Fetches clinic data from the database.
-// If a clinic document is found, its services array is processed to convert image buffers to Base64 strings
-// for easier frontend consumption.
-// Responds with the clinic data or an error message if the fetch fails.
+// GET route for fetching clinic data
 router.get('/clinic', async (req, res) => {
   try {
     console.log('Fetching clinic data...');
@@ -88,11 +85,22 @@ router.get('/clinic', async (req, res) => {
     console.log('Raw clinic data:', clinic);
     
     if (clinic) {
+      // Process services
       clinic.services = clinic.services.map(service => ({
         ...service.toObject(),
         image: service.image ? `${service.image}` : null,
       }));
       console.log('Processed services:', clinic.services);
+
+      // Process medicines
+      if (!clinic.medicines) {
+        clinic.medicines = [];
+      }
+      clinic.medicines = clinic.medicines.map(medicine => ({
+        ...medicine.toObject(),
+        fees: medicine.fees || []
+      }));
+      console.log('Processed medicines:', clinic.medicines);
     } else {
       console.log('No clinic found in database');
     }
@@ -114,6 +122,7 @@ router.get('/clinic', async (req, res) => {
       signupMessage: clinic?.signupMessage || null,
       signupDescription: clinic?.signupDescription || null,
       services: clinic?.services || [],
+      medicines: clinic?.medicines || [],
       questionOne: clinic?.questionOne || null,
       questionTwo: clinic?.questionTwo || null,
       questionThree: clinic?.questionThree || null,
@@ -125,16 +134,15 @@ router.get('/clinic', async (req, res) => {
       questionNine: clinic?.questionNine || null,
       questionTen: clinic?.questionTen || null,
     };
-    
-    console.log('Sending response:', response);
-    res.json(response);
+
+    res.status(200).json(response);
   } catch (err) {
     console.error('Error fetching clinic data:', err);
     res.status(500).json({ message: err.message });
   }
 });
 
-// Helper function to validate service data
+// Update the validateService function to handle fee array
 const validateService = (service) => {
   const errors = [];
   if (!service.name || service.name.trim().length === 0) {
@@ -143,8 +151,17 @@ const validateService = (service) => {
   if (!service.description || service.description.trim().length === 0) {
     errors.push('Service description is required');
   }
-  if (typeof service.fee !== 'number' || service.fee < 0) {
-    errors.push('Service fee must be a non-negative number');
+  if (!Array.isArray(service.fees)) {
+    errors.push('Fees must be an array');
+  } else {
+    service.fees.forEach((fee, index) => {
+      if (!fee.feeType) {
+        errors.push(`Fee type is required for fee ${index + 1}`);
+      }
+      if (typeof fee.amount !== 'number' || fee.amount < 0) {
+        errors.push(`Fee amount must be a non-negative number for fee ${index + 1}`);
+      }
+    });
   }
   if (!['both', 'clinicOne', 'clinicTwo'].includes(service.clinic)) {
     errors.push('Invalid clinic selection');
@@ -170,6 +187,28 @@ async function cleanupServiceImages(oldServices, newServices) {
     console.error('Error cleaning up service images:', error);
   }
 }
+
+// Update validateMedicine function to handle empty fees
+const validateMedicine = (medicine) => {
+  const errors = [];
+  if (!medicine.medicineName || medicine.medicineName.trim().length === 0) {
+    errors.push('Medicine name is required');
+  }
+  if (!medicine.medicineDescription || medicine.medicineDescription.trim().length === 0) {
+    errors.push('Medicine description is required');
+  }
+  if (medicine.fees && Array.isArray(medicine.fees)) {
+    medicine.fees.forEach((fee, index) => {
+      if (!fee.feeType) {
+        errors.push(`Fee type is required for fee ${index + 1}`);
+      }
+      if (typeof fee.amount !== 'number' || fee.amount < 0) {
+        errors.push(`Fee amount must be a non-negative number for fee ${index + 1}`);
+      }
+    });
+  }
+  return errors;
+};
 
 // Updates or creates clinic data in the database.
 // Parses form data to update clinic fields and services, including uploaded images stored in memory.
@@ -234,11 +273,23 @@ router.put('/clinic', upload.any(), async (req, res) => {
     let index = 0;
 
     while (req.body[`service_name_${index}`] !== undefined) {
+      // Parse fees array for this service
+      const fees = [];
+      let feeIndex = 0;
+      while (req.body[`service_fee_type_${index}_${feeIndex}`] !== undefined) {
+        fees.push({
+          feeType: req.body[`service_fee_type_${index}_${feeIndex}`],
+          amount: parseFloat(req.body[`service_fee_amount_${index}_${feeIndex}`]) || 0,
+          description: req.body[`service_fee_description_${index}_${feeIndex}`] || ''
+        });
+        feeIndex++;
+      }
+
       const serviceData = {
         name: req.body[`service_name_${index}`],
         description: req.body[`service_description_${index}`],
         clinic: req.body[`service_clinic_${index}`] || 'both',
-        fee: parseFloat(req.body[`service_fee_${index}`]) || 0
+        fees: fees
       };
 
       // Handle service image
@@ -261,8 +312,50 @@ router.put('/clinic', upload.any(), async (req, res) => {
       } else {
         newServices.push(serviceData);
       }
-
       index++;
+    }
+
+    // Process medicines with validation
+    const newMedicines = [];
+    let medicineIndex = 0;
+
+    while (req.body[`medicine_name_${medicineIndex}`] !== undefined) {
+      const medicineData = {
+        medicineName: req.body[`medicine_name_${medicineIndex}`],
+        medicineAmount: parseFloat(req.body[`medicine_amount_${medicineIndex}`]) || 0,
+        medicineDescription: req.body[`medicine_description_${medicineIndex}`] || '',
+        discountApplicable: req.body[`medicine_discount_${medicineIndex}`] === 'true',
+        fees: [] // Initialize empty fees array
+      };
+
+      // Process fees for this medicine if they exist
+      let feeIndex = 0;
+      while (req.body[`medicine_fee_type_${medicineIndex}_${feeIndex}`] !== undefined) {
+        medicineData.fees.push({
+          feeType: req.body[`medicine_fee_type_${medicineIndex}_${feeIndex}`],
+          amount: parseFloat(req.body[`medicine_fee_amount_${medicineIndex}_${feeIndex}`]) || 0,
+          description: req.body[`medicine_fee_description_${medicineIndex}_${feeIndex}`] || ''
+        });
+        feeIndex++;
+      }
+
+      // If no fees were found, add a default fee
+      if (medicineData.fees.length === 0) {
+        medicineData.fees.push({
+          feeType: 'Default',
+          amount: medicineData.medicineAmount,
+          description: ''
+        });
+      }
+
+      const medicineErrors = validateMedicine(medicineData);
+      if (medicineErrors.length > 0) {
+        errors.push(`Medicine ${medicineIndex + 1}: ${medicineErrors.join(', ')}`);
+      } else {
+        newMedicines.push(medicineData);
+      }
+
+      medicineIndex++;
     }
 
     if (errors.length > 0) {
@@ -273,26 +366,23 @@ router.put('/clinic', upload.any(), async (req, res) => {
       return res.status(400).json({ message: 'Validation errors', errors });
     }
 
-    // Update services and clean up old images
+    // Update services and medicines
     clinic.services = newServices;
+    clinic.medicines = newMedicines;
     await cleanupServiceImages(oldServices, newServices);
 
     await clinic.save();
     res.status(200).json({ 
       message: 'Clinic data updated successfully!',
-      servicesCount: newServices.length
+      servicesCount: newServices.length,
+      medicinesCount: newMedicines.length
     });
+
   } catch (error) {
-    // Clean up any uploaded files on error
-    if (req.files) {
-      for (const file of req.files) {
-        await safeDeleteFile(path.join(uploadDir, file.filename));
-      }
-    }
     console.error('Error updating clinic:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       message: 'Server error while updating clinic data',
-      error: error.message 
+      error: error.message
     });
   }
 });

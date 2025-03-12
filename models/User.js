@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
     role: { type: String, default: 'patient' },
     clinic: { type: String, default: 'both' },
     termscondition: {type: Boolean, default: false},
+    discountId: { type: String, default: null, required: false},
 
     // User health record commonly asked before dental operation
     questionOne: { type: Boolean, default: null },

@@ -599,16 +599,7 @@ const SuperPatientsInformation = () => {
                                             Next
                                           </button>
                                         )}
-                                        {currentStep === 2 && (
-                                          <button 
-                                            className="PIButton" 
-                                            onClick={() => {
-                                              console.log("Completing edit for doctor:", selectedDoctor);
-                                            }}
-                                          >
-                                            Complete Edit
-                                          </button>
-                                        )}
+                                        
                                       </div>
                                     )}
 
