@@ -6,6 +6,7 @@ import ViewDentalChart from '../../component/viewDentalChart.jsx';
 import { generateAvailableDates } from '../../utils/appDate';
 import '../../component/admin/ViewAppointment.css'
 import axios from 'axios';
+import UpdateFee from '../../test/UpdateFee.jsx';
 
 
 const DoctorPatientsInformation = () => {
@@ -66,6 +67,9 @@ const DoctorPatientsInformation = () => {
     questionNine: '',
     questionTen: ''
   });
+
+  const [showUpdateFee, setShowUpdateFee] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   const generateTimeSlots = (start, end) => {
     const timeSlots = [];
@@ -385,6 +389,54 @@ const DoctorPatientsInformation = () => {
     `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleComplete = (appointment) => {
+    setSelectedAppointment({
+      ...appointment,
+      userId: appointment.userId,
+      patientFirstName: appointment.patientFirstName,
+      patientLastName: appointment.patientLastName,
+      patientEmail: appointment.patientEmail
+    });
+    setShowUpdateFee(true);
+  };
+
+  const updateAppointmentStatus = async (appointmentId, newStatus) => {
+    try {
+      const token = localStorage.getItem('token');
+      const appointment = appointments.find(app => app._id === appointmentId);
+
+      // Check the slot status before updating
+      const slotStatus = await checkSlotStatus(appointment.mainID, appointment.slotID);
+
+      if (slotStatus === "Unavailable") {
+        alert("The selected slot is unavailable. Cannot update appointment status.");
+        return;
+      }
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/ViewAppointment/updateStatus`,
+        { appointmentId, newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const updatedAppointment = response.data;
+
+      setAppointments(prevAppointments =>
+        prevAppointments.map(app =>
+          app._id === updatedAppointment._id ? { ...app, appointmentStatus: updatedAppointment.appointmentStatus } : app
+        )
+      );
+
+      if (newStatus === 'Completed') {
+        setSelectedAppointment(updatedAppointment);
+        setShowUpdateFee(true);
+      }
+    } catch (err) {
+      console.error('Error updating appointment status:', err);
+      setError('Failed to update appointment status');
+    }
+  };
+
   return (
     <div className="PIContainer">
       <h1 className="PITitle">Patients Information</h1>
@@ -513,13 +565,16 @@ const DoctorPatientsInformation = () => {
                         {filteredAppointments.map((appointment) => (
                           <React.Fragment key={appointment._id}>
                             <tr>
-                            <td>{new Date(appointment.appointmentDate).toLocaleDateString('en-CA')}</td>
-                            <td>{appointment.appointmentTimeFrom}</td>
+                              <td>{new Date(appointment.appointmentDate).toLocaleDateString('en-CA')}</td>
+                              <td>{appointment.appointmentTimeFrom}</td>
                               <td>{appointment.appointmentType}</td>
                               <td>{appointment.appointmentStatus}</td>
                               <td>
                                 <button className="PIButton" onClick={() => handleEditAppointment(appointment)}>
                                   {editingAppointment && editingAppointment._id === appointment._id ? 'Close' : 'Edit'}
+                                </button>
+                                <button className="PIButton" onClick={() => handleComplete(appointment)}>
+                                  Create Dental Record
                                 </button>
                               </td>
                             </tr>
@@ -657,6 +712,13 @@ const DoctorPatientsInformation = () => {
                 </div>
               )}
             </>
+          )}
+
+          {showUpdateFee && (
+            <UpdateFee 
+              selectedAppointment={selectedAppointment}
+              onClose={() => setShowUpdateFee(false)} 
+            />
           )}
         </>
       )}

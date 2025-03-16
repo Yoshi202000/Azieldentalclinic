@@ -100,7 +100,7 @@ function SuperDashboard() {
             className={activeComponent === 'AdminSales' ? 'active' : ''}
             onClick={() => setActiveComponent('AdminSales')}
           >
-            Total Sales
+            Total Gross Sales
           </button>
           <button 
            className={activeComponent === 'EditContent'? 'active' : ''}

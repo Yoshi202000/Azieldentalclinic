@@ -53,7 +53,8 @@ const serviceSchema = new mongoose.Schema({
   image: { type: String, default: null },
   clinic: { type: String, required: true, default: 'both' },
   fees: [feeSchema], // Array of fees
-  duration: { type: String, required: false }
+  duration: { type: String, required: false },
+  servicesSlot: { type: Number, required: false }
 });
 
 const clinicSchema = new mongoose.Schema({

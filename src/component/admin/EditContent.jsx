@@ -38,6 +38,15 @@ const EditContent = () => {
     const[questionNine, setQuestionNine] = useState(null);
     const[questionTen, setQuestionTen] = useState(null);
     const [medicines, setMedicines] = useState([]);
+    const [editedService, setEditedService] = useState({
+      name: '',
+      description: '',
+      image: '',
+      clinic: 'both',
+      fees: [],
+      duration: '',
+      servicesSlot: 1 // Default to 1 slot
+    });
     
     // Initialize medicine with default values
     const defaultMedicine = {
@@ -127,6 +136,8 @@ const EditContent = () => {
                 imageUpdated: false,
                 clinic: service.clinic || 'both',
                 fee: isNaN(feeValue) ? 0 : feeValue,
+                duration: service.duration || '',
+                servicesSlot: service.servicesSlot || 1 // Default to 1 slot if not set
               };
             })
           );          
@@ -152,43 +163,45 @@ const EditContent = () => {
     setServices(prev => [...prev, {
       name: '',
       description: '',
-      image: null,
+      image: '',
       clinic: 'both',
-      fees: [{ feeType: '', amount: 0, description: '' }] // Initialize with one fee
+      fees: [],
+      duration: '',
+      servicesSlot: 1
     }]);
   };
 
   // Removes a service from the services array by its index.
   // If the service has an ID, it attempts to delete the service from the backend as well.
-  const removeService = (index, serviceId) => {
-    console.log(`Removing service at index ${index}, Service ID: ${serviceId || 'No ID'}`);
-
-    // Optimistically update the UI
-    const serviceToRemove = services[index];
-    setServices(prev => prev.filter((_, i) => i !== index));
-
+  const removeService = (serviceIndex, serviceId) => {
     if (serviceId) {
-      axios.delete(`${import.meta.env.VITE_BACKEND_URL}/clinic/service/${serviceId}`)
-        .then(() => {
-          console.log(`Service with ID: ${serviceId} removed successfully`);
-        })
-        .catch(error => {
-          console.error('Error removing service:', error.response?.data?.message || error.message);
-          // Revert the optimistic update on failure
-          setServices(prev => {
-            const updatedServices = [...prev];
-            updatedServices.splice(index, 0, serviceToRemove);
-            return updatedServices;
-          });
-        });
+      // If the service has an ID, delete it from the backend
+      const token = localStorage.getItem('token');
+      axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/services/${serviceId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(() => {
+        setServices(prev => prev.filter((_, index) => index !== serviceIndex));
+      })
+      .catch(error => {
+        console.error('Error deleting service:', error);
+      });
+    } else {
+      // If the service doesn't have an ID, just remove it from the state
+      setServices(prev => prev.filter((_, index) => index !== serviceIndex));
     }
   };
 
   // Updates a specific field (e.g., name, description, or clinic) of a service at a given index.
-  const handleServiceChange = (index, field, value) => {
+  const handleServiceChange = (serviceIndex, field, value) => {
     setServices(prev => {
       const updatedServices = [...prev];
-      updatedServices[index][field] = value;
+      updatedServices[serviceIndex] = {
+        ...updatedServices[serviceIndex],
+        [field]: value
+      };
       return updatedServices;
     });
   };
@@ -308,6 +321,8 @@ const EditContent = () => {
         formData.append(`service_name_${index}`, service.name);
         formData.append(`service_description_${index}`, service.description);
         formData.append(`service_clinic_${index}`, service.clinic);
+        formData.append(`service_duration_${index}`, service.duration);
+        formData.append(`service_servicesSlot_${index}`, service.servicesSlot);
 
         // Handle service fees
         service.fees.forEach((fee, feeIndex) => {
@@ -451,6 +466,31 @@ const EditContent = () => {
     });
   };
   
+  const handleSlotChange = (index, value) => {
+    setServices(prev => {
+      const updatedServices = [...prev];
+      updatedServices[index] = {
+        ...updatedServices[index],
+        servicesSlot: parseInt(value)
+      };
+      return updatedServices;
+    });
+  };
+
+  const fetchServices = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/services`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setServices(response.data);
+    } catch (error) {
+      console.error('Error fetching services:', error);
+    }
+  };
+
   return (
     <div  className='edit-content-container'>
       <h2>Edit Clinic Content</h2>
@@ -696,155 +736,72 @@ const EditContent = () => {
 
         <div className="servicesSection">
           <h3>Clinic Services</h3>
-          {services.map((service, serviceIndex) => (
-            <div key={serviceIndex} className="serviceInput">
+          {services.map((service, index) => (
+            <div key={index} className="serviceInput">
               <label>
-                Clinic Service {serviceIndex + 1}:
+                Clinic Service {index + 1}:
                 <input
-                            className='form-control-plaintext'
                   type="text"
-                  value={service.name}
-                  onChange={(e) => handleServiceChange(serviceIndex, 'name', e.target.value)}
+                  className="form-control-plaintext"
+                  value={service.name || ''}
+                  onChange={(e) => handleServiceChange(index, 'name', e.target.value)}
                 />
               </label>
+              
               <label>
                 Service Description:
                 <textarea
-                className="form-control"
-                  value={service.description}
-                  onChange={(e) => handleServiceChange(serviceIndex, 'description', e.target.value)}
+                  className="form-control"
+                  value={service.description || ''}
+                  onChange={(e) => handleServiceChange(index, 'description', e.target.value)}
                 ></textarea>
               </label>
-              <label>
-                Fee:
-                <input
-                  type="number"
-                  className="form-control-plaintext"
-                  value={service.fee || ''}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    const numValue = value === '' ? 0 : parseFloat(value);
-                    handleServiceChange(serviceIndex, 'fee', numValue);
-                  }}
-                  placeholder="Enter service fee"
-                  min="0"
-                  step="0.01"
-                />
-              </label>
+
               <label>
                 Clinic:
                 <select
                   className="form-select"
-                  value={service.clinic}
-                  onChange={(e) => handleServiceChange(serviceIndex, 'clinic', e.target.value)}
+                  value={service.clinic || 'both'}
+                  onChange={(e) => handleServiceChange(index, 'clinic', e.target.value)}
                 >
                   <option value="both">Both</option>
-                  <option value="clinicOne">{nameOne}</option>
-                  <option value="clinicTwo">{nameTwo}</option>
+                  <option value="clinicOne">Clinic One</option>
+                  <option value="clinicTwo">Clinic Two</option>
                 </select>
               </label>
-              <label>
-              Service Image:
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {/* Input for file upload */}
-                <input
-                className="form-control"
-                  type="file"
-                  onChange={(e) => handleServiceImageChange(serviceIndex, e.target.files[0])}
-                  style={{ flex: '1' }}
-                />
-                {/* Display existing image if available */}
-                {service.image && (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <img
-                      className="img-thumbnail"
-                      src={service.imagePreview || getServiceImageUrl(service.image)}
-                      alt={`Service ${serviceIndex + 1}`}
-                      style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (service.imagePreview) {
-                          URL.revokeObjectURL(service.imagePreview); // Clean up the preview URL
-                        }
-                        handleServiceChange(serviceIndex, 'image', null);
-                        handleServiceChange(serviceIndex, 'imagePreview', null);
-                        handleServiceChange(serviceIndex, 'imageUpdated', true);
-                      }}
-                      className="btn btn-primary btn-sm"
-                    >
-                      Remove Image
-                    </button>
-                  </div>
-                )}
+
+              <div className="form-group">
+                <label className="slot-label">Number of Slots:</label>
+                <div className="slot-radio-group">
+                  {[1, 2, 3].map((number) => (
+                    <label key={number} className="slot-radio-label">
+                      <input
+                        type="radio"
+                        name={`servicesSlot-${index}`}
+                        value={number}
+                        checked={service.servicesSlot === number}
+                        onChange={(e) => handleSlotChange(index, e.target.value)}
+                      />
+                      <span className="slot-radio-text">{number} {number === 1 ? 'Slot' : 'Slots'}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
-            </label>
 
               <button
-                type="button" className="btn btn-primary btn-sm"
-                onClick={() => removeService(serviceIndex, service._id)}
+                type="button"
+                className="btn btn-danger"
+                onClick={() => removeService(index, service._id)}
               >
                 Remove Service
               </button>
-
-              <div className="feesSection">
-                <h4>Service Fees</h4>
-                {(service.fees || []).map((fee, feeIndex) => (
-                  <div key={feeIndex} className="feeInput">
-                    <label>
-                      Fee Type:
-                      <input
-                        type="text"
-                        className="form-control-plaintext"
-                        value={fee.feeType}
-                        onChange={(e) => handleFeeChange(serviceIndex, feeIndex, 'feeType', e.target.value)}
-                        placeholder="Enter fee type"
-                      />
-                    </label>
-                    <label>
-                      Amount:
-                      <input
-                        type="number"
-                        className="form-control-plaintext"
-                        value={fee.amount}
-                        onChange={(e) => handleFeeChange(serviceIndex, feeIndex, 'amount', parseFloat(e.target.value) || 0)}
-                        placeholder="Enter amount"
-                        min="0"
-                        step="0.01"
-                      />
-                    </label>
-                    <label>
-                      Description:
-                      <input
-                        type="text"
-                        className="form-control-plaintext"
-                        value={fee.description}
-                        onChange={(e) => handleFeeChange(serviceIndex, feeIndex, 'description', e.target.value)}
-                        placeholder="Enter description"
-                      />
-                    </label>
-                    <button
-                      type="button"
-                      className="btn btn-danger btn-sm"
-                      onClick={() => removeFee(serviceIndex, feeIndex)}
-                    >
-                      Remove Fee
-                    </button>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-sm"
-                  onClick={() => addFee(serviceIndex)}
-                >
-                  Add Fee
-                </button>
-              </div>
             </div>
-            
           ))}
-          <button type="button" className="btn btn-primary btn-sm" onClick={addService}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={addService}
+          >
             Add Service
           </button>
         </div>

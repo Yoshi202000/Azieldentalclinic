@@ -79,7 +79,7 @@ const SuperAdminSales = () => {
     }
   };
 
-  // Fetch appointments from the backend and filter by user's clinic
+  // Function to fetch appointments from the backend and filter by user's clinic
   const fetchAppointments = async (token, clinic) => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment`, {
@@ -88,13 +88,13 @@ const SuperAdminSales = () => {
         },
       });
 
-      // Filter appointments by clinic and only include appointments with status 'Completed'
-      const filteredByClinicAndStatus = response.data.filter(
-        (app) => app.appointmentStatus === 'Completed' 
+      // Filter appointments by status 'Completed' only
+      const filteredByStatus = response.data.filter(
+        (app) => app.appointmentStatus === 'Completed'
       );
 
-      setAppointments(filteredByClinicAndStatus);
-      filterAppointments('All', 'Daily', filteredByClinicAndStatus);
+      setAppointments(filteredByStatus);
+      filterAppointments('All', 'Daily', filteredByStatus);
     } catch (err) {
       console.error('Error fetching appointments:', err);
       setError(err.message);
@@ -134,18 +134,7 @@ const SuperAdminSales = () => {
     filterAppointments(selectedAppointmentType, filter);
   };
 
-  // Handle clinic filter change
-  const handleClinicFilterChange = (clinic) => {
-    if (clinic === selectedClinic) {
-      // If the same clinic is clicked again, reset the filter
-      setSelectedClinic(''); // Reset to no clinic selected
-    } else {
-      setSelectedClinic(clinic); // Set selected clinic
-    }
-    filterAppointments(selectedAppointmentType, dateFilter); // Call filterAppointments with the current appointment type and date filter
-  };
-
-  // Filter appointments based on type and date filters
+  // Filter appointments based on type, date, and clinic
   const filterAppointments = (type, date, data = appointments) => {
     let filtered = data;
 
@@ -154,9 +143,21 @@ const SuperAdminSales = () => {
       filtered = filtered.filter(app => app.appointmentType === type);
     }
 
-    // Apply clinic filter
+    // Apply clinic filter - check both bookedClinic and clinic fields
     if (selectedClinic) {
-      filtered = filtered.filter(app => app.bookedClinic === selectedClinic);
+      filtered = filtered.filter(app => 
+        app.bookedClinic === selectedClinic || 
+        app.clinic === selectedClinic
+      );
+      console.log('Filtered by clinic:', {
+        selectedClinic,
+        filteredCount: filtered.length,
+        appointments: filtered.map(app => ({
+          id: app._id,
+          bookedClinic: app.bookedClinic,
+          clinic: app.clinic
+        }))
+      });
     }
 
     // Apply date filter and group sales
@@ -217,29 +218,70 @@ const SuperAdminSales = () => {
     }));
   };
 
+  // Handle clinic filter change with debug logging
+  const handleClinicFilterChange = (clinic) => {
+    console.log('Clinic filter changed:', {
+      previousClinic: selectedClinic,
+      newClinic: clinic,
+      appointmentsCount: appointments.length,
+      clinicAppointments: appointments.filter(app => 
+        app.bookedClinic === clinic || 
+        app.clinic === clinic
+      ).length
+    });
+
+    if (clinic === selectedClinic) {
+      setSelectedClinic(''); // Reset clinic filter
+    } else {
+      setSelectedClinic(clinic); // Set new clinic filter
+    }
+    filterAppointments(selectedAppointmentType, dateFilter); // Reapply filters
+  };
+
   return (
     <div className="sales-summary-container">
-      <h1 className="sales-summary-title">Sales by Appointment Summary (Completed Only)</h1>
+      <h1 className="sales-summary-title">Gross Sales by Appointment Summary (Completed Only)</h1>
 
       {/* Type Filter */}
       <div className="filter-buttons">
         <h3>Filter by Appointment Type:</h3>
-        <button onClick={() => handleTypeFilterChange('All')} className={selectedAppointmentType === 'All' ? 'active' : ''}>All</button>
+        <button 
+          onClick={() => handleTypeFilterChange('All')} 
+          className={selectedAppointmentType === 'All' ? 'active' : ''}
+        >
+          All
+        </button>
         {clinicServices.map((service) => (
-          <button key={service._id} onClick={() => handleTypeFilterChange(service.name)} className={selectedAppointmentType === service.name ? 'active' : ''}>
+          <button 
+            key={service._id} 
+            onClick={() => handleTypeFilterChange(service.name)} 
+            className={selectedAppointmentType === service.name ? 'active' : ''}
+          >
             {service.name}
           </button>
         ))}
       </div>
 
-      {/* New buttons for filtering by clinic names */}
+      {/* Clinic Filter with updated display */}
       <div className="filter-buttons">
         <h3>Filter by Clinic:</h3>
-        <button onClick={() => handleClinicFilterChange(nameOne)} className={selectedClinic === nameOne ? 'active' : ''}>
-          {nameOne}
+        <button 
+          onClick={() => handleClinicFilterChange(nameOne)} 
+          className={selectedClinic === nameOne ? 'active' : ''}
+        >
+          {nameOne} ({appointments.filter(app => 
+            app.bookedClinic === nameOne || 
+            app.clinic === nameOne
+          ).length} appointments)
         </button>
-        <button onClick={() => handleClinicFilterChange(nameTwo)} className={selectedClinic === nameTwo ? 'active' : ''}>
-          {nameTwo}
+        <button 
+          onClick={() => handleClinicFilterChange(nameTwo)} 
+          className={selectedClinic === nameTwo ? 'active' : ''}
+        >
+          {nameTwo} ({appointments.filter(app => 
+            app.bookedClinic === nameTwo || 
+            app.clinic === nameTwo
+          ).length} appointments)
         </button>
       </div>
 
@@ -268,19 +310,19 @@ const SuperAdminSales = () => {
           {dateFilter === 'Daily' && salesData.map((day, index) => (
             <div key={index} className="sales-summary-card">
               <h2 className="sales-summary-card-title">{day.date}</h2>
-              <p className="sales-summary-card-total">Total Sales: ${day.totalSales.toFixed(2)}</p>
+              <p className="sales-summary-card-total">Total Gross Sales: ${day.totalSales.toFixed(2)}</p>
             </div>
           ))}
           {dateFilter === 'Weekly' && salesData.map((week, index) => (
             <div key={index} className="sales-summary-card">
               <h2 className="sales-summary-card-title">Week starting {week.week}</h2>
-              <p className="sales-summary-card-total">Total Sales: ${week.totalSales.toFixed(2)}</p>
+              <p className="sales-summary-card-total">Total Gross Sales: ${week.totalSales.toFixed(2)}</p>
             </div>
           ))}
           {dateFilter === 'Monthly' && salesData.map((month, index) => (
             <div key={index} className="sales-summary-card">
               <h2 className="sales-summary-card-title">{month.month}</h2>
-              <p className="sales-summary-card-total">Total Sales: ${month.totalSales.toFixed(2)}</p>
+              <p className="sales-summary-card-total">Total Gross Sales: ${month.totalSales.toFixed(2)}</p>
             </div>
           ))}
         </div>

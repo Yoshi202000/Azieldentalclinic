@@ -534,7 +534,6 @@ function SuperViewAppointment() {
                       <td>{appointment.appointmentType}</td>
                       <td>{appointment.bookedClinic}</td>
                       <td>{appointment.appointmentStatus}</td>
-                      <td>{appointment.userId}</td>
                       <td>
                         <button className="AdminAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}

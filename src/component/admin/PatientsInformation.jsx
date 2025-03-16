@@ -6,6 +6,7 @@ import ViewDentalChart from '../../component/viewDentalChart.jsx';
 import { generateAvailableDates } from '../../utils/appDate';
 import './ViewAppointment.css'
 import axios from 'axios';
+import UpdateFee from '../../test/UpdateFee.jsx';
 
 
 const PatientsInformation = () => {
@@ -66,6 +67,9 @@ const PatientsInformation = () => {
     questionNine: '',
     questionTen: ''
   });
+
+  const [showUpdateFee, setShowUpdateFee] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   const generateTimeSlots = (start, end) => {
     const timeSlots = [];
@@ -385,6 +389,54 @@ const PatientsInformation = () => {
     `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleComplete = (appointment) => {
+    setSelectedAppointment({
+      ...appointment,
+      userId: appointment.userId,
+      patientFirstName: appointment.patientFirstName,
+      patientLastName: appointment.patientLastName,
+      patientEmail: appointment.patientEmail
+    });
+    setShowUpdateFee(true);
+  };
+
+  const updateAppointmentStatus = async (appointmentId, newStatus) => {
+    try {
+      const token = localStorage.getItem('token');
+      const appointment = appointments.find(app => app._id === appointmentId);
+
+      // Check the slot status before updating
+      const slotStatus = await checkSlotStatus(appointment.mainID, appointment.slotID);
+
+      if (slotStatus === "Unavailable") {
+        alert("The selected slot is unavailable. Cannot update appointment status.");
+        return;
+      }
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/ViewAppointment/updateStatus`,
+        { appointmentId, newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const updatedAppointment = response.data;
+
+      setAppointments(prevAppointments =>
+        prevAppointments.map(app =>
+          app._id === updatedAppointment._id ? { ...app, appointmentStatus: updatedAppointment.appointmentStatus } : app
+        )
+      );
+
+      if (newStatus === 'Completed') {
+        setSelectedAppointment(updatedAppointment);
+        setShowUpdateFee(true);
+      }
+    } catch (err) {
+      console.error('Error updating appointment status:', err);
+      setError('Failed to update appointment status');
+    }
+  };
+
   return (
     <div className="PIContainer">
       <h1 className="PITitle">Patients Information</h1>
@@ -521,6 +573,9 @@ const PatientsInformation = () => {
                                 <button className="PIButton" onClick={() => handleEditAppointment(appointment)}>
                                   {editingAppointment && editingAppointment._id === appointment._id ? 'Close' : 'Edit'}
                                 </button>
+                                <button className="PIButton" onClick={() => handleComplete(appointment)}>
+                                  Create Dental Record
+                                </button>
                               </td>
                             </tr>
                             {editingAppointment && editingAppointment._id === appointment._id && (
@@ -528,12 +583,12 @@ const PatientsInformation = () => {
                                 <td colSpan="5">
                                   <div 
                                     ref={editSectionRef}
-                                    className={`PIEditSection ${isContainerExpanded ? 'expanded' : ''}`}
+                                    className={`AdminAppointmentEditSection ${isContainerExpanded ? 'expanded' : ''}`}
                                   >
                                     <h2>Edit Appointment</h2>
-                                    <div className="PIEditButtons">
+                                    <div className="AdminAppointmentEditButtons">
                                       <button 
-                                        className="PIButton" 
+                                        className="AdminAppointmentButton" 
                                         onClick={() => {
                                           setShowDateTimeChange(true);
                                           setShowStatusButtons(false);
@@ -543,7 +598,7 @@ const PatientsInformation = () => {
                                         Edit Appointment Details
                                       </button>
                                       <button 
-                                        className="PIButton" 
+                                        className="AdminAppointmentButton" 
                                         onClick={() => {
                                           setShowDateTimeChange(false);
                                           setShowStatusButtons(true);
@@ -555,7 +610,7 @@ const PatientsInformation = () => {
                                     </div>
 
                                     {showDateTimeChange && (
-                                      <div className="PIEditContent">
+                                      <div className="AdminAppointmentEditContent">
                                         {currentStep === 1 && (
                                           <AppointmentStepOne 
                                             formData={formData}
@@ -582,10 +637,10 @@ const PatientsInformation = () => {
                                     )}
 
                                     {showNavigationButtons && (
-                                      <div className="PINavigationButtons">
+                                      <div className="AdminAppointmentNavigationButtons">
                                         {currentStep > 1 && (
                                           <button 
-                                            className="PIButton" 
+                                            className="AdminAppointmentButton" 
                                             onClick={() => setCurrentStep(currentStep - 1)}
                                           >
                                             Previous
@@ -593,31 +648,21 @@ const PatientsInformation = () => {
                                         )}
                                         {currentStep === 1 && showDateTimeChange && (
                                           <button 
-                                            className="PIButton" 
+                                            className="AdminAppointmentButton" 
                                             onClick={() => setCurrentStep(currentStep + 1)}
                                           >
                                             Next
-                                          </button>
-                                        )}
-                                        {currentStep === 2 && (
-                                          <button 
-                                            className="PIButton" 
-                                            onClick={() => {
-                                              console.log("Completing edit for doctor:", selectedDoctor);
-                                            }}
-                                          >
-                                            Complete Edit
                                           </button>
                                         )}
                                       </div>
                                     )}
 
                                     {showStatusButtons && (
-                                      <div className="PIStatusButtons">
+                                      <div className="AdminAppointmentStatusButtons">
                                         {['Cancelled', 'Completed', 'No Show'].map(status => (
                                           <button
                                             key={status}
-                                            className="PIStatusButton"
+                                            className="AdminAppointmentStatusButton"
                                             onClick={() => updateAppointmentStatus(appointment._id, status)}
                                           >
                                             {status}
@@ -626,9 +671,9 @@ const PatientsInformation = () => {
                                       </div>
                                     )}
 
-                                    <div className="PIActionButtons">
+                                    <div className="AdminAppointmentActionButtons">
                                       <button 
-                                        className="PIButton UpdateButton" 
+                                        className="AdminAppointmentButton UpdateButton" 
                                         onClick={handleUpdateAppointment}
                                       >
                                         Update Appointment
@@ -657,6 +702,13 @@ const PatientsInformation = () => {
                 </div>
               )}
             </>
+          )}
+
+          {showUpdateFee && (
+            <UpdateFee 
+              selectedAppointment={selectedAppointment}
+              onClose={() => setShowUpdateFee(false)} 
+            />
           )}
         </>
       )}

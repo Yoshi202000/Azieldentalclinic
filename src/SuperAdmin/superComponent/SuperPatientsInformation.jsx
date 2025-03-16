@@ -6,6 +6,7 @@ import ViewDentalChart from '../../component/viewDentalChart.jsx';
 import { generateAvailableDates } from '../../utils/appDate';
 import '../../component/admin/ViewAppointment.css'
 import axios from 'axios';
+import UpdateFee from '../../test/UpdateFee.jsx';
 
 
 const SuperPatientsInformation = () => {
@@ -66,6 +67,9 @@ const SuperPatientsInformation = () => {
     questionNine: '',
     questionTen: ''
   });
+
+  const [showUpdateFee, setShowUpdateFee] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   const generateTimeSlots = (start, end) => {
     const timeSlots = [];
@@ -379,11 +383,60 @@ const SuperPatientsInformation = () => {
     }
   };
 
+  const handleComplete = (appointment) => {
+    setSelectedAppointment({
+      ...appointment,
+      userId: appointment.userId,
+      patientFirstName: appointment.patientFirstName,
+      patientLastName: appointment.patientLastName,
+      patientEmail: appointment.patientEmail
+    });
+    setShowUpdateFee(true);
+  };
+
   // Filter users to show only those with the role of "patient"
   const filteredPatients = users.filter(user => user.role === 'patient' && 
     (user.emailVerified === true) &&
     `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Add this function to handle appointment status updates
+  const updateAppointmentStatus = async (appointmentId, newStatus) => {
+    try {
+      const token = localStorage.getItem('token');
+      const appointment = appointments.find(app => app._id === appointmentId);
+
+      // Check the slot status before updating
+      const slotStatus = await checkSlotStatus(appointment.mainID, appointment.slotID);
+
+      if (slotStatus === "Unavailable") {
+        alert("The selected slot is unavailable. Cannot update appointment status.");
+        return;
+      }
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/ViewAppointment/updateStatus`,
+        { appointmentId, newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const updatedAppointment = response.data;
+
+      setAppointments(prevAppointments =>
+        prevAppointments.map(app =>
+          app._id === updatedAppointment._id ? { ...app, appointmentStatus: updatedAppointment.appointmentStatus } : app
+        )
+      );
+
+      if (newStatus === 'Completed') {
+        setSelectedAppointment(updatedAppointment);
+        setShowUpdateFee(true);
+      }
+    } catch (err) {
+      console.error('Error updating appointment status:', err);
+      setError('Failed to update appointment status');
+    }
+  };
 
   return (
     <div className="PIContainer">
@@ -521,6 +574,9 @@ const SuperPatientsInformation = () => {
                                 <button className="PIButton" onClick={() => handleEditAppointment(appointment)}>
                                   {editingAppointment && editingAppointment._id === appointment._id ? 'Close' : 'Edit'}
                                 </button>
+                                <button className="PIButton" onClick={() => handleComplete(appointment)}>
+                                  Create Dental Record
+                                </button>
                               </td>
                             </tr>
                             {editingAppointment && editingAppointment._id === appointment._id && (
@@ -604,11 +660,11 @@ const SuperPatientsInformation = () => {
                                     )}
 
                                     {showStatusButtons && (
-                                      <div className="PIStatusButtons">
+                                      <div className="AdminAppointmentStatusButtons">
                                         {['Cancelled', 'Completed', 'No Show'].map(status => (
                                           <button
                                             key={status}
-                                            className="PIStatusButton"
+                                            className="AdminAppointmentStatusButton"
                                             onClick={() => updateAppointmentStatus(appointment._id, status)}
                                           >
                                             {status}
@@ -648,6 +704,13 @@ const SuperPatientsInformation = () => {
                 </div>
               )}
             </>
+          )}
+
+          {showUpdateFee && (
+            <UpdateFee 
+              selectedAppointment={selectedAppointment}
+              onClose={() => setShowUpdateFee(false)} 
+            />
           )}
         </>
       )}

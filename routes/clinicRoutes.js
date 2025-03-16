@@ -165,9 +165,7 @@ const validateService = (service) => {
   }
   if (!['both', 'clinicOne', 'clinicTwo'].includes(service.clinic)) {
     errors.push('Invalid clinic selection');
-  }
-  return errors;
-};
+  }  return errors;};
 
 // Helper function to clean up old service images
 async function cleanupServiceImages(oldServices, newServices) {
@@ -228,6 +226,7 @@ router.put('/clinic', upload.any(), async (req, res) => {
     // Store old services for cleanup
     const oldServices = [...clinic.services];
 
+
     // Update clinic fields from request body
     clinic.nameOne = req.body.nameOne || clinic.nameOne;
     clinic.nameTwo = req.body.nameTwo || clinic.nameTwo;
@@ -254,6 +253,7 @@ router.put('/clinic', upload.any(), async (req, res) => {
     clinic.questionEight = req.body.questionEight || clinic.questionEight;
     clinic.questionNine = req.body.questionNine || clinic.questionNine;
     clinic.questionTen = req.body.questionTen || clinic.questionTen;
+
 
     // Handle image uploads with validation
     const imageFields = ['clinicLogo', 'gcashQR', 'responsiveBg', 'mainImg'];
@@ -284,11 +284,12 @@ router.put('/clinic', upload.any(), async (req, res) => {
         });
         feeIndex++;
       }
-
+ 
       const serviceData = {
         name: req.body[`service_name_${index}`],
         description: req.body[`service_description_${index}`],
         clinic: req.body[`service_clinic_${index}`] || 'both',
+        servicesSlot: req.body[`service_slot_${index}`] || 1,
         fees: fees
       };
 
