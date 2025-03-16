@@ -13,6 +13,7 @@ import Chat from '../../component/chat'
 import DoctorSignup from '../../component/admin/AddUser';
 import ViewAdminDoctor from '../../component/admin/ViewAdminDoctor';
 import DoctorServices from '../../component/admin/DoctorServices';
+import AdminSchedule from '../../component/admin/AdminSchedule';
 
 function Dashboard() {
   const [activeComponent, setActiveComponent] = useState('AccountSettings');
@@ -39,6 +40,8 @@ function Dashboard() {
         return <ViewAdminDoctor/>
       case 'DoctorServices':
         return <DoctorServices/>
+      case 'AdminSchedule':
+        return <AdminSchedule/>
       default:
         return <h2>Select an option</h2>;
     }
@@ -104,6 +107,12 @@ function Dashboard() {
             onClick={() => setActiveComponent('ViewFeedback')}
           >
             View Feedback
+          </button>
+          <button
+            className={activeComponent === 'AdminSchedule' ? 'active' : ''}
+            onClick={() => setActiveComponent('AdminSchedule')}
+          >
+            Edit Schedule
           </button>
           </div>
         </div>

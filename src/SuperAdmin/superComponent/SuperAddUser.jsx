@@ -1,21 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import '../../styles/AddUser.css';
+
 function SuperDoctorSignup() {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
         email: '',
         phoneNumber: '',
-        password: '',
-        confirmPassword: '',
-        clinic: 'Arts of Millennials Dental Clinic', // Default selection
-        role: 'doctor', // Default role
+        clinic: '',
+        role: 'doctor',
     });
 
-    const [error, setError] = useState(''); // State to hold the error message
-    const [successMessage, setSuccessMessage] = useState(''); // State to hold the success message
-    const navigate = useNavigate(); // Initialize useNavigate
+    const [error, setError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+    const [nameOne, setNameOne] = useState('');
+    const [nameTwo, setNameTwo] = useState('');
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        fetchClinicNames();
+    }, []);
+
+    const fetchClinicNames = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            
+            if (response.data) {
+                setNameOne(response.data.nameOne);
+                setNameTwo(response.data.nameTwo);
+                // Set default clinic value
+                setFormData(prev => ({
+                    ...prev,
+                    clinic: response.data.nameOne
+                }));
+            }
+        } catch (error) {
+            console.error('Error fetching clinic names:', error);
+            setError('Failed to fetch clinic names');
+        }
+    };
 
     const handleChange = (e) => {
         setFormData({
@@ -26,44 +56,40 @@ function SuperDoctorSignup() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(''); // Clear any previous error message
-        setSuccessMessage(''); // Clear any previous success message
+        setError('');
+        setSuccessMessage('');
 
-        if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
-            return;
-        }
-
-        const { firstName, lastName, email, phoneNumber, password, clinic, role } = formData;
+        const { firstName, lastName, email, phoneNumber, clinic, role } = formData;
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/signup`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
+            const response = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/admin-signup`,
+                {
                     firstName,
                     lastName,
                     email,
                     phoneNumber,
-                    password,
-                    role, // Role selected by the user
+                    role,
                     clinic,
-                }),
+                }
+            );
+
+            setSuccessMessage(response.data.message);
+            alert('Account created successfully. Login credentials have been sent to the email address.');
+            
+            // Clear form
+            setFormData({
+                firstName: '',
+                lastName: '',
+                email: '',
+                phoneNumber: '',
+                clinic: nameOne, // Reset to default clinic
+                role: 'doctor',
             });
 
-            const result = await response.json();
-            if (response.ok) {
-                setSuccessMessage(result.message);
-                alert('Signup successful. Please verify your email by clicking the link sent to your email address.');
-                navigate('/login'); // Redirect to login page on successful registration
-            } else {
-                setError(result.message || 'Signup failed');
-            }
         } catch (error) {
-            console.error('Error signing up:', error);
-            setError('An error occurred while signing up.');
+            console.error('Error creating account:', error);
+            setError(error.response?.data?.message || 'An error occurred while creating the account.');
         }
     };
 
@@ -74,16 +100,16 @@ function SuperDoctorSignup() {
                     <h1>Add Account for Doctor or Admin</h1>
                 </div>
                 <div className="adduserSignupContainer">
-                    <h2 className="adduserSignupTitle">Signup</h2>
-                    {error && <div className="adduserErrorMessage">{error}</div>} {/* Display error message */}
-                    {successMessage && <div className="adduserSuccessMessage">{successMessage}</div>} {/* Display success message */}
+                    <h2 className="adduserSignupTitle">Create Account</h2>
+                    {error && <div className="adduserErrorMessage">{error}</div>}
+                    {successMessage && <div className="adduserSuccessMessage">{successMessage}</div>}
                     <form className="adduserSignupForm" onSubmit={handleSubmit}>
                         <div className="adduserFormGroup">
                             <label htmlFor="firstName">First Name</label>
                             <input
                                 type="text"
                                 id="firstName"
-                                placeholder="Enter your first name"
+                                placeholder="Enter first name"
                                 value={formData.firstName}
                                 onChange={handleChange}
                                 required
@@ -94,7 +120,7 @@ function SuperDoctorSignup() {
                             <input
                                 type="text"
                                 id="lastName"
-                                placeholder="Enter your last name"
+                                placeholder="Enter last name"
                                 value={formData.lastName}
                                 onChange={handleChange}
                                 required
@@ -105,7 +131,7 @@ function SuperDoctorSignup() {
                             <input
                                 type="email"
                                 id="email"
-                                placeholder="Enter your email"
+                                placeholder="Enter email"
                                 value={formData.email}
                                 onChange={handleChange}
                                 required
@@ -116,7 +142,7 @@ function SuperDoctorSignup() {
                             <input
                                 type="text"
                                 id="phoneNumber"
-                                placeholder="Enter your phone number"
+                                placeholder="Enter phone number"
                                 value={formData.phoneNumber}
                                 onChange={handleChange}
                                 required
@@ -131,8 +157,8 @@ function SuperDoctorSignup() {
                                 onChange={handleChange}
                                 required
                             >
-                                <option value="Arts of Millennials Dental Clinica">Arts of Millennials Dental Clinic</option>
-                                <option value="Aziel Dental Clinic">Aziel Dental Clinica</option>
+                                {nameOne && <option value={nameOne}>{nameOne}</option>}
+                                {nameTwo && <option value={nameTwo}>{nameTwo}</option>}
                             </select>
                         </div>
                         <div className="adduserFormGroup">
@@ -148,30 +174,8 @@ function SuperDoctorSignup() {
                                 <option value="admin">Admin</option>
                             </select>
                         </div>
-                        <div className="adduserFormGroup">
-                            <label htmlFor="password">Password</label>
-                            <input
-                                type="password"
-                                id="password"
-                                placeholder="Enter your password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div className="adduserFormGroup">
-                            <label htmlFor="confirmPassword">Confirm Password</label>
-                            <input
-                                type="password"
-                                id="confirmPassword"
-                                placeholder="Confirm your password"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
                         <button type="submit" className="adduserSignupButton">
-                            Sign Up
+                            Create Account
                         </button>
                     </form>
                 </div>

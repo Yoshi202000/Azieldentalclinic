@@ -27,7 +27,7 @@ import DoctorDashboard from './doctor/DoctorDashboard/DoctorDashboard.jsx';
 import DentalChartForm from './component/DentalChart.jsx';
 import ViewDentalChart from './component/viewDentalChart.jsx';
 import SuperDashboard from './SuperAdmin/superDasboard/SuperDashboard.jsx';
-import TestShowSched from './test/testshowSched.jsx';
+import ChangePass from './pages/ChangePass/ChangePass.jsx';
 
 
 
@@ -57,6 +57,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot" element={<Forgot />} />
+        <Route path="/changePassword" element={<ChangePass />} />
         
         {/* protected route for verify email */}
         <Route

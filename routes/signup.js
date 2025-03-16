@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 import User from '../models/User.js'; // Your User model
+import crypto from 'crypto';
 
 dotenv.config(); // Load environment variables from .env
 
@@ -146,8 +147,120 @@ router.get('/verify-email', async (req, res) => {
     }
 });
 
+// Function to generate random password
+const generateRandomPassword = () => {
+    // Ensure at least one of each required character type
+    const upperCase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lowerCase = 'abcdefghijklmnopqrstuvwxyz';
+    const numbers = '0123456789';
 
+    let password = '';
+    
+    // Add one of each required character type
+    password += upperCase[Math.floor(Math.random() * upperCase.length)];
+    password += lowerCase[Math.floor(Math.random() * lowerCase.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
 
+    // Fill the rest with random characters
+    const allChars = upperCase + lowerCase + numbers;
+    for(let i = password.length; i < 9; i++) {
+        password += allChars[Math.floor(Math.random() * allChars.length)];
+    }
+
+    // Shuffle the password
+    return password.split('').sort(() => Math.random() - 0.5).join('');
+};
+
+// Admin signup route
+router.post('/admin-signup', async (req, res) => {
+    const { firstName, lastName, email, phoneNumber, clinic, role } = req.body;
+
+    try {
+        // Basic validation
+        if (!firstName || !lastName || !email || !phoneNumber || !clinic || !role) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        // Check if email already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Email already in use' });
+        }
+
+        // Generate random password
+        const randomPassword = generateRandomPassword();
+        
+        // Hash the password
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(randomPassword, saltRounds);
+
+        // Create new user with email verified
+        const newUser = new User({
+            firstName,
+            lastName,
+            email,
+            phoneNumber,
+            password: hashedPassword,
+            clinic,
+            role,
+            emailVerified: true, // Set email as verified
+            termscondition: true,
+        });
+
+        await newUser.save();
+
+        // Generate password reset token
+        const resetToken = jwt.sign(
+            { email, type: 'password-reset' },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        // Create password reset link using the VITE_BACKEND_URL from .env
+        const resetLink = `http://localhost:5173//change-password?token=${resetToken}`;
+
+        // Send email with password and reset link
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Your Account Details',
+            html: `
+                <h1>Welcome to Aziel Dental Clinic</h1>
+                <p>Your account has been created successfully.</p>
+                <p>Here are your temporary login credentials:</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Temporary Password:</strong> ${randomPassword}</p>
+                <p>For security reasons, please change your password immediately by clicking the link below:</p>
+                <a href="${resetLink}" style="
+                    background-color: #4CAF50;
+                    border: none;
+                    color: white;
+                    padding: 15px 32px;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 16px;
+                    margin: 4px 2px;
+                    cursor: pointer;
+                    border-radius: 4px;
+                ">Change Your Password</a>
+                <p>This link will expire in 24 hours.</p>
+                <p>If you didn't request this account, please ignore this email.</p>
+                <p>Best regards,<br>Aziel Dental Clinic Team</p>
+            `
+        });
+
+        res.status(201).json({
+            message: 'Account created successfully. Login credentials sent to email.'
+        });
+
+    } catch (error) {
+        console.error('Error in admin signup:', error);
+        res.status(500).json({
+            message: 'An error occurred while creating the account'
+        });
+    }
+});
 
 // Add this route to handle sending verification code
 router.post('/send-verification', async (req, res) => {
@@ -158,7 +271,5 @@ router.post('/send-verification', async (req, res) => {
         return res.status(400).json({ message: 'Email is required' });
     }
 });
-
-
 
 export default router;
