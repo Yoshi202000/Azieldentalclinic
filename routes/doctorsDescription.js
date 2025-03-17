@@ -1,10 +1,71 @@
-import express from "express";
-import User from "../models/User.js";
-import { authenticateUser } from "./middleware/authMiddleware.js";
-import Clinic from '../models/clinicSchema.js';
-import jwt from 'jsonwebtoken';
+import express from 'express';
+import mongoose from 'mongoose';
+import multer from 'multer';
+import path from 'path';
+import { promises as fs } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 const router = express.Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const uploadDir = path.join(__dirname, '..', 'src', 'uploads');
+
+// Ensure upload directory exists
+async function ensureUploadDir() {
+  try {
+      await fs.access(uploadDir);
+  } catch (error) {
+      if (error.code === 'ENOENT') {
+          await fs.mkdir(uploadDir, { recursive: true });
+      }
+  }
+}
+
+await ensureUploadDir(); // Call it once before setting up storage
+
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+      cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname) || '.png';
+      const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, ''); // Format YYYYMMDDHHMMSS
+      cb(null, `doctor_${timestamp}${ext}`);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+  if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+  } else {
+      cb(new Error('Only .jpg, .jpeg, and .png formats are allowed'), false);
+  }
+};
+
+const upload = multer({ 
+  storage, 
+  fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
+
+router.post('/upload-doctor-image', upload.single('doctorImage'), async (req, res) => {
+  try {
+      if (!req.file) {
+          return res.status(400).json({ error: 'No file uploaded' });
+      }
+      res.json({ 
+          message: 'File uploaded successfully', 
+          filename: req.file.filename, 
+          path: `/uploads/${req.file.filename}` 
+      });
+  } catch (error) {
+      console.error('Error uploading file:', error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 // Make sure express can handle JSON
 router.use(express.json());

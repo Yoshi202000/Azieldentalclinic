@@ -7,6 +7,7 @@ const AccountSettings = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [doctorImage, setDoctorImage] = useState(null);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -86,6 +87,32 @@ const AccountSettings = () => {
 
     fetchData();
   }, [navigate]);
+
+  const handleImageChange = (e) => {
+    setDoctorImage(e.target.files[0]);
+  };
+
+  const handleImageUpload = async () => {
+    if (!doctorImage) {
+      setMessage('Please select an image.');
+      setIsError(true);
+      return;
+    }
+    
+    const formData = new FormData();
+    formData.append('doctorImage', doctorImage);
+
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/upload-doctor-image`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setMessage('Image uploaded successfully!');
+      setIsError(false);
+    } catch (error) {
+      setMessage('Error uploading image.');
+      setIsError(true);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -206,6 +233,9 @@ const AccountSettings = () => {
 
             <button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Submitting...' : 'Submit'}</button>
           </form>
+          <label>Doctor Image:</label>
+      <input type="file" accept="image/*" onChange={handleImageChange} />
+      <button onClick={handleImageUpload} disabled={!doctorImage}>Upload Image</button>
         </>
       )}
     </div>

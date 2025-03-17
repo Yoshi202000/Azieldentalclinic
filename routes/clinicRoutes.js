@@ -53,7 +53,7 @@ const storage = multer.diskStorage({
       const serviceNumber = index.toString().padStart(2, '0');
       cb(null, `Service${serviceNumber}${ext}`);
     } else {
-      const timestamp = Date.now();
+      const timestamp = Date.now();  
       cb(null, `${file.fieldname}_${timestamp}${ext}`);
     }
   }
