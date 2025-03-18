@@ -75,27 +75,24 @@
 
         {/* Doctor Selection */}
         <h4>Choose Your Doctor</h4>
-        <select
-          name="selectedDoctor"
-          className="form-select form-select-lg mb-3"
-          value={formData.selectedDoctor || ''}
-          onChange={(e) => {
-            handleInputChange(e);
-            // Reset service selection if doctor changes
-            if (selectedCard) {
-              handleCardSelect(null);
-            }
-          }}
-          required
-          disabled={!formData.bookedClinic} // Disable if no clinic is selected
-        >
-          <option value="" disabled>Select a doctor</option>
+        <div className="app-card-container">
+
           {filteredDoctors.map((doctor) => (
-            <option key={doctor._id} value={doctor.email}>
-              Dr. {doctor.firstName} {doctor.lastName}
-            </option>
-          ))}
-        </select>
+          <Card
+            key={doctor._id}
+            name={`Dr. ${doctor.firstName} ${doctor.lastName}`}
+            description={doctor.specialization}
+            image={doctor.image ? `${import.meta.env.VITE_BACKEND_URL}${doctor.image}` : null}
+            isSelected={formData.selectedDoctor === doctor.email}
+            onClick={() => {
+              if (formData.bookedClinic) {
+                handleInputChange({ target: { name: "selectedDoctor", value: doctor.email } });
+                if (selectedCard) handleCardSelect(null); // Reset service selection if doctor changes
+              }
+            }}
+          />
+          
+        ))}/</div>
 
         {/* Services Selection */}
         {formData.selectedDoctor && ( // Only show services if a doctor is selected

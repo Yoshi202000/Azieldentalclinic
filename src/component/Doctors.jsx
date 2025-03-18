@@ -29,8 +29,8 @@ const Doctors = () => {
       <div className="doctors-grid">
         {doctors.map((doctor) => (
           <div className="doctor-card" key={doctor._id}>
-            <img src={doctor1} alt={`Dr. ${doctor.lastName}`} className="doctor-image" />
-            <div className="doctor-info">
+              <img src={doctor.doctorImage} className="doctor-image"/>
+              <div className="doctor-info">
               <h3 className="doctor-name">Dr. {doctor.lastName}</h3>
               <p className="doctor-greetings">{doctor.doctorGreeting}</p>
               <p className="doctor-description">{doctor.doctorDescription}</p>

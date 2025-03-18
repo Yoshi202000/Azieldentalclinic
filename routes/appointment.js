@@ -49,7 +49,7 @@ router.get('/doctor-info', async (req, res) => {
   try {
     const doctors = await User.find(
       { role: 'doctor' }, 
-      'firstName lastName email services clinic doctorGreeting doctorDescription'
+      'firstName lastName email services clinic doctorGreeting doctorDescription doctorImage'
     );
     res.status(200).json({ doctors });
   } catch (error) {
