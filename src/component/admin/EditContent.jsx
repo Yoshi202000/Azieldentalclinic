@@ -126,18 +126,15 @@ const EditContent = () => {
           setQuestionNine(questionNine || '');
           setQuestionTen(questionTen || '');
             
-          // Set services with proper image handling
+          // Set services with proper image and fees handling
           setServices(
             (fetchedServices || []).map(service => {
-              const feeValue = service.fee !== undefined ? parseFloat(service.fee) : 0;
               return {
                 ...service,
-                image: service.image || null, // Don't construct path here, just store the path or null
+                image: service.image || null,
                 imageUpdated: false,
                 clinic: service.clinic || 'both',
-                fee: isNaN(feeValue) ? 0 : feeValue,
-                duration: service.duration || '',
-                servicesSlot: service.servicesSlot || 1 // Default to 1 slot if not set
+                fees: service.fees || [{ feeType: 'Default', amount: 0, description: '' }]
               };
             })
           );          
@@ -206,26 +203,113 @@ const EditContent = () => {
     });
   };
 
-  // Updates the image of a specific service at a given index in the services array.
-  const handleServiceImageChange = (index, file) => {
-    console.log(`Updating image for service at index ${index}`, file);
+  // Modify the handleServiceImageUpload function to use the correct endpoint
+  const handleServiceImageUpload = async (index, file) => {
+    if (!file) {
+      console.log('No file selected for service image upload');
+      return;
+    }
+
+    try {
+      console.log(`Uploading image for service at index ${index}, ID: ${services[index]._id}`);
+      const formData = new FormData();
+      formData.append('serviceImage', file);
+
+      // Log the file being uploaded
+      console.log('File details:', {
+        name: file.name,
+        type: file.type,
+        size: file.size
+      });
+
+      // Update the endpoint URL to match your backend route structure
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/clinic/service-image/${services[index]._id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      console.log('Upload response:', response.data);
+
+      if (response.data.path) {
+        setServices(prev => {
+          const updatedServices = [...prev];
+          updatedServices[index] = {
+            ...updatedServices[index],
+            image: response.data.path,
+            imagePreview: `${import.meta.env.VITE_BACKEND_URL}${response.data.path}`
+          };
+          return updatedServices;
+        });
+      }
+    } catch (error) {
+      console.error('Error uploading service image:', error);
+      console.error('Error details:', error.response?.data || error.message);
+      alert('Error uploading service image: ' + (error.response?.data?.message || error.message));
+    }
+  };
+
+  // Modify the existing handleServiceImageChange function to preserve the original image path
+  const handleServiceImageChange = async (index, file) => {
     if (!file) {
       console.log('No file provided');
       return;
     }
 
+    console.log(`Changing image for service at index ${index}`, file);
+    
+    // Create a preview immediately
+    const previewUrl = URL.createObjectURL(file);
+    
+    // Store the original image path before updating
+    const originalImage = services[index].image;
+    
     setServices(prevServices => {
       const updatedServices = [...prevServices];
       updatedServices[index] = {
         ...updatedServices[index],
+        originalImage: originalImage, // Store the original image path
         image: file,
-        imageUpdated: true,
-        imagePreview: URL.createObjectURL(file)
+        imagePreview: previewUrl,
+        imageUpdated: true
       };
       return updatedServices;
     });
-  };   
 
+    // If the service has an ID, upload the image immediately
+    if (services[index]._id) {
+      console.log(`Service has ID ${services[index]._id}, uploading immediately`);
+      try {
+        await handleServiceImageUpload(index, file);
+      } catch (error) {
+        // If upload fails, revert to the original image
+        setServices(prevServices => {
+          const updatedServices = [...prevServices];
+          updatedServices[index] = {
+            ...updatedServices[index],
+            image: originalImage,
+            imagePreview: null,
+            imageUpdated: false
+          };
+          return updatedServices;
+        });
+        
+        // Clean up the preview URL
+        URL.revokeObjectURL(previewUrl);
+        
+        // Re-throw the error to be handled by the caller
+        throw error;
+      }
+    } else {
+      console.log('New service without ID, image will be uploaded on form submission');
+    }
+  };
+
+  
   // Function to handle responsiveBg file selection
   const handleResponsiveBgChange = (e) => {
     const file = e.target.files[0];
@@ -276,83 +360,111 @@ const EditContent = () => {
 
   // Update handleSubmit to properly handle image uploads
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
-    
-    try {
-      const formData = new FormData();
+    e.preventDefault();
+    console.log('Submitting form data');
+    const formData = new FormData();
+
+    // Append all text fields first
+    formData.append('nameOne', nameOne || '');
+    formData.append('nameTwo', nameTwo || '');
+    formData.append('description', clinicDescription);
+    formData.append('address', clinicAddress);
+    formData.append('addressTwo', clinicAddressTwo);
+    formData.append('clinicCatchLine', clinicCatchLine);
+    formData.append('clinicHeader', clinicHeader);
+    formData.append('loginMessage', loginMessage);
+    formData.append('loginDescription', loginDescription);
+    formData.append('welcomeMessage', welcomeMessage);
+    formData.append('signupMessage', signupMessage);
+    formData.append('signupDescription', signupDescription);
+    formData.append('nameOnePhone', nameOnePhone || '');
+    formData.append('nameTwoPhone', nameTwoPhone || '');
+    formData.append('termsAndConditions', termsAndConditions || '');
+
+    // Add questions
+    formData.append('questionOne', questionOne || '');
+    formData.append('questionTwo', questionTwo || '');
+    formData.append('questionThree', questionThree || '');
+    formData.append('questionFour', questionFour || '');
+    formData.append('questionFive', questionFive || '');
+    formData.append('questionSix', questionSix || '');
+    formData.append('questionSeven', questionSeven || '');
+    formData.append('questionEight', questionEight || '');
+    formData.append('questionNine', questionNine || '');
+    formData.append('questionTen', questionTen || '');
+
+    // Add images if they exist
+    if (responsiveBg) formData.append('responsiveBg', responsiveBg);
+    if (mainImg) formData.append('mainImg', mainImg);
+    if (gcashQR) formData.append('gcashQR', gcashQR);
+    if (clinicLogo) formData.append('clinicLogo', clinicLogo);
+
+    // Add services count to help backend process the data
+    formData.append('servicesCount', services.length);
+
+    // Handle services with fees
+    services.forEach((service, index) => {
+      formData.append(`service_name_${index}`, service.name || '');
+      formData.append(`service_description_${index}`, service.description || '');
+      formData.append(`service_clinic_${index}`, service.clinic || 'both');
       
-      // Add basic clinic info
-      formData.append('nameOne', nameOne);
-      formData.append('nameTwo', nameTwo);
-      formData.append('description', clinicDescription);
-      formData.append('address', clinicAddress);
-      formData.append('addressTwo', clinicAddressTwo);
-      formData.append('clinicCatchLine', clinicCatchLine);
-      formData.append('clinicHeader', clinicHeader);
-      formData.append('loginMessage', loginMessage);
-      formData.append('loginDescription', loginDescription);
-      formData.append('welcomeMessage', welcomeMessage);
-      formData.append('signupMessage', signupMessage);
-      formData.append('signupDescription', signupDescription);
-      formData.append('nameOnePhone', nameOnePhone);
-      formData.append('nameTwoPhone', nameTwoPhone);
-      formData.append('termsAndConditions', termsAndConditions);
+      if (service._id) {
+        formData.append(`service_id_${index}`, service._id);
+      }
 
-      // Add questions
-      formData.append('questionOne', questionOne);
-      formData.append('questionTwo', questionTwo);
-      formData.append('questionThree', questionThree);
-      formData.append('questionFour', questionFour);
-      formData.append('questionFive', questionFive);
-      formData.append('questionSix', questionSix);
-      formData.append('questionSeven', questionSeven);
-      formData.append('questionEight', questionEight);
-      formData.append('questionNine', questionNine);
-      formData.append('questionTen', questionTen);
-
-      // Add images if they exist
-      if (responsiveBg) formData.append('responsiveBg', responsiveBg);
-      if (mainImg) formData.append('mainImg', mainImg);
-      if (gcashQR) formData.append('gcashQR', gcashQR);
-      if (clinicLogo) formData.append('clinicLogo', clinicLogo);
-
-      // Add services with fees
-      services.forEach((service, index) => {
-        formData.append(`service_name_${index}`, service.name);
-        formData.append(`service_description_${index}`, service.description);
-        formData.append(`service_clinic_${index}`, service.clinic);
-        formData.append(`service_duration_${index}`, service.duration);
-        formData.append(`service_servicesSlot_${index}`, service.servicesSlot);
-
-        // Handle service fees
+      // Handle fees
+      if (service.fees && service.fees.length > 0) {
+        // Append the number of fees for this service
+        formData.append(`service_fees_count_${index}`, service.fees.length);
+        
+        // Append each fee's data
         service.fees.forEach((fee, feeIndex) => {
-          formData.append(`service_fee_type_${index}_${feeIndex}`, fee.feeType);
-          formData.append(`service_fee_amount_${index}_${feeIndex}`, fee.amount);
+          formData.append(`service_fee_type_${index}_${feeIndex}`, fee.feeType || 'Default');
+          formData.append(`service_fee_amount_${index}_${feeIndex}`, fee.amount || 0);
           formData.append(`service_fee_description_${index}_${feeIndex}`, fee.description || '');
         });
+      } else {
+        // If no fees, set count to 0
+        formData.append(`service_fees_count_${index}`, 0);
+      }
 
-        if (service.imageUpdated && service.image instanceof File) {
+      // Handle image upload for services
+      if (service.imageUpdated) {
+        if (service.image instanceof File) {
           formData.append(`service_image_${index}`, service.image);
-        } else if (service.image && typeof service.image === 'string') {
-          formData.append(`service_image_${index}`, service.image);
+        } else if (service.image === null) {
+          formData.append(`service_image_remove_${index}`, 'true');
+        } else if (typeof service.image === 'string') {
+          formData.append(`service_image_path_${index}`, service.image);
         }
+      } else if (service.image) {
+        if (typeof service.image === 'string') {
+          formData.append(`service_image_path_${index}`, service.image);
+        }
+      }
+    });
+
+    // Add medicines with fees and discount flag
+    medicines.forEach((medicine, index) => {
+      formData.append(`medicine_name_${index}`, medicine.medicineName);
+      formData.append(`medicine_amount_${index}`, medicine.medicineAmount);
+      formData.append(`medicine_description_${index}`, medicine.medicineDescription);
+      formData.append(`medicine_discount_${index}`, medicine.discountApplicable || false);
+
+      // Add medicine fees
+      medicine.fees.forEach((fee, feeIndex) => {
+        formData.append(`medicine_fee_type_${index}_${feeIndex}`, fee.feeType);
+        formData.append(`medicine_fee_amount_${index}_${feeIndex}`, fee.amount);
+        formData.append(`medicine_fee_description_${index}_${feeIndex}`, fee.description || '');
       });
+    });
 
-      // Add medicines with fees and discount flag
-      medicines.forEach((medicine, index) => {
-        formData.append(`medicine_name_${index}`, medicine.medicineName);
-        formData.append(`medicine_amount_${index}`, medicine.medicineAmount);
-        formData.append(`medicine_description_${index}`, medicine.medicineDescription);
-        formData.append(`medicine_discount_${index}`, medicine.discountApplicable || false);
+    // Log the form data for debugging
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
 
-        // Add medicine fees
-        medicine.fees.forEach((fee, feeIndex) => {
-          formData.append(`medicine_fee_type_${index}_${feeIndex}`, fee.feeType);
-          formData.append(`medicine_fee_amount_${index}_${feeIndex}`, fee.amount);
-          formData.append(`medicine_fee_description_${index}_${feeIndex}`, fee.description || '');
-        });
-      });
-
+    try {
       // Send the update request
       const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/clinic`,
@@ -364,6 +476,13 @@ const EditContent = () => {
         }
       );
 
+      // Clean up preview URLs
+      services.forEach(service => {
+        if (service.imagePreview) {
+          URL.revokeObjectURL(service.imagePreview);
+        }
+      });
+
       if (response.status === 200) {
         alert('Clinic updated successfully!');
         // Optionally refresh the data
@@ -371,6 +490,7 @@ const EditContent = () => {
       }
     } catch (error) {
       console.error('Error updating clinic:', error);
+      console.error('Error details:', error.response?.data || error.message);
       alert('Error updating clinic: ' + (error.response?.data?.message || error.message));
     }
   };
@@ -382,10 +502,10 @@ const EditContent = () => {
       if (!updatedServices[serviceIndex].fees) {
         updatedServices[serviceIndex].fees = [];
       }
-      if (!updatedServices[serviceIndex].fees[feeIndex]) {
-        updatedServices[serviceIndex].fees[feeIndex] = {};
-      }
-      updatedServices[serviceIndex].fees[feeIndex][field] = value;
+      updatedServices[serviceIndex].fees[feeIndex] = {
+        ...updatedServices[serviceIndex].fees[feeIndex],
+        [field]: value
+      };
       return updatedServices;
     });
   };
@@ -397,7 +517,11 @@ const EditContent = () => {
       if (!updatedServices[serviceIndex].fees) {
         updatedServices[serviceIndex].fees = [];
       }
-      updatedServices[serviceIndex].fees.push({ feeType: '', amount: 0, description: '' });
+      updatedServices[serviceIndex].fees.push({
+        feeType: 'Default',
+        amount: 0,
+        description: ''
+      });
       return updatedServices;
     });
   };
@@ -613,7 +737,6 @@ const EditContent = () => {
           Login Description:
           <input
                       className='form-control-plaintext'
-
             type="text"
             name="LoginDescription"
             value={loginDescription}
@@ -765,32 +888,106 @@ const EditContent = () => {
                   onChange={(e) => handleServiceChange(index, 'clinic', e.target.value)}
                 >
                   <option value="both">Both</option>
-                  <option value="clinicOne">Clinic One</option>
-                  <option value="clinicTwo">Clinic Two</option>
+                  <option value="clinicOne">{nameOne}</option>
+                  <option value="clinicTwo">{nameTwo}</option>
                 </select>
               </label>
 
-              <div className="form-group">
-                <label className="slot-label">Number of Slots:</label>
-                <div className="slot-radio-group">
-                  {[1, 2, 3].map((number) => (
-                    <label key={number} className="slot-radio-label">
+              {/* Fees Section */}
+              <div className="fees-section mt-3">
+                <h5>Service Fees</h5>
+                {(service.fees || []).map((fee, feeIndex) => (
+                  <div key={feeIndex} className="feeInput p-3 border rounded mb-2">
+                    <label>
+                      Fee Type:
                       <input
-                        type="radio"
-                        name={`servicesSlot-${index}`}
-                        value={number}
-                        checked={service.servicesSlot === number}
-                        onChange={(e) => handleSlotChange(index, e.target.value)}
+                        type="text"
+                        className="form-control"
+                        value={fee.feeType || ''}
+                        onChange={(e) => handleFeeChange(index, feeIndex, 'feeType', e.target.value)}
+                        placeholder="Enter fee type"
                       />
-                      <span className="slot-radio-text">{number} {number === 1 ? 'Slot' : 'Slots'}</span>
                     </label>
-                  ))}
-                </div>
+                    <label>
+                      Amount:
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={fee.amount || 0}
+                        onChange={(e) => handleFeeChange(index, feeIndex, 'amount', parseFloat(e.target.value) || 0)}
+                        placeholder="Enter amount"
+                        min="0"
+                        step="0.01"
+                      />
+                    </label>
+                    <label>
+                      Description:
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={fee.description || ''}
+                        onChange={(e) => handleFeeChange(index, feeIndex, 'description', e.target.value)}
+                        placeholder="Enter description"
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      className="btn btn-danger btn-sm mt-2"
+                      onClick={() => removeFee(index, feeIndex)}
+                    >
+                      Remove Fee
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={() => addFee(index)}
+                >
+                  Add Fee
+                </button>
               </div>
+
+              <label className="mt-3">
+                Service Image:
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <input
+                    className="form-control"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleServiceImageChange(index, e.target.files[0])}
+                    style={{ flex: '1' }}
+                  />
+                  {(service.image || service.imagePreview) && (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <img
+                        className="img-thumbnail"
+                        src={service.imagePreview || getServiceImageUrl(service.image)}
+                        alt={`Service ${index + 1}`}
+                        style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (service.imagePreview) {
+                            URL.revokeObjectURL(service.imagePreview);
+                          }
+                          handleServiceChange(index, 'image', null);
+                          handleServiceChange(index, 'imagePreview', null);
+                          handleServiceChange(index, 'imageUpdated', true);
+                        }}
+                        className="btn btn-danger btn-sm mt-1"
+                      >
+                        Remove Image
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </label>
 
               <button
                 type="button"
-                className="btn btn-danger"
+                className="btn btn-danger mt-3"
                 onClick={() => removeService(index, service._id)}
               >
                 Remove Service

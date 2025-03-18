@@ -208,183 +208,173 @@ const validateMedicine = (medicine) => {
   return errors;
 };
 
-// Updates or creates clinic data in the database.
-// Parses form data to update clinic fields and services, including uploaded images stored in memory.
-// Services are rebuilt entirely from the provided form data in the request body.
-// If a clinic does not exist, a new document is created.
-// Responds with a success message or an error message if the update fails.
-router.put('/clinic', upload.any(), async (req, res) => {
-  console.log('Files uploaded:', req.files);
-  console.log('Request body:', req.body);
-
+// Update the clinic PUT route to handle service fees
+router.put('/clinic', upload.fields([
+  { name: 'responsiveBg', maxCount: 1 },
+  { name: 'mainImg', maxCount: 1 },
+  { name: 'gcashQR', maxCount: 1 },
+  { name: 'clinicLogo', maxCount: 1 },
+  // Add dynamic fields for service images
+  ...Array(50).fill().map((_, i) => ({ name: `service_image_${i}`, maxCount: 1 }))
+]), async (req, res) => {
   try {
+    console.log('Received clinic update request');
+    
+    // Find existing clinic or create new one
     let clinic = await Clinic.findOne();
     if (!clinic) {
       clinic = new Clinic();
     }
-
-    // Store old services for cleanup
-    const oldServices = [...clinic.services];
-
-
-    // Update clinic fields from request body
-    clinic.nameOne = req.body.nameOne || clinic.nameOne;
-    clinic.nameTwo = req.body.nameTwo || clinic.nameTwo;
-    clinic.description = req.body.description || clinic.description;
-    clinic.address = req.body.address || clinic.address;
-    clinic.addressTwo = req.body.addressTwo || clinic.addressTwo;
-    clinic.clinicCatchLine = req.body.clinicCatchLine || clinic.clinicCatchLine;
-    clinic.nameOnePhone = req.body.nameOnePhone || clinic.nameOnePhone;
-    clinic.nameTwoPhone = req.body.nameTwoPhone || clinic.nameTwoPhone;
-    clinic.termsAndConditions = req.body.termsAndConditions || clinic.termsAndConditions;
-    clinic.clinicHeader = req.body.clinicHeader || clinic.clinicHeader;
-    clinic.loginMessage = req.body.loginMessage || clinic.loginMessage;
-    clinic.loginDescription = req.body.loginDescription || clinic.loginDescription;
-    clinic.welcomeMessage = req.body.welcomeMessage || clinic.welcomeMessage;
-    clinic.signupMessage = req.body.signupMessage || clinic.signupMessage;
-    clinic.signupDescription = req.body.signupDescription || clinic.signupDescription;
-    clinic.questionOne = req.body.questionOne || clinic.questionOne;
-    clinic.questionTwo = req.body.questionTwo || clinic.questionTwo;
-    clinic.questionThree = req.body.questionThree || clinic.questionThree;
-    clinic.questionFour = req.body.questionFour || clinic.questionFour;
-    clinic.questionFive = req.body.questionFive || clinic.questionFive;
-    clinic.questionSix = req.body.questionSix || clinic.questionSix;
-    clinic.questionSeven = req.body.questionSeven || clinic.questionSeven;
-    clinic.questionEight = req.body.questionEight || clinic.questionEight;
-    clinic.questionNine = req.body.questionNine || clinic.questionNine;
-    clinic.questionTen = req.body.questionTen || clinic.questionTen;
-
-
-    // Handle image uploads with validation
-    const imageFields = ['clinicLogo', 'gcashQR', 'responsiveBg', 'mainImg'];
-    for (const field of imageFields) {
-      const image = req.files.find(file => file.fieldname === field);
-      if (image) {
-        if (!image.mimetype.startsWith('image/')) {
-          return res.status(400).json({ message: `Invalid file type for ${field}` });
-        }
-        clinic[field] = `/uploads/${image.filename}`;
+    
+    // Update basic clinic info
+    const basicFields = [
+      'nameOne', 'nameTwo', 'description', 'address', 'addressTwo',
+      'clinicCatchLine', 'clinicHeader', 'loginMessage', 'loginDescription',
+      'welcomeMessage', 'signupMessage', 'signupDescription',
+      'nameOnePhone', 'nameTwoPhone', 'termsAndConditions',
+      'questionOne', 'questionTwo', 'questionThree', 'questionFour', 'questionFive',
+      'questionSix', 'questionSeven', 'questionEight', 'questionNine', 'questionTen'
+    ];
+    
+    basicFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        clinic[field] = req.body[field];
       }
-    }
-
-    // Process services with validation
-    const newServices = [];
-    const errors = [];
-    let index = 0;
-
-    while (req.body[`service_name_${index}`] !== undefined) {
-      // Parse fees array for this service
-      const fees = [];
-      let feeIndex = 0;
-      while (req.body[`service_fee_type_${index}_${feeIndex}`] !== undefined) {
-        fees.push({
-          feeType: req.body[`service_fee_type_${index}_${feeIndex}`],
-          amount: parseFloat(req.body[`service_fee_amount_${index}_${feeIndex}`]) || 0,
-          description: req.body[`service_fee_description_${index}_${feeIndex}`] || ''
-        });
-        feeIndex++;
-      }
- 
-      const serviceData = {
-        name: req.body[`service_name_${index}`],
-        description: req.body[`service_description_${index}`],
-        clinic: req.body[`service_clinic_${index}`] || 'both',
-        servicesSlot: req.body[`service_slot_${index}`] || 1,
-        fees: fees
-      };
-
-      // Handle service image
-      const serviceImage = req.files.find(file => file.fieldname === `service_image_${index}`);
-      if (serviceImage) {
-        if (!serviceImage.mimetype.startsWith('image/')) {
-          errors.push(`Invalid file type for service ${index + 1} image`);
-          index++;
-          continue;
-        }
-        serviceData.image = `/uploads/${serviceImage.filename}`;
-      } else if (req.body[`service_image_${index}`]) {
-        serviceData.image = req.body[`service_image_${index}`];
-      }
-
-      // Validate service data
-      const serviceErrors = validateService(serviceData);
-      if (serviceErrors.length > 0) {
-        errors.push(`Service ${index + 1}: ${serviceErrors.join(', ')}`);
-      } else {
-        newServices.push(serviceData);
-      }
-      index++;
-    }
-
-    // Process medicines with validation
-    const newMedicines = [];
-    let medicineIndex = 0;
-
-    while (req.body[`medicine_name_${medicineIndex}`] !== undefined) {
-      const medicineData = {
-        medicineName: req.body[`medicine_name_${medicineIndex}`],
-        medicineAmount: parseFloat(req.body[`medicine_amount_${medicineIndex}`]) || 0,
-        medicineDescription: req.body[`medicine_description_${medicineIndex}`] || '',
-        discountApplicable: req.body[`medicine_discount_${medicineIndex}`] === 'true',
-        fees: [] // Initialize empty fees array
-      };
-
-      // Process fees for this medicine if they exist
-      let feeIndex = 0;
-      while (req.body[`medicine_fee_type_${medicineIndex}_${feeIndex}`] !== undefined) {
-        medicineData.fees.push({
-          feeType: req.body[`medicine_fee_type_${medicineIndex}_${feeIndex}`],
-          amount: parseFloat(req.body[`medicine_fee_amount_${medicineIndex}_${feeIndex}`]) || 0,
-          description: req.body[`medicine_fee_description_${medicineIndex}_${feeIndex}`] || ''
-        });
-        feeIndex++;
-      }
-
-      // If no fees were found, add a default fee
-      if (medicineData.fees.length === 0) {
-        medicineData.fees.push({
-          feeType: 'Default',
-          amount: medicineData.medicineAmount,
-          description: ''
-        });
-      }
-
-      const medicineErrors = validateMedicine(medicineData);
-      if (medicineErrors.length > 0) {
-        errors.push(`Medicine ${medicineIndex + 1}: ${medicineErrors.join(', ')}`);
-      } else {
-        newMedicines.push(medicineData);
-      }
-
-      medicineIndex++;
-    }
-
-    if (errors.length > 0) {
-      // Clean up any uploaded files if there are validation errors
-      for (const file of req.files) {
-        await safeDeleteFile(path.join(uploadDir, file.filename));
-      }
-      return res.status(400).json({ message: 'Validation errors', errors });
-    }
-
-    // Update services and medicines
-    clinic.services = newServices;
-    clinic.medicines = newMedicines;
-    await cleanupServiceImages(oldServices, newServices);
-
-    await clinic.save();
-    res.status(200).json({ 
-      message: 'Clinic data updated successfully!',
-      servicesCount: newServices.length,
-      medicinesCount: newMedicines.length
     });
-
+    
+    // Handle main images
+    if (req.files) {
+      if (req.files.responsiveBg) {
+        clinic.responsiveBg = `/uploads/${req.files.responsiveBg[0].filename}`;
+      }
+      if (req.files.mainImg) {
+        clinic.mainImg = `/uploads/${req.files.mainImg[0].filename}`;
+      }
+      if (req.files.gcashQR) {
+        clinic.gcashQR = `/uploads/${req.files.gcashQR[0].filename}`;
+      }
+      if (req.files.clinicLogo) {
+        clinic.clinicLogo = `/uploads/${req.files.clinicLogo[0].filename}`;
+      }
+    }
+    
+    // Process services
+    const servicesCount = parseInt(req.body.servicesCount) || 0;
+    const updatedServices = [];
+    
+    for (let i = 0; i < servicesCount; i++) {
+      const name = req.body[`service_name_${i}`];
+      const description = req.body[`service_description_${i}`];
+      const clinicType = req.body[`service_clinic_${i}`];
+      const serviceId = req.body[`service_id_${i}`];
+      
+      // Find existing service or create new one
+      let service;
+      if (serviceId) {
+        service = clinic.services.find(s => s._id.toString() === serviceId);
+      }
+      
+      if (!service) {
+        service = { 
+          name, 
+          description, 
+          clinic: clinicType,
+          fees: []
+        };
+      } else {
+        service.name = name;
+        service.description = description;
+        service.clinic = clinicType;
+      }
+      
+      // Handle service image
+      if (req.files && req.files[`service_image_${i}`]) {
+        // New image uploaded
+        service.image = `/uploads/${req.files[`service_image_${i}`][0].filename}`;
+      } else if (req.body[`service_image_remove_${i}`] === 'true') {
+        // Image removed
+        service.image = null;
+      } else if (req.body[`service_image_path_${i}`]) {
+        // Use existing image path
+        service.image = req.body[`service_image_path_${i}`];
+      }
+      
+      // Handle service fees
+      const feesCount = parseInt(req.body[`service_fees_count_${i}`]) || 0;
+      const fees = [];
+      
+      for (let j = 0; j < feesCount; j++) {
+        const feeType = req.body[`service_fee_type_${i}_${j}`] || 'Default';
+        const amount = parseFloat(req.body[`service_fee_amount_${i}_${j}`]) || 0;
+        const description = req.body[`service_fee_description_${i}_${j}`] || '';
+        
+        fees.push({
+          feeType,
+          amount,
+          description
+        });
+      }
+      
+      // Update service fees
+      service.fees = fees.length > 0 ? fees : [{ feeType: 'Default', amount: 0, description: '' }];
+      
+      updatedServices.push(service);
+    }
+    
+    // Update services array
+    clinic.services = updatedServices;
+    
+    // Process medicines
+    const medicinesCount = parseInt(req.body.medicinesCount) || 0;
+    const updatedMedicines = [];
+    
+    for (let i = 0; i < medicinesCount; i++) {
+      const medicineName = req.body[`medicine_name_${i}`];
+      const medicineAmount = parseFloat(req.body[`medicine_amount_${i}`]) || 0;
+      const medicineDescription = req.body[`medicine_description_${i}`] || '';
+      const discountApplicable = req.body[`medicine_discount_${i}`] === 'true';
+      
+      // Handle medicine fees
+      const feesCount = parseInt(req.body[`medicine_fees_count_${i}`]) || 0;
+      const fees = [];
+      
+      for (let j = 0; j < feesCount; j++) {
+        const feeType = req.body[`medicine_fee_type_${i}_${j}`] || 'Default';
+        const amount = parseFloat(req.body[`medicine_fee_amount_${i}_${j}`]) || 0;
+        const description = req.body[`medicine_fee_description_${i}_${j}`] || '';
+        
+        fees.push({
+          feeType,
+          amount,
+          description
+        });
+      }
+      
+      updatedMedicines.push({
+        medicineName,
+        medicineAmount,
+        medicineDescription,
+        discountApplicable,
+        fees: fees.length > 0 ? fees : [{ feeType: 'Default', amount: 0, description: '' }]
+      });
+    }
+    
+    // Update medicines array if medicines were provided
+    if (medicinesCount > 0) {
+      clinic.medicines = updatedMedicines;
+    }
+    
+    // Save updated clinic
+    await clinic.save();
+    
+    console.log('Clinic updated successfully');
+    res.status(200).json({ 
+      message: 'Clinic updated successfully',
+      clinic
+    });
   } catch (error) {
     console.error('Error updating clinic:', error);
-    res.status(500).json({
-      message: 'Server error while updating clinic data',
-      error: error.message
-    });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -445,6 +435,79 @@ router.delete('/clinic/service/:serviceId', async (req, res) => {
       message: 'Server error while removing service',
       error: error.message
     });
+  }
+});
+
+// Update the service image upload route to preserve the old image
+router.post('/service-image/:serviceId', upload.single('serviceImage'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const serviceId = req.params.serviceId;
+    console.log('Uploading image for service ID:', serviceId);
+    console.log('File details:', req.file);
+    
+    // Find the clinic document
+    const clinic = await Clinic.findOne();
+    if (!clinic) {
+      return res.status(404).json({ error: 'Clinic not found' });
+    }
+
+    // Find the service in the clinic's services array
+    const serviceIndex = clinic.services.findIndex(
+      service => service._id.toString() === serviceId
+    );
+
+    if (serviceIndex === -1) {
+      console.log('Service not found. Available services:', clinic.services.map(s => s._id.toString()));
+      return res.status(404).json({ error: 'Service not found' });
+    }
+
+    // Store the old image path before updating
+    const oldImagePath = clinic.services[serviceIndex].image;
+    
+    // Update the service's image path
+    const imagePath = `/uploads/${req.file.filename}`;
+    clinic.services[serviceIndex].image = imagePath;
+
+    // Save the updated clinic document
+    await clinic.save();
+    console.log('Service image updated successfully:', imagePath);
+
+    // If save was successful and there was an old image, try to delete it
+    // Only if it's not the default image and the path is different
+    if (oldImagePath && 
+        oldImagePath !== imagePath && 
+        !oldImagePath.includes('default') && 
+        fs.existsSync(path.join(__dirname, '..', oldImagePath.replace(/^\//, '')))) {
+      try {
+        await fs.unlink(path.join(__dirname, '..', oldImagePath.replace(/^\//, '')));
+        console.log('Old image deleted:', oldImagePath);
+      } catch (unlinkError) {
+        console.error('Error deleting old image:', unlinkError);
+        // Non-critical error, continue
+      }
+    }
+
+    res.status(200).json({ 
+      message: 'Service image uploaded successfully',
+      path: imagePath
+    });
+  } catch (error) {
+    console.error('Error uploading service image:', error);
+    
+    // Clean up the uploaded file if there was an error
+    if (req.file) {
+      try {
+        await fs.unlink(path.join(__dirname, '..', 'uploads', req.file.filename));
+      } catch (unlinkError) {
+        console.error('Error deleting file after error:', unlinkError);
+      }
+    }
+    
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 

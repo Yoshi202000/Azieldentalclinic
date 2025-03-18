@@ -62,7 +62,6 @@ const Services = () => {
                 <div className="doctor-info">
                   <h3 className="doctor-name">{service.name}</h3>
                   <p className="doctor-description">{service.description}</p>
-                  <p className="service-fee">Fee: ₱{service.fee?.toLocaleString()}</p>
                 </div>
               </div>
             ))
