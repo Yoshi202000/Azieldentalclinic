@@ -15,9 +15,9 @@ router.get('/api/verify-token', (req, res) => {
             return res.status(401).json({ message: 'Invalid token' });
         }
     
-    
         res.status(200).json({ 
             user: { 
+                userId: decoded.userId,
                 firstName: decoded.firstName, 
                 lastName: decoded.lastName, 
                 phoneNumber: decoded.phoneNumber, 
@@ -26,7 +26,8 @@ router.get('/api/verify-token', (req, res) => {
                 clinic: decoded.clinic,
                 greetings: decoded.doctorGreeting,
                 description: decoded.doctorDescription,
-                services: decoded.services, 
+                services: decoded.services,
+                doctorImage: decoded.doctorImage
             },
             token
         });
@@ -52,6 +53,7 @@ router.put('/api/edit-user', async (req, res) => {
             const updatedUser = await User.findByIdAndUpdate(
                 decoded.userId, // Use the userId from the token
                 {
+                    userId: decoded.userId,
                     firstName,
                     lastName,
                     phoneNumber,
@@ -95,6 +97,7 @@ router.put('/api/edit-user', async (req, res) => {
             res.status(200).json({
                 message: 'User updated successfully',
                 user: {
+                    userId: updatedUser._id,
                     firstName: updatedUser.firstName,
                     lastName: updatedUser.lastName,
                     phoneNumber: updatedUser.phoneNumber,

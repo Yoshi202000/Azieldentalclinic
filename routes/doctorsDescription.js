@@ -1,5 +1,8 @@
-import express from 'express';
-import mongoose from 'mongoose';
+import express from "express";
+import User from "../models/User.js";
+import { authenticateUser } from "./middleware/authMiddleware.js";
+import Clinic from '../models/clinicSchema.js';
+import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import path from 'path';
 import { promises as fs } from 'fs';
@@ -9,62 +12,37 @@ import { dirname } from 'path';
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const uploadDir = path.join(__dirname, '..', 'src', 'uploads');
+const uploadDir = path.join(__dirname, '..', 'uploads');
 
 // Ensure upload directory exists
 async function ensureUploadDir() {
   try {
-      await fs.access(uploadDir);
+    await fs.access(uploadDir);
   } catch (error) {
-      if (error.code === 'ENOENT') {
-          await fs.mkdir(uploadDir, { recursive: true });
-      }
+    if (error.code === 'ENOENT') {
+      await fs.mkdir(uploadDir, { recursive: true });
+    }
   }
 }
 
-await ensureUploadDir(); // Call it once before setting up storage
+await ensureUploadDir();
 
-
+// Multer configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-      cb(null, uploadDir);
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-      const ext = path.extname(file.originalname) || '.png';
-      const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, ''); // Format YYYYMMDDHHMMSS
-      cb(null, `doctor_${timestamp}${ext}`);
+    const now = new Date();
+    const timestamp = now.toISOString().replace(/[:.]/g, '-');
+    const ext = path.extname(file.originalname);
+    cb(null, `doctor_${timestamp}${ext}`);
   }
 });
-
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-  if (allowedTypes.includes(file.mimetype)) {
-      cb(null, true);
-  } else {
-      cb(new Error('Only .jpg, .jpeg, and .png formats are allowed'), false);
-  }
-};
 
 const upload = multer({ 
-  storage, 
-  fileFilter,
+  storage,
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
-});
-
-router.post('/upload-doctor-image', upload.single('doctorImage'), async (req, res) => {
-  try {
-      if (!req.file) {
-          return res.status(400).json({ error: 'No file uploaded' });
-      }
-      res.json({ 
-          message: 'File uploaded successfully', 
-          filename: req.file.filename, 
-          path: `/uploads/${req.file.filename}` 
-      });
-  } catch (error) {
-      console.error('Error uploading file:', error);
-      res.status(500).json({ message: 'Internal server error' });
-  }
 });
 
 // Make sure express can handle JSON
@@ -155,7 +133,7 @@ router.put('/doctor-services/:doctorId', authenticateUser, async (req, res) => {
     res.status(200).json({
       message: 'Doctor services updated successfully',
       services: doctor.services,
-      token: newToken // Include the new token in the response
+      token: newToken
     });
   } catch (error) {
     console.error('Error updating doctor services:', error);
@@ -163,70 +141,133 @@ router.put('/doctor-services/:doctorId', authenticateUser, async (req, res) => {
   }
 });
 
-// Update doctor information including greeting and description
+// Update doctor information route
 router.put('/update-doctor-information', authenticateUser, async (req, res) => {
-    const { doctorInformation } = req.body;
-    const userId = req.userId;
-  
-    try {
-      // 1. Ensure user exists and is a doctor
-      const user = await User.findById(userId);
-      if (!user) return res.status(404).json({ message: 'User not found' });
-      if (user.role !== 'doctor') {
-        return res.status(403).json({ message: 'Only doctors can update this information' });
-      }
-  
-      // 2. Update doctor information
-      user.doctorGreeting = doctorInformation.doctorGreeting;
-      user.doctorDescription = doctorInformation.doctorDescription;
-      
-      // 3. Handle services update if provided
-      if (doctorInformation.services && Array.isArray(doctorInformation.services)) {
-        const clinic = await Clinic.findOne();
-        const clinicServices = clinic?.services || [];
-        
-        const validatedServices = doctorInformation.services
-          .map(serviceName => {
-            const clinicService = clinicServices.find(cs => cs.name === serviceName);
-            if (clinicService) {
-              return {
-                serviceId: clinicService._id,
-                name: clinicService.name,
-                description: clinicService.description,
-                fee: clinicService.fee,
-                isActive: true
-              };
-            }
-            return null;
-          })
-          .filter(service => service !== null);
-        
-        user.services = validatedServices;
-      }
-  
-      // 4. Save the updates
-      const updatedUser = await user.save();
-  
-      // Generate new token with updated information
-      const newToken = generateNewToken(updatedUser);
+  const { doctorInformation } = req.body;
+  const userId = req.userId;
 
-      // Set the new token as an HTTP-only cookie
-      res.cookie('token', newToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'Strict',
-        maxAge: 24 * 60 * 60 * 1000 // 1 day
-      });
-  
-      return res.status(200).json({
-        message: 'Doctor information updated successfully',
-        user: updatedUser,
-        token: newToken // Include the new token in the response
-      });
-    } catch (error) {
-      console.error('Error updating doctor information:', error);
-      return res.status(500).json({ message: 'Internal server error' });
+  try {
+    // 1. Ensure user exists and is a doctor
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (user.role !== 'doctor') {
+      return res.status(403).json({ message: 'Only doctors can update this information' });
     }
+
+    // 2. Update doctor information
+    user.doctorGreeting = doctorInformation.doctorGreeting;
+    user.doctorDescription = doctorInformation.doctorDescription;
+    
+    // 3. Handle services update if provided
+    if (doctorInformation.services && Array.isArray(doctorInformation.services)) {
+      const clinic = await Clinic.findOne();
+      const clinicServices = clinic?.services || [];
+      
+      const validatedServices = doctorInformation.services
+        .map(serviceName => {
+          const clinicService = clinicServices.find(cs => cs.name === serviceName);
+          if (clinicService) {
+            return {
+              serviceId: clinicService._id,
+              name: clinicService.name,
+              description: clinicService.description,
+              fee: clinicService.fee,
+              isActive: true
+            };
+          }
+          return null;
+        })
+        .filter(service => service !== null);
+      
+      user.services = validatedServices;
+    }
+
+    // 4. Save the updates
+    const updatedUser = await user.save();
+
+    // Generate new token with updated information
+    const newToken = generateNewToken(updatedUser);
+
+    // Set the new token as an HTTP-only cookie
+    res.cookie('token', newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict',
+      maxAge: 24 * 60 * 60 * 1000 // 1 day
+    });
+
+    return res.status(200).json({
+      message: 'Doctor information updated successfully',
+      user: updatedUser,
+      token: newToken
+    });
+  } catch (error) {
+    console.error('Error updating doctor information:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Upload doctor image route - separate middleware from route handler
+router.post('/upload-doctor-image', upload.single('doctorImage'), async (req, res) => {
+  try {
+    // Check if file was uploaded
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    // Get token from authorization header
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    // Verify token and get userId
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+    
+    const userId = decoded.userId;
+    console.log('User ID from token:', userId);
+    console.log('File uploaded:', req.file.filename);
+
+    // Update user with image path
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { doctorImage: `/uploads/${req.file.filename}` },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      // If update failed, try to delete the uploaded file
+      try {
+        await fs.unlink(path.join(uploadDir, req.file.filename));
+      } catch (unlinkError) {
+        console.error('Error deleting file after failed update:', unlinkError);
+      }
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Return success response
+    res.status(200).json({ 
+      message: 'Image uploaded successfully', 
+      path: `/uploads/${req.file.filename}`
+    });
+  } catch (error) {
+    // If an error occurred, try to delete the uploaded file
+    if (req.file) {
+      try {
+        await fs.unlink(path.join(uploadDir, req.file.filename));
+      } catch (unlinkError) {
+        console.error('Error deleting file after error:', unlinkError);
+      }
+    }
+    
+    console.error('Error uploading doctor image:', error);
+    res.status(500).json({ error: error.message || 'Internal server error' });
+  }
 });
 
 export default router;

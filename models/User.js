@@ -34,6 +34,9 @@ const userSchema = new mongoose.Schema({
     doctorGreeting: { type: String, default: '' },
     doctorDescription: { type: String, default: '' },
 
+    // Add doctorImage field
+    doctorImage: { type: String, default: null, required: false},
+
     // Array of services
     services: [
         {

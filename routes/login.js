@@ -25,7 +25,8 @@ const generateToken = (user) => {
         doctorGreeting: user.doctorGreeting, // Updated here
         doctorDescription: user.doctorDescription, // Updated here
         services: user.services, 
-        termscondition: user.termscondition
+        termscondition: user.termscondition,
+        doctorImage: user.doctorImage
       },
       process.env.JWT_SECRET,
       { expiresIn }
@@ -75,6 +76,7 @@ router.post('/login', async (req, res) => {
         res.status(200).json({ 
             message: 'Login successful', 
             user: { 
+                userId: user._id, 
                 role: user.role,
                 clinic: user.clinic,
                 firstName: user.firstName,
@@ -82,6 +84,7 @@ router.post('/login', async (req, res) => {
                 services: user.services,
                 doctorGreeting: user.doctorGreeting, 
                 doctorDescription: user.doctorDescription,
+                doctorImage: user.doctorImage
                 // emailVerified: user.emailVerified,
             },
             token: token, // Include the token in the response

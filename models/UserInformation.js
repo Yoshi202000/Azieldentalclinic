@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 
 // Define the schema for user data
 const userSchema = new mongoose.Schema({
+    _id: mongoose.Schema.Types.ObjectId,
+    id: { type: String, required: true, unique: true }, // Unique ID for user
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true }, // Unique email
@@ -13,6 +15,8 @@ const userSchema = new mongoose.Schema({
         default: null,
         required: false
     },
+    role: { type: String, default: 'patient' },
+    doctorImage: { type: String }, // Add this field for doctor images
     
 }, { timestamps: true }); // Automatically adds createdAt and updatedAt fields
 

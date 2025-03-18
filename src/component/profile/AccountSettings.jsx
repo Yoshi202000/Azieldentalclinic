@@ -7,7 +7,6 @@ const AccountSettings = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [doctorImage, setDoctorImage] = useState(null);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -19,10 +18,13 @@ const AccountSettings = () => {
     greetings: '',
     description: '',
     services: [],
+    doctorImage: '',
   });
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
   const [availableServices, setAvailableServices] = useState([]);
+  const [doctorImage, setDoctorImage] = useState(null);
+  const [doctorImagePreview, setDoctorImagePreview] = useState('');
 
   useEffect(() => {
     const fetchServicesData = async () => {
@@ -75,6 +77,7 @@ const AccountSettings = () => {
           greetings: greetings || '',
           description: description || '',
           services: Array.isArray(services) ? services.map(service => service.name) : [],
+          doctorImage: '',
         });
 
         setLoading(false);
@@ -87,32 +90,6 @@ const AccountSettings = () => {
 
     fetchData();
   }, [navigate]);
-
-  const handleImageChange = (e) => {
-    setDoctorImage(e.target.files[0]);
-  };
-
-  const handleImageUpload = async () => {
-    if (!doctorImage) {
-      setMessage('Please select an image.');
-      setIsError(true);
-      return;
-    }
-    
-    const formData = new FormData();
-    formData.append('doctorImage', doctorImage);
-
-    try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/upload-doctor-image`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setMessage('Image uploaded successfully!');
-      setIsError(false);
-    } catch (error) {
-      setMessage('Error uploading image.');
-      setIsError(true);
-    }
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -128,6 +105,51 @@ const AccountSettings = () => {
     });
   };
 
+  const handleImageUpload = async () => {
+    if (!doctorImage) {
+      setMessage('Please select an image.');
+      setIsError(true);
+      return;
+    }
+    
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setMessage('Please log in again.');
+        setIsError(true);
+        return;
+      }
+
+      const formDataObj = new FormData();
+      formDataObj.append('doctorImage', doctorImage);
+
+      const uploadResponse = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/upload-doctor-image`, 
+        formDataObj, 
+        {
+          headers: { 
+            Authorization: `Bearer ${token}`
+          },
+          withCredentials: true
+        }
+      );
+
+      if (uploadResponse.data.path) {
+        setDoctorImagePreview(`${import.meta.env.VITE_BACKEND_URL}${uploadResponse.data.path}`);
+        setFormData(prev => ({
+          ...prev,
+          doctorImage: uploadResponse.data.path
+        }));
+        setMessage('Image uploaded successfully!');
+        setIsError(false);
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      setMessage(error.response?.data?.error || 'Error uploading image.');
+      setIsError(true);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -135,54 +157,46 @@ const AccountSettings = () => {
     setIsError(false);
 
     const token = localStorage.getItem('token');
-    console.log('Submitting with token:', token);
+    if (!token) {
+      setMessage('Please log in again.');
+      setIsError(true);
+      setIsSubmitting(false);
+      return;
+    }
 
     const requestData = {
       doctorInformation: {
-        doctorGreeting: formData.greetings,
-        doctorDescription: formData.description,
-        services: formData.services.filter(service => availableServices.some(s => s.name === service)),
-      },
+        doctorGreeting: formData.greetings || '',
+        doctorDescription: formData.description || '',
+        services: Array.isArray(formData.services) ? formData.services : []
+      }
     };
 
-    console.log('Sending request with data:', requestData);
-
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/update-doctor-information`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: 'include',
-        body: JSON.stringify(requestData),
-      });
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/update-doctor-information`,
+        requestData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          withCredentials: true
+        }
+      );
 
-      console.log('Response status:', response.status);
-      const data = await response.json();
-      console.log('Response data:', data);
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to update information');
-      }
-
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-      }
-
-      if (data.user) {
+      if (response.data.user) {
         setFormData(prev => ({
           ...prev,
-          greetings: data.user.doctorGreeting,
-          description: data.user.doctorDescription,
-          services: data.user.services.map(service => service.name),
+          greetings: response.data.user.doctorGreeting || '',
+          description: response.data.user.doctorDescription || '',
+          services: response.data.user.services || []
         }));
+        setMessage('Information updated successfully');
       }
-
-      setMessage('Information updated successfully');
     } catch (error) {
       console.error('Error updating doctor information:', error);
-      setMessage(error.message || 'An error occurred while updating information');
+      setMessage(error.response?.data?.message || 'An error occurred while updating information');
       setIsError(true);
     } finally {
       setIsSubmitting(false);
@@ -233,11 +247,25 @@ const AccountSettings = () => {
 
             <button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Submitting...' : 'Submit'}</button>
           </form>
-          <label>Doctor Image:</label>
-      <input type="file" accept="image/*" onChange={handleImageChange} />
-      <button onClick={handleImageUpload} disabled={!doctorImage}>Upload Image</button>
         </>
       )}
+
+      <label>Doctor Image:</label>
+      <input type="file" accept="image/*" onChange={(e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setDoctorImage(file);
+            setDoctorImagePreview(reader.result);
+          };
+          reader.readAsDataURL(file);
+        }
+      }} />
+      
+      {doctorImagePreview && <img src={doctorImagePreview} alt="Doctor" style={{ maxWidth: '200px', marginTop: '10px' }} />}
+
+      <button onClick={handleImageUpload}>Upload Image</button>
     </div>
   );
 };
