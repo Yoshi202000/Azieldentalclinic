@@ -1,17 +1,17 @@
 import mongoose from 'mongoose';
 
-// Define the schema for appointment data
+// Define the schema for monthly reminder data
 const monthlyReminderSchema = new mongoose.Schema({
-    patientFirstName: { type: String, required: true },
-    patientLastName: { type: String, required: true },
-    patientEmail: { type: String, required: true },
-    appointmentDate: { type: String, required: true },
-    appointmentType: { type: [String], required: true },
-    bookedClinic: { type: String, required: true },
+    monthlyPatientFirstName: { type: String, required: true },
+    monthlyPatientLastName: { type: String, required: true },
+    monthlyPatientEmail: { type: String, required: true },
+    monthlyReminderDate: { type: String, required: true },
+    monthlyAppointmentType: { type: [String], required: true },
+    monthlyBookedClinic: { type: String, required: true },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     userEmail: { type: String, required: true },
 }, { timestamps: true });   
 
-const MonthlyReminder = mongoose.model('Appointment', appointmentSchema);
+const MonthlyReminder = mongoose.model('MonthlyReminder', monthlyReminderSchema);
 
 export default MonthlyReminder;

@@ -530,7 +530,14 @@ function SuperViewAppointment() {
                     <tr>
                       <td>{`${appointment.patientFirstName} ${appointment.patientLastName}`}</td>
                       <td>{new Date(appointment.appointmentDate).toLocaleDateString('en-CA')}</td>
-                      <td>{appointment.appointmentTimeFrom}</td>
+                      <td>
+  {Array.isArray(appointment.appointmentTimeFrom)
+    ? appointment.appointmentTimeFrom.map((time, index) => (
+        <div key={index}>{time}</div>
+      ))
+    : <div>{appointment.appointmentTimeFrom}</div>
+  }
+</td>
                       <td>{appointment.appointmentType}</td>
                       <td>{appointment.bookedClinic}</td>
                       <td>{appointment.appointmentStatus}</td>

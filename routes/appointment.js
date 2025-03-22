@@ -5,6 +5,7 @@ import AdminNotification from '../models/AdminNotification.js';
 import PatientNotification from '../models/PatientNotification.js';
 import nodemailer from 'nodemailer';
 import User from '../models/User.js'; // Assuming your User model is in the models folder
+import MonthlyReminder from '../models/MonthlyReminder.js';
 
 const router = express.Router();
 
@@ -94,6 +95,7 @@ router.post('/appointments', authenticateToken, async (req, res) => {
     const timeFromArray = Array.isArray(appointmentTimeFrom) ? appointmentTimeFrom : [appointmentTimeFrom];
     const typeArray = Array.isArray(appointmentType) ? appointmentType : [appointmentType];
 
+    // Create new appointment
     const newAppointment = new Appointment({
       patientFirstName,
       patientLastName,
@@ -112,6 +114,26 @@ router.post('/appointments', authenticateToken, async (req, res) => {
     });
 
     const savedAppointment = await newAppointment.save();
+
+    // Calculate the date for the monthly reminder (1 month after appointment date)
+    const appointmentDateObj = new Date(appointmentDate);
+    const reminderDateObj = new Date(appointmentDateObj);
+    reminderDateObj.setMonth(appointmentDateObj.getMonth() + 1);
+    const monthlyReminderDate = reminderDateObj.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    
+    // Create a monthly reminder entry
+    const newMonthlyReminder = new MonthlyReminder({
+      monthlyPatientFirstName: patientFirstName,
+      monthlyPatientLastName: patientLastName,
+      monthlyPatientEmail: patientEmail,
+      monthlyReminderDate: monthlyReminderDate, // Use the date that's 1 month after appointment
+      monthlyAppointmentType: typeArray,
+      monthlyBookedClinic: bookedClinic,
+      userId: req.user.userId,
+      userEmail: req.user.email,
+    });
+
+    await newMonthlyReminder.save();
 
     // Format time display for notifications - join array elements with commas
     const timeDisplay = timeFromArray.join(', ');
@@ -143,8 +165,12 @@ router.post('/appointments', authenticateToken, async (req, res) => {
       typeDisplay
     );
 
-    res.status(201).json({ message: 'Appointment booked and email notification sent successfully!' });
+    res.status(201).json({ 
+      message: 'Appointment booked and email notification sent successfully!',
+      appointmentId: savedAppointment._id
+    });
   } catch (error) {
+    console.error('Error booking appointment:', error);
     res.status(500).json({ message: 'Error booking appointment: ' + error.message });
   }
 });
