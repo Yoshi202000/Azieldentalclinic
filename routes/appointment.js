@@ -88,10 +88,12 @@ router.post('/appointments', authenticateToken, async (req, res) => {
     bookedClinic,
     doctor,
   } = req.body;
-  console.log(bookedClinic);
   
-
   try {
+    // Convert appointmentTimeFrom and appointmentType to arrays if they're not already
+    const timeFromArray = Array.isArray(appointmentTimeFrom) ? appointmentTimeFrom : [appointmentTimeFrom];
+    const typeArray = Array.isArray(appointmentType) ? appointmentType : [appointmentType];
+
     const newAppointment = new Appointment({
       patientFirstName,
       patientLastName,
@@ -99,9 +101,9 @@ router.post('/appointments', authenticateToken, async (req, res) => {
       patientPhone,
       patientDOB,
       appointmentDate,
-      appointmentTimeFrom,
+      appointmentTimeFrom: timeFromArray,
+      appointmentType: typeArray,
       bookedClinic,
-      appointmentType,
       userId: req.user.userId,
       userEmail: req.user.email,
       appointmentStatus: 'pending',
@@ -109,14 +111,16 @@ router.post('/appointments', authenticateToken, async (req, res) => {
       doctor,
     });
 
-    console.log(bookedClinic);
-
     const savedAppointment = await newAppointment.save();
+
+    // Format time display for notifications - join array elements with commas
+    const timeDisplay = timeFromArray.join(', ');
+    const typeDisplay = typeArray.join(', ');
 
     const adminNotification = new AdminNotification({
       appointmentId: savedAppointment._id,
       userEmail: req.user.email,
-      message: `New appointment booked by ${patientFirstName} ${patientLastName} (${req.user.email}) for ${appointmentDate} at ${appointmentTimeFrom} at ${bookedClinic}.`,
+      message: `New appointment booked by ${patientFirstName} ${patientLastName} (${req.user.email}) for ${appointmentDate} at ${timeDisplay} at ${bookedClinic}.`,
     });
     await adminNotification.save();
 
@@ -124,12 +128,20 @@ router.post('/appointments', authenticateToken, async (req, res) => {
       userId: req.user.userId,
       userEmail: req.user.email,
       appointmentId: savedAppointment._id,
-      message: `Your appointment for ${appointmentType} on ${appointmentDate} at ${appointmentTimeFrom} at ${bookedClinic} has been booked successfully.`,
+      message: `Your appointment for ${typeDisplay} on ${appointmentDate} at ${timeDisplay} at ${bookedClinic} has been booked successfully.`,
     });
     await patientNotification.save();
 
     // Send email notification to the user
-    await sendEmailNotification(patientEmail, patientFirstName, patientLastName, appointmentDate, appointmentTimeFrom, bookedClinic, appointmentType);
+    await sendEmailNotification(
+      patientEmail, 
+      patientFirstName, 
+      patientLastName, 
+      appointmentDate, 
+      timeDisplay, 
+      bookedClinic, 
+      typeDisplay
+    );
 
     res.status(201).json({ message: 'Appointment booked and email notification sent successfully!' });
   } catch (error) {

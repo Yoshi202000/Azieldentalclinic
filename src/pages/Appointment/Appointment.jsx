@@ -42,6 +42,7 @@ const Appointment = () => {
   const [nameOne, setNameOne] = useState('');
   const [nameTwo, setNameTwo] = useState(''); 
   const [showModal, setShowModal] = useState(false); // State to control modal visibility
+  const [isSubmitting, setIsSubmitting] = useState(false); // Add this state for loading indicator
 
   const generateTimeSlots = (start, end) => {
     const timeSlots = [];
@@ -147,9 +148,9 @@ const Appointment = () => {
     setSelectedDate(scheduleInfo.date);
     
     // Check if the selected slot is available
-    if (scheduleInfo.slotStatus === 'unavailable') { // Assuming slotStatus is part of scheduleInfo
+    if (scheduleInfo.slotStatus === 'unavailable') {
       alert('The selected slot is already taken. Please repeat the appointment process again.');
-      return; // Cancel the appointment process
+      return;
     }
     console.log('the booked appointment slot is' + scheduleInfo.slotStatus);
 
@@ -159,15 +160,18 @@ const Appointment = () => {
       doctorEmail: scheduleInfo.doctorEmail,
       doctorFirstName: scheduleInfo.doctorFirstName,
       doctorLastName: scheduleInfo.doctorLastName,
-      appointmentTimeFrom: scheduleInfo.appointmentTimeFrom,
-      mainID: scheduleInfo.mainID, // Store mainID
-      slotID: scheduleInfo.slotID, // Store slotID
+      appointmentTimeFrom: scheduleInfo.appointmentTimeFrom, // This is now an array
+      formattedTimeSlot: scheduleInfo.formattedTimeSlot, // For display purposes
+      mainID: scheduleInfo.mainID,
+      slotID: scheduleInfo.slotID,
+      slotCount: scheduleInfo.slotCount,
+      selectedSlots: scheduleInfo.selectedSlots,
     }));
     console.log('Selected Schedule:', scheduleInfo);
   };
 
   const handleAppointmentSubmit = async () => {
-    if (!selectedCard || !formData.dob || !formData.lastName || !formData.firstName || !selectedDate || !selectedTimeFrom || !formData.bookedClinic) {
+    if (!formData.appointmentType || !formData.dob || !formData.lastName || !formData.firstName || !selectedDate || !selectedTimeFrom || !formData.bookedClinic) {
       alert('Please fill in all required fields.');
       return;
     }
@@ -178,90 +182,114 @@ const Appointment = () => {
       return;
     }
 
-    // Function to check slot status before booking
-    const checkSlotStatus = async (mainID, slotID) => {
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/check-slot-status/${mainID}/${slotID}`);
-            const result = await response.json();
+    // Set loading state to true
+    setIsSubmitting(true);
 
-            if (response.ok) {
-                console.log('Slot Status:', result.status); // Log the slot status
-                return result.status; // Return the slot status
-            } else {
-                console.error('Error checking slot status:', result.message);
-                return null; // Return null in case of error
-            }
-        } catch (error) {
-            console.error('Error checking slot status:', error);
-            return null; // Return null in case of error
+    // Function to check slot status before booking
+    const checkSlotStatus = async (mainID, slotIDs) => {
+      try {
+        // Split the comma-separated slotIDs string into an array
+        const slotIDArray = slotIDs.split(',');
+        
+        // Check status for each slot
+        const statusPromises = slotIDArray.map(slotID => 
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/check-slot-status/${mainID}/${slotID}`)
+            .then(response => response.json())
+        );
+        
+        const results = await Promise.all(statusPromises);
+        
+        // If any slot is unavailable, return "Unavailable"
+        if (results.some(result => result.status === "Unavailable")) {
+          return "Unavailable";
         }
+        
+        return "Available";
+      } catch (error) {
+        console.error('Error checking slot status:', error);
+        return null;
+      }
     };
 
-    // **Check the slot status before proceeding**
+    // Check the slot status before proceeding
     const slotStatus = await checkSlotStatus(formData.mainID, formData.slotID);
 
     if (slotStatus === "Unavailable" || slotStatus === null) {
-        alert("The selected slot is unavailable. Your appointment has been canceled.");
-        navigate('/'); // Redirect the user to the appointment page
-        return; // Stop execution to prevent booking
+      setIsSubmitting(false); // Reset loading state
+      alert("One or more selected slots are unavailable. Your appointment has been canceled.");
+      navigate('/');
+      return;
     }
-
 
     // Prepare appointment details
     const appointmentDetails = {
-        patientFirstName: formData.firstName,
-        patientLastName: formData.lastName,
-        patientEmail: formData.email,
-        patientPhone: formData.phoneNumber,
-        patientDOB: formData.dob,
-        bookedClinic: formData.bookedClinic,
-        appointmentDate: selectedDate,
-        appointmentTimeFrom: formData.appointmentTimeFrom,
-        appointmentType: selectedCard,
-        fee: null, 
-        doctor: formData.doctorEmail,
+      patientFirstName: formData.firstName,
+      patientLastName: formData.lastName,
+      patientEmail: formData.email,
+      patientPhone: formData.phoneNumber,
+      patientDOB: formData.dob,
+      bookedClinic: formData.bookedClinic,
+      appointmentDate: selectedDate,
+      appointmentTimeFrom: formData.appointmentTimeFrom, // This is now an array
+      appointmentType: formData.appointmentType, // This is now an array
+      fee: null, 
+      doctor: formData.doctorEmail,
+      slotCount: formData.slotCount,
+      selectedSlots: formData.selectedSlots,
+      mainID: formData.mainID,
+      slotID: formData.slotID
     };
 
     console.log('Appointment Details:', appointmentDetails);
 
     try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/appointments`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `${token}`,
-            },
-            body: JSON.stringify(appointmentDetails),
-        });
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/appointments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${token}`,
+        },
+        body: JSON.stringify(appointmentDetails),
+      });
 
-        const result = await response.json();
+      const result = await response.json();
 
-        if (response.ok) {
-            alert('Appointment booked successfully!');
-            setShowModal(true); // Show modal after successful booking
-
-            // Update the slot status to Unavailable after booking
-            await updateSlotToUnavailable(formData.mainID, formData.slotID);
-        } else {
-            alert(`Error: ${result.message}`);
-        }
+      if (response.ok) {
+        // Update all selected slots to Unavailable after booking
+        await updateSlotsToUnavailable(formData.mainID, formData.slotID);
+        setShowModal(true);
+      } else {
+        alert(`Error: ${result.message}`);
+      }
     } catch (error) {
-        console.error('Error booking appointment:', error);
-        alert('An error occurred while booking the appointment.');
+      console.error('Error booking appointment:', error);
+      alert('An error occurred while booking the appointment.');
+    } finally {
+      setIsSubmitting(false); // Reset loading state regardless of outcome
     }
-};
+  };
 
-  const updateSlotToUnavailable = async (mainID, slotID) => {
+  // Updated function to handle multiple slots
+  const updateSlotsToUnavailable = async (mainID, slotIDs) => {
     try {
-        const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/update-slot-status/${mainID}/${slotID}`);
-        
-        if (response.status === 200) {
-            console.log('Slot updated successfully:', response.data);
-        } else {
-            console.error('Failed to update slot:', response.data.message);
-        }
+      // Split the comma-separated slotIDs string into an array
+      const slotIDArray = slotIDs.split(',');
+      
+      // Update each slot
+      const updatePromises = slotIDArray.map(slotID => 
+        axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/update-slot-status/${mainID}/${slotID}`)
+      );
+      
+      const results = await Promise.all(updatePromises);
+      
+      // Check if all updates were successful
+      if (results.every(response => response.status === 200)) {
+        console.log('All slots updated successfully');
+      } else {
+        console.error('Some slots failed to update');
+      }
     } catch (error) {
-        console.error('Error updating slot status:', error);
+      console.error('Error updating slot status:', error);
     }
   };
 
@@ -297,26 +325,60 @@ const Appointment = () => {
           <TestStepTwo
             selectedDoctor={formData.selectedDoctor}
             onScheduleSelect={handleScheduleSelect}
+            requiredSlots={formData.requiredSlots || 1}
           />
         )}
         {step === 3 && (
           <AppointmentStepThree
-            formData={formData}
+            formData={{
+              ...formData,
+              displayTimeFrom: formData.formattedTimeSlot || (Array.isArray(formData.appointmentTimeFrom) ? formData.appointmentTimeFrom.join(', ') : formData.appointmentTimeFrom)
+            }}
             handleInputChange={handleInputChange}
           />
         )}
         
         <div className="footer">
-          {step > 1 && <button className="previous-button" onClick={prevStep}>Previous</button>}
-          {step < 3 && <button onClick={nextStep}>Next</button>}
-          {step === 3 && <button className="complete-button" 
-            onClick={handleAppointmentSubmit}>
-            Complete Booking
-          </button>}
+          {step > 1 && <button className="previous-button" onClick={prevStep} disabled={isSubmitting}>Previous</button>}
+          {step < 3 && <button onClick={nextStep} disabled={isSubmitting}>Next</button>}
+          {step === 3 && (
+            isSubmitting ? (
+              <button className="complete-button loading" disabled>
+                <span className="spinner"></span> Processing...
+              </button>
+            ) : (
+              <button className="complete-button" onClick={handleAppointmentSubmit}>
+                Complete Booking
+              </button>
+            )
+          )}
         </div>
         {showModal && <AppointmentStepFour onClose={handleCloseModal} />} {/* Render the modal */}
       </div>
       <Footer />
+      
+      {/* Add CSS for the loading spinner */}
+      <style jsx>{`
+        .spinner {
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          border: 3px solid rgba(255,255,255,.3);
+          border-radius: 50%;
+          border-top-color: #fff;
+          animation: spin 1s ease-in-out infinite;
+          margin-right: 10px;
+        }
+        
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        
+        .loading {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+      `}</style>
     </>
   );
 };

@@ -51,7 +51,7 @@ const AppointmentStepOne = ({
   // Calculate required slots based on selected services
   const calculateRequiredSlots = (services) => {
     // Default is 1 slot per service
-    return services.length;
+    return services.length > 0 ? services.length : 1;
   };
 
   // Handle service selection (multiple)
@@ -78,6 +78,15 @@ const AppointmentStepOne = ({
             value: requiredSlots 
           } 
         });
+        
+        // Update appointmentType as an array
+        handleInputChange({
+          target: {
+            name: "appointmentType",
+            value: updated
+          }
+        });
+        
         return updated;
       } 
       // Otherwise add it
@@ -100,6 +109,14 @@ const AppointmentStepOne = ({
             name: "requiredSlots", 
             value: requiredSlots 
           } 
+        });
+        
+        // Update appointmentType as an array
+        handleInputChange({
+          target: {
+            name: "appointmentType",
+            value: updated
+          }
         });
         
         return updated;

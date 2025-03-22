@@ -77,10 +77,43 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
     return <p>Loading...</p>;
   }
 
+  // Add a function to display appointment type and time slots properly
+  const renderAppointmentTypes = () => {
+    if (!formData.appointmentType) return 'None selected';
+    
+    if (Array.isArray(formData.appointmentType)) {
+      return formData.appointmentType.join(', ');
+    }
+    
+    return formData.appointmentType;
+  };
+  
+  const renderTimeSlots = () => {
+    if (formData.displayTimeFrom) {
+      return formData.displayTimeFrom;
+    }
+    
+    if (!formData.appointmentTimeFrom) return 'No time selected';
+    
+    if (Array.isArray(formData.appointmentTimeFrom)) {
+      return formData.appointmentTimeFrom.join(', ');
+    }
+    
+    return formData.appointmentTimeFrom;
+  };
+
   return (
     <div className="appointment-details">
-
       <h2>Patient Details</h2>
+
+      <div className="appointment-summary">
+        <h3>Appointment Summary</h3>
+        <p><strong>Clinic:</strong> {formData.bookedClinic || 'Not selected'}</p>
+        <p><strong>Doctor:</strong> Dr. {formData.doctorFirstName} {formData.doctorLastName}</p>
+        <p><strong>Date:</strong> {formData.appointmentDate || 'Not selected'}</p>
+        <p><strong>Time:</strong> {renderTimeSlots()}</p>
+        <p><strong>Services:</strong> {renderAppointmentTypes()}</p>
+      </div>
 
       <label>
         <input
@@ -92,15 +125,13 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
       </label>
 
       <div className="stepthree">
-        <label>Choose your clinic</label>
-        
-
         <label>Date of Birth</label>
         <input
           type="date"
           name="dob" 
           value={formData.dob}
           onChange={handleInputChange}
+          required
         />
 
         <label>First Name</label>
@@ -110,6 +141,7 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
           value={formData.firstName}
           onChange={handleInputChange}
           readOnly={!isForOther}
+          required
         />
 
         <label>Last Name</label>
@@ -119,6 +151,7 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
           value={formData.lastName}
           onChange={handleInputChange}
           readOnly={!isForOther}
+          required
         />
 
         <label>Email</label>
@@ -128,6 +161,7 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
           value={formData.email}
           onChange={handleInputChange}
           readOnly={!isForOther}
+          required
         />
 
         <label>Phone Number</label>
@@ -137,6 +171,7 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
           value={formData.phoneNumber}
           onChange={handleInputChange}
           readOnly={!isForOther}
+          required
         />
       </div>
     </div>
