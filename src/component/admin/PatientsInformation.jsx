@@ -151,17 +151,51 @@ const PatientsInformation = () => {
       setShowTypeChange(false);
       setShowDateTimeChange(false);
     } else {
-      setEditingAppointment(appointment);
-      setIsContainerExpanded(true);
-      setShowTypeChange(false);
-      setShowDateTimeChange(false);
-      setSelectedCard(appointment.appointmentType);
-      setSelectedDate(appointment.appointmentDate);
-      setSelectedTimeFrom(appointment.appointmentTimeFrom);
+      // Set all state updates in a single batch
+      const appointmentType = Array.isArray(appointment.appointmentType) 
+        ? appointment.appointmentType[0] 
+        : appointment.appointmentType;
+
+      const updatedFormData = {
+        ...formData,
+        doctorEmail: appointment.doctor,
+        mainID: appointment.mainID,
+        slotID: appointment.slotID,
+        slotCount: appointment.slotCount,
+        selectedSlots: appointment.selectedSlots,
+        appointmentTimeFrom: appointment.appointmentTimeFrom,
+        appointmentTimeTo: appointment.appointmentTimeTo,
+        selectedServices: Array.isArray(appointment.appointmentType) 
+          ? appointment.appointmentType 
+          : [appointment.appointmentType]
+      };
+
+      // Batch state updates
+      Promise.resolve().then(() => {
+        setEditingAppointment(appointment);
+        setIsContainerExpanded(true);
+        setShowTypeChange(false);
+        setShowDateTimeChange(false);
+        setSelectedCard(appointmentType);
+        setSelectedDate(appointment.appointmentDate);
+        setSelectedTimeFrom(appointment.appointmentTimeFrom);
+        setFormData(updatedFormData);
+      });
     }
   };
 
-  const handleCardSelect = (cardName) => setSelectedCard(cardName);
+  const handleCardSelect = (cardName) => {
+    setSelectedCard(cardName);
+    // Find the selected service to get its required slots
+    const selectedService = services.find(service => service.name === cardName);
+    if (selectedService) {
+      setFormData(prev => ({
+        ...prev,
+        requiredSlots: selectedService.requiredSlots || 1
+      }));
+    }
+  };
+
   const handleDateSelect = (date) => {
     setSelectedDate(date);
     setSelectedTimeFrom(null);
@@ -171,30 +205,68 @@ const PatientsInformation = () => {
     if (type === 'from') setSelectedTimeFrom(time);
   };
 
-  const checkSlotStatus = async (mainID, slotID) => {
+  const checkSlotStatus = async (mainID, slotIDs) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/check-slot-status/${mainID}/${slotID}`);
-      const result = await response.json();
+      // Split the slotIDs string into an array
+      const slotIDArray = slotIDs.split(',');
+      
+      // Check each slot individually
+      for (const slotID of slotIDArray) {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/check-slot-status/${mainID}/${slotID}`);
+        const result = await response.json();
 
-      if (response.ok) {
-        console.log('Slot Status:', result.status);
-        return result.status;
-      } else {
-        console.error('Error checking slot status:', result.message);
-        return null;
+        if (!response.ok) {
+          console.error('Error checking slot status:', result.message);
+          return null;
+        }
+
+        if (result.status === "Unavailable") {
+          return "Unavailable";
+        }
       }
+
+      return "Available";
     } catch (error) {
       console.error('Error checking slot status:', error);
       return null;
     }
   };
 
+  const updateSlotsToUnavailable = async (mainID, slotIDs) => {
+    try {
+      // Split the slotIDs string into an array
+      const slotIDArray = slotIDs.split(',');
+      
+      // Update each slot individually
+      for (const slotID of slotIDArray) {
+        const response = await axios.put(
+          `${import.meta.env.VITE_BACKEND_URL}/api/schedule/update-slot-status/${mainID}/${slotID}`,
+          {},
+          { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        );
+        
+        if (response.status !== 200) {
+          console.error('Failed to update slot:', response.data.message);
+          return false;
+        }
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error updating slot status:', error);
+      return false;
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    // Use Promise.resolve().then to batch state updates
+    Promise.resolve().then(() => {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    });
   };
 
   const handleScheduleSelect = (selectedSchedule) => {
@@ -303,6 +375,9 @@ const PatientsInformation = () => {
 
   const handleUpdateAppointment = async () => {
     try {
+      const token = localStorage.getItem('token');
+      
+      // Check slot status before updating
       const slotStatus = await checkSlotStatus(formData.mainID, formData.slotID);
 
       if (slotStatus === "Unavailable") {
@@ -310,54 +385,68 @@ const PatientsInformation = () => {
         return;
       }
 
-      // Extract timeFrom from the formatted string if needed
-      const timeFrom = formData.appointmentTimeFrom.split(' → ')[0];
-      const timeTo = formData.appointmentTimeFrom.split(' → ')[1];
-
+      // Prepare appointment details
       const updatedAppointment = {
-        appointmentType: selectedCard,
-        appointmentDate: selectedDate,
-        appointmentTimeFrom: formData.appointmentTimeFrom, // Use the full formatted time string
-        appointmentTimeTo: timeTo,
+        patientFirstName: editingAppointment.patientFirstName,
+        patientLastName: editingAppointment.patientLastName,
+        patientEmail: editingAppointment.patientEmail,
+        patientPhone: editingAppointment.patientPhone,
+        patientDOB: editingAppointment.patientDOB,
         bookedClinic: formData.bookedClinic,
+        appointmentDate: selectedDate,
+        appointmentTimeFrom: formData.appointmentTimeFrom,
+        appointmentType: formData.selectedServices || [selectedCard], // Ensure it's an array
+        fee: editingAppointment.fee,
         doctor: formData.doctorEmail,
+        slotCount: formData.requiredSlots || 1,
+        selectedSlots: formData.selectedSlots,
         mainID: formData.mainID,
-        slotID: formData.slotID,
-        doctorFirstName: formData.doctorFirstName,
-        doctorLastName: formData.doctorLastName
+        slotID: formData.slotID
       };
 
+      // Update status to Rebooked if date changed
       if (selectedDate !== editingAppointment.appointmentDate) {
         updatedAppointment.appointmentStatus = 'Rebooked';
       }
 
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/updateAppointment/${editingAppointment._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedAppointment),
-      });
+      console.log('Updating Appointment:', updatedAppointment);
 
-      if (response.ok) {
-        const updatedData = await response.json();
-        setAppointments(prevAppointments =>
-          prevAppointments.map(app =>
-            app._id === updatedData._id ? updatedData : app
-          )
-        );
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/updateAppointment/${editingAppointment._id}`,
+        updatedAppointment,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-        setEditingAppointment(null);
-        setShowDateTimeChange(false);
-        setShowStatusButtons(true);
-        setCurrentStep(1);
-        alert('Appointment updated successfully');
+      if (response.status === 200) {
+        // Update slots to unavailable after successful update
+        const slotsUpdated = await updateSlotsToUnavailable(formData.mainID, formData.slotID);
+        
+        if (slotsUpdated) {
+          // Update the appointments list with the new data
+          setAppointments(prevAppointments =>
+            prevAppointments.map(app =>
+              app._id === response.data._id ? {
+                ...app,
+                ...response.data,
+                appointmentType: response.data.appointmentType || [response.data.appointmentType] // Ensure it's an array
+              } : app
+            )
+          );
+          
+          alert('Appointment updated successfully');
+        } else {
+          alert('Appointment updated but failed to update slot status');
+        }
       } else {
-        alert('Failed to update appointment');
+        alert(`Error: ${response.data.message}`);
       }
-    } catch (err) {
-      console.error('Error updating appointment:', err);
-      alert('Error updating appointment');
+
+      setEditingAppointment(null);
+      setShowTypeChange(false);
+      setShowDateTimeChange(false);
+    } catch (error) {
+      console.error('Error updating appointment:', error);
+      setError('Failed to update appointment');
     }
   };
 
@@ -631,6 +720,7 @@ const PatientsInformation = () => {
                                             selectedDoctor={formData.selectedDoctor}
                                             onScheduleSelect={handleScheduleSelect}
                                             filterEmail={doctorEmailFilter}
+                                            requiredSlots={formData.requiredSlots || 1}
                                           />
                                         )}
                                       </div>

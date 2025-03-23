@@ -208,21 +208,56 @@ function ViewAppointment() {
   
 
   // Function to check slot status before updating
-  const checkSlotStatus = async (mainID, slotID) => {
+  const checkSlotStatus = async (mainID, slotIDs) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/check-slot-status/${mainID}/${slotID}`);
-      const result = await response.json();
+      // Split the slotIDs string into an array
+      const slotIDArray = slotIDs.split(',');
+      
+      // Check each slot individually
+      for (const slotID of slotIDArray) {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/check-slot-status/${mainID}/${slotID}`);
+        const result = await response.json();
 
-      if (response.ok) {
-        console.log('Slot Status:', result.status); // Log the slot status
-        return result.status; // Return the slot status
-      } else {
-        console.error('Error checking slot status:', result.message);
-        return null; // Return null in case of error
+        if (!response.ok) {
+          console.error('Error checking slot status:', result.message);
+          return null;
+        }
+
+        if (result.status === "Unavailable") {
+          return "Unavailable";
+        }
       }
+
+      return "Available";
     } catch (error) {
       console.error('Error checking slot status:', error);
-      return null; // Return null in case of error
+      return null;
+    }
+  };
+
+  const updateSlotsToUnavailable = async (mainID, slotIDs) => {
+    try {
+      // Split the slotIDs string into an array
+      const slotIDArray = slotIDs.split(',');
+      
+      // Update each slot individually
+      for (const slotID of slotIDArray) {
+        const response = await axios.put(
+          `${import.meta.env.VITE_BACKEND_URL}/api/schedule/update-slot-status/${mainID}/${slotID}`,
+          {},
+          { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        );
+        
+        if (response.status !== 200) {
+          console.error('Failed to update slot:', response.data.message);
+          return false;
+        }
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error updating slot status:', error);
+      return false;
     }
   };
 
@@ -274,9 +309,29 @@ function ViewAppointment() {
       setIsContainerExpanded(true);
       setShowTypeChange(false);
       setShowDateTimeChange(false);
-      setSelectedCard(appointment.appointmentType);
+      
+      // Set the selected card to the first appointment type if it's an array
+      setSelectedCard(Array.isArray(appointment.appointmentType) 
+        ? appointment.appointmentType[0] 
+        : appointment.appointmentType);
+      
       setSelectedDate(appointment.appointmentDate);
-      setSelectedTimeFrom(appointment.appointmentTimeFrom);  // ✅ Ensure time is set
+      setSelectedTimeFrom(appointment.appointmentTimeFrom);
+      
+      // Set form data with existing appointment details
+      setFormData(prev => ({
+        ...prev,
+        doctorEmail: appointment.doctor,
+        mainID: appointment.mainID,
+        slotID: appointment.slotID,
+        slotCount: appointment.slotCount,
+        selectedSlots: appointment.selectedSlots,
+        appointmentTimeFrom: appointment.appointmentTimeFrom,
+        appointmentTimeTo: appointment.appointmentTimeTo,
+        selectedServices: Array.isArray(appointment.appointmentType) 
+          ? appointment.appointmentType 
+          : [appointment.appointmentType]
+      }));
     }
   };
   
@@ -293,50 +348,79 @@ function ViewAppointment() {
 
   const handleUpdateAppointment = async () => {
     try {
-        const token = localStorage.getItem('token');
-        const updatedAppointment = {
-            appointmentType: selectedCard,
-            appointmentDate: selectedDate,
-            appointmentTimeFrom: selectedTimeFrom || editingAppointment.appointmentTimeFrom,
-            appointmentTimeTo: selectedTimeTo || editingAppointment.appointmentTimeTo,
-        };
+      const token = localStorage.getItem('token');
+      
+      // Check slot status before updating
+      const slotStatus = await checkSlotStatus(formData.mainID, formData.slotID);
 
-        if (selectedDate !== editingAppointment.appointmentDate) {
-            updatedAppointment.appointmentStatus = 'Rebooked';
-        }
+      if (slotStatus === "Unavailable") {
+        alert("The selected slot is unavailable. Cannot update appointment.");
+        return;
+      }
 
-        const response = await axios.put(
-            `${import.meta.env.VITE_BACKEND_URL}/api/updateAppointment/${editingAppointment._id}`,
-            updatedAppointment,
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
+      // Prepare appointment details
+      const updatedAppointment = {
+        patientFirstName: editingAppointment.patientFirstName,
+        patientLastName: editingAppointment.patientLastName,
+        patientEmail: editingAppointment.patientEmail,
+        patientPhone: editingAppointment.patientPhone,
+        patientDOB: editingAppointment.patientDOB,
+        bookedClinic: formData.bookedClinic,
+        appointmentDate: selectedDate,
+        appointmentTimeFrom: formData.appointmentTimeFrom,
+        appointmentType: formData.selectedServices || [selectedCard], // Ensure it's an array
+        fee: editingAppointment.fee,
+        doctor: formData.doctorEmail,
+        slotCount: formData.requiredSlots || 1,
+        selectedSlots: formData.selectedSlots,
+        mainID: formData.mainID,
+        slotID: formData.slotID
+      };
 
-        if (response.status === 200) {
-            alert('Appointment updated successfully');
-            await updateSlotToUnavailable(formData.mainID, formData.slotID);
-        } else {
-            alert(`Error: ${response.data.message}`);
-        }
+      // Update status to Rebooked if date changed
+      if (selectedDate !== editingAppointment.appointmentDate) {
+        updatedAppointment.appointmentStatus = 'Rebooked';
+      }
 
-        setAppointments(prevAppointments =>
+      console.log('Updating Appointment:', updatedAppointment);
+
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/updateAppointment/${editingAppointment._id}`,
+        updatedAppointment,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.status === 200) {
+        // Update slots to unavailable after successful update
+        const slotsUpdated = await updateSlotsToUnavailable(formData.mainID, formData.slotID);
+        
+        if (slotsUpdated) {
+          // Update the appointments list with the new data
+          setAppointments(prevAppointments =>
             prevAppointments.map(app =>
-                app._id === response.data._id ? {
-                    ...app,
-                    appointmentDate: response.data.appointmentDate,
-                    appointmentTimeFrom: response.data.appointmentTimeFrom,
-                    appointmentType: response.data.appointmentType,
-                    appointmentStatus: response.data.appointmentStatus
-                } : app
+              app._id === response.data._id ? {
+                ...app,
+                ...response.data,
+                appointmentType: response.data.appointmentType || [response.data.appointmentType] // Ensure it's an array
+              } : app
             )
-        );
+          );
+          
+          alert('Appointment updated successfully');
+        } else {
+          alert('Appointment updated but failed to update slot status');
+        }
+      } else {
+        alert(`Error: ${response.data.message}`);
+      }
 
-        setEditingAppointmentId(null);
-        setEditingAppointment(null);
-        setShowTypeChange(false);
-        setShowDateTimeChange(false);
+      setEditingAppointmentId(null);
+      setEditingAppointment(null);
+      setShowTypeChange(false);
+      setShowDateTimeChange(false);
     } catch (error) {
-        console.error('Error updating appointment:', error);
-        setError('Failed to update appointment');
+      console.error('Error updating appointment:', error);
+      setError('Failed to update appointment');
     }
   };
 
@@ -452,20 +536,6 @@ function ViewAppointment() {
     console.log('Selected Schedule:', scheduleInfo);
   };
   
-  const updateSlotToUnavailable = async (mainID, slotID) => {
-    try {
-        const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/update-slot-status/${mainID}/${slotID}`);
-        
-        if (response.status === 200) {
-            console.log('Slot updated successfully:', response.data);
-        } else {
-            console.error('Failed to update slot:', response.data.message);
-        }
-    } catch (error) {
-        console.error('Error updating slot status:', error);
-    }};
-  
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -522,6 +592,7 @@ function ViewAppointment() {
                   <th>Clinic</th>
                   <th>Status</th>
                   <th>Actions</th>
+                  <th>Dental Chart</th>
                 </tr>
               </thead>
               <tbody>
@@ -538,7 +609,10 @@ function ViewAppointment() {
                         <button className="AdminAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}
                         </button>
-                        <button className="AdminAppointmentButton" onClick={() => handleComplete(appointment)}>
+                        
+                      </td>
+                      <td>
+                      <button className="AdminAppointmentButton" onClick={() => handleComplete(appointment)}>
                           Create Dental Record
                         </button>
                       </td>
@@ -595,6 +669,7 @@ function ViewAppointment() {
                                     selectedDoctor={formData.selectedDoctor}
                                     onScheduleSelect={handleScheduleSelect}
                                     filterEmail={doctorEmailFilter}
+                                    requiredSlots={formData.requiredSlots || 1}
                                   />
                                 )}
                               </div>
@@ -604,28 +679,18 @@ function ViewAppointment() {
                               <div className="AdminAppointmentNavigationButtons">
                                 {currentStep > 1 && (
                                   <button 
-                                  type="button" class="btn btn-primary btn-sm"
-                                  onClick={() => setCurrentStep(currentStep - 1)}
+                                    type="button" className="btn btn-primary btn-sm"
+                                    onClick={() => setCurrentStep(currentStep - 1)}
                                   >
                                     Previous
                                   </button>
                                 )}
                                 {currentStep === 1 && showDateTimeChange && (
                                   <button 
-                                  type="button" class="btn btn-primary btn-sm"
-                                  onClick={() => setCurrentStep(currentStep + 1)}
+                                    type="button" className="btn btn-primary btn-sm"
+                                    onClick={() => setCurrentStep(currentStep + 1)}
                                   >
                                     Next
-                                  </button>
-                                )}
-                                {currentStep === 2 && (
-                                  <button 
-                                  type="button" class="btn btn-primary btn-sm"
-                                  onClick={() => {
-                                      console.log("Completing edit for doctor:", selectedDoctor);
-                                    }}
-                                  >
-                                    Complete Edit
                                   </button>
                                 )}
                               </div>

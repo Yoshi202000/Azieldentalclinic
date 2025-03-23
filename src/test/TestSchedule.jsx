@@ -90,13 +90,22 @@ const TestSchedule = () => {
         });
   
         if (response.status === 200) {
-          const fetchedSchedules = response.data.length > 0 ? response.data : [];
-          setSchedule(fetchedSchedules);
+          // Filter out duplicate schedules by date
+          const filteredSchedules = response.data.reduce((acc, current) => {
+            const date = new Date(current.date).toISOString().split('T')[0];
+            // Only keep the first schedule for each date
+            if (!acc.find(s => new Date(s.date).toISOString().split('T')[0] === date)) {
+              acc.push(current);
+            }
+            return acc;
+          }, []);
+
+          setSchedule(filteredSchedules);
   
           // Determine the latest scheduled date
-          if (fetchedSchedules.length > 0) {
+          if (filteredSchedules.length > 0) {
             const latestDate = new Date(
-              Math.max(...fetchedSchedules.map(s => new Date(s.date).getTime()))
+              Math.max(...filteredSchedules.map(s => new Date(s.date).getTime()))
             );
   
             // Set the next available start date (day after latest schedule)
@@ -210,21 +219,10 @@ const TestSchedule = () => {
     setPreviewSlots(newSlots); // Set the generated slots for preview
   };
 
-  const handleSlotStatusChange = (dateIndex, slotIndex, status) => {
-    console.log('Date index' + dateIndex);
-    console.log('slotIndex ' + slotIndex);
-    console.log('status' + status);
-
-    setPreviewSlots((prevSlots) =>
-      prevSlots.map((dateSlots, idx) =>
-        idx === dateIndex
-          ? {
-              ...dateSlots,
-              slots: dateSlots.slots.map((slot, sIdx) =>
-                sIdx === slotIndex ? { ...slot, status } : slot
-              ),
-            }
-          : dateSlots
+  const handleSlotStatusChange = (slotIndex, newStatus) => {
+    setEditedSlots(prevSlots => 
+      prevSlots.map((slot, index) => 
+        index === slotIndex ? { ...slot, status: newStatus } : slot
       )
     );
   };
@@ -314,43 +312,56 @@ const TestSchedule = () => {
   };
 
   const makeAllEditAvailable = () => {
-    const updatedSlots = editedSlots.map(slot => ({ ...slot, status: 'Available' }));
-    setEditedSlots(updatedSlots);
+    setEditedSlots(prevSlots => 
+      prevSlots.map(slot => ({ ...slot, status: 'Available' }))
+    );
   };
 
   const makeAllEditUnavailable = () => {
-    const updatedSlots = editedSlots.map(slot => ({ ...slot, status: 'Unavailable' }));
-    setEditedSlots(updatedSlots);
+    setEditedSlots(prevSlots => 
+      prevSlots.map(slot => ({ ...slot, status: 'Unavailable' }))
+    );
   };
 
-  const saveEditedSchedule = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert('Please log in to continue.');
+  const handleDateChange = (date) => {
+    console.log('Raw selected date:', date);
+
+    if (!date) {
+      console.error('Date is null or undefined');
+      setSelectedDate(null);
       return;
     }
-
-    try {
-      const daySchedule = schedule.find(day => day.date === selectedDate);
-      if (!daySchedule || !daySchedule._id) {
-        console.error('Schedule ID is undefined for:', daySchedule);
-        return; // Exit if the schedule is not found or ID is undefined
-      }
-
-      const response = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/${daySchedule._id}`, {
-        slots: editedSlots,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.status === 200) {
-        alert('Schedule updated successfully!');
-      }
-    } catch (error) {
-      alert('Failed to save adjusted schedule: ' + (error.response?.data?.message || error.message));
+  
+    let parsedDate;
+  
+    if (typeof date === 'string') {
+      parsedDate = new Date(date);
+    } else if (date instanceof Date) {
+      parsedDate = date;
+    } else {
+      console.error('Invalid date format:', date);
+      setSelectedDate(null);
+      return;
     }
+  
+    if (isNaN(parsedDate.getTime())) {
+      console.error('Invalid Date object:', parsedDate);
+      setSelectedDate(null);
+      return;
+    }
+  
+    const formattedDate = parsedDate.toISOString().split('T')[0];
+    console.log('Formatted selected date:', formattedDate);
+    
+    // Find the schedule for the selected date and set editedSlots
+    const daySchedule = schedule.find(day => new Date(day.date).toISOString().split('T')[0] === formattedDate);
+    if (daySchedule && daySchedule.slots) {
+      setEditedSlots(daySchedule.slots);
+    } else {
+      setEditedSlots([]);
+    }
+    
+    setSelectedDate(formattedDate);
   };
 
   const handleEmailSubmit = async (e) => {
@@ -391,48 +402,50 @@ const TestSchedule = () => {
     setSelectedDate(date);
   };
 
-  const handleDateChange = (date) => {
-    console.log('Raw selected date:', date); // Debugging: Log the input
-
-    // Ensure date is valid
-    if (!date) {
-      console.error('Date is null or undefined');
-      setSelectedDate(null);
+  const saveEditedSchedule = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please log in to continue.');
       return;
     }
-  
-    let parsedDate;
-  
-    // Check if date is a string (e.g., "2025-03-12")
-    if (typeof date === 'string') {
-      parsedDate = new Date(date);
-      console.log('1');
-    } else if (date instanceof Date) {
-      parsedDate = date;
-      console.log('2');
-    } else {
-      console.error('Invalid date format:', date);
-      setSelectedDate(null);
-      return;
-    }
-  
-    // Ensure the date is valid (not "Invalid Date")
-    if (isNaN(parsedDate.getTime())) {
-      console.error('Invalid Date object:', parsedDate);
-      setSelectedDate(null);
-      return;
-    }
-  
-    // Adjust for timezone properly
-    const adjustedDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
 
-    setSelectedDate(adjustedDate);
-    console.log( adjustedDate); // Debugging: Log the fixed date]
+    try {
+      const daySchedule = schedule.find(day => new Date(day.date).toISOString().split('T')[0] === selectedDate);
+      if (!daySchedule || !daySchedule._id) {
+        console.error('Schedule ID is undefined for:', daySchedule);
+        return;
+      }
 
-    console.log('-----'); 
+      const response = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/${daySchedule._id}`, {
+        slots: editedSlots,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        // Show success message
+        const successMessage = document.createElement('div');
+        successMessage.className = 'alert alert-success alert-dismissible fade show';
+        successMessage.innerHTML = `
+          Schedule updated successfully for ${selectedDate}!
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.querySelector('.test-schedule').insertBefore(successMessage, document.querySelector('.test-schedule').firstChild);
+        
+        // Remove the alert after 5 seconds
+        setTimeout(() => {
+          successMessage.remove();
+        }, 5000);
+
+        // Refresh the schedules after updating
+        fetchSchedules();
+      }
+    } catch (error) {
+     
+    }
   };
-  
-  
 
   return (
     <div className="test-schedule">
@@ -505,11 +518,11 @@ const TestSchedule = () => {
       {selectedDate && (
         <>
           <h4 className="text-center mt-3">
-            Available Slots for {selectedDate.toISOString().split("T")[0]}
+            Available Slots for {selectedDate}
           </h4>
           {previewSlots.map((dateSlots, dateIndex) => {
             // Check if the date matches the selected date
-            if (dateSlots.date === selectedDate.toISOString().split("T")[0]) {
+            if (dateSlots.date === selectedDate) {
               return (
                 <div key={dateIndex} className="">
                   <div className="card-body">
@@ -519,7 +532,7 @@ const TestSchedule = () => {
                         <select
                           className="form-select w-100"
                           value={slot.status}
-                          onChange={(e) => handleSlotStatusChange(dateIndex, slotIndex, e.target.value)}
+                          onChange={(e) => handleSlotStatusChange(slotIndex, e.target.value)}
                         >
                           <option value="Available">Available</option>
                           <option value="Unavailable">Unavailable</option>
@@ -552,50 +565,68 @@ const TestSchedule = () => {
         </div>
       ) : (
         <div>
-          <h3>Available Schedule Dates</h3>
-          {schedule.map((day, index) => (
-            <div key={index}>
-              <span>{day.date}</span>
-              <button type="button" class="btn btn-primary btn-sm"
-                 onClick={() => handleEditSchedule(day.date)}>Edit</button>
-            </div>
-          ))}
-
-          {/* Display the finalized slots for editing */}
-          {selectedDate && editedSlots.length > 0 && (
+          <h3>Edit Schedule</h3>
+          <div className="justify-content-center">
             <div>
-              <h3>Slots for {selectedDate}</h3>
-              {editedSlots.map((slot, index) => (
-                <div key={index}>
-                  <span>{slot.timeFrom} - {slot.timeTo}</span>
-                  <select
-                  class="form-select w-100"
-                  value={slot.status}
-                  onChange={(e) => handleSlotStatusChange(dateIndex, slotIndex, e.target.value)}
-                >
-                  <option value="Available">Available</option>
-                  <option value="Unavailable">Unavailable</option>
-                </select>
-                
-                </div>
-              ))}
-              <button class="btn btn-primary me-2" onClick={makeAllEditAvailable}>Make All Available</button>
-              <button class="btn btn-primary me-2" onClick={makeAllEditUnavailable}>Make All Unavailable</button>
-              <button class="btn btn-primary me-2"onClick={saveEditedSchedule}>Save Changes</button>
+              <h3>Select Date to Edit</h3>
+              <div className="d-flex justify-content-center">
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={handleDateChange}
+                  dateFormat="yyyy-MM-dd"
+                  className="form-control text-center w-50"
+                  placeholderText="Pick a date"
+                  inline
+                  highlightDates={schedule.map(day => new Date(day.date))}
+                />
+              </div>
             </div>
-          )}
+
+            {selectedDate && (
+              <>
+                <h4 className="text-center mt-3">
+                  Available Slots for {selectedDate}
+                </h4>
+                {editedSlots.length > 0 ? (
+                  <div className="card-body">
+                    {editedSlots.map((slot, slotIndex) => (
+                      <div key={slotIndex} className="d-flex justify-content-between align-items-center mb-2">
+                        <span className="fw-bold">{slot.timeFrom} - {slot.timeTo}</span>
+                        <select
+                          className="form-select w-100"
+                          value={slot.status}
+                          onChange={(e) => handleSlotStatusChange(slotIndex, e.target.value)}
+                        >
+                          <option value="Available">Available</option>
+                          <option value="Unavailable">Unavailable</option>
+                        </select>
+                      </div>
+                    ))}
+                    <div className="d-flex justify-content-center gap-3 mt-3">
+                      <button type="button" className="btn btn-success btn-lg px-4 py-2" onClick={makeAllEditAvailable}>
+                        Make All Available
+                      </button>
+                      <button type="button" className="btn btn-danger btn-lg px-4 py-2" onClick={makeAllEditUnavailable}>
+                        Make All Unavailable
+                      </button>
+                    </div>
+                    <div className="d-flex justify-content-center gap-3 mt-3">
+                      <button className="btn btn-primary btn-lg px-4 py-2" onClick={saveEditedSchedule}>
+                        Save Changes
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="alert alert-info">
+                    No slots available for this date.
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
       )}
 
-      {/* User Information Section */}
-      <div>
-        <h2>User Information</h2>
-        <p>Email: {formData.email}</p>
-        <p>First Name: {formData.firstName}</p>
-        <p>Last Name: {formData.lastName}</p>
-        <p>Clinic: {formData.clinic}</p>
-        <p>Selected Services: {formData.services.join(', ')}</p>
-      </div>
     </div>
   );
 };

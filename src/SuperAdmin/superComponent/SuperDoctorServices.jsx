@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './DoctorServices.css';
+import '../../component/admin/DoctorServices.css';
 
-const DoctorServices = () => {
+const SuperDoctorServices = () => {
   const [doctors, setDoctors] = useState([]);
   const [services, setServices] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState('');
@@ -13,16 +13,15 @@ const DoctorServices = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [userId, setUserId] = useState(null);
-  const [userClinic, setUserClinic] = useState(null);
 
   useEffect(() => {
+    // Get user info from localStorage on component mount
     const token = localStorage.getItem('token');
     if (token) {
       try {
         const decodedToken = JSON.parse(atob(token.split('.')[1]));
         setUserRole(decodedToken.role);
         setUserId(decodedToken.userId);
-        fetchUserInfo(token);
       } catch (error) {
         console.error('Error decoding token:', error);
         setError('Authentication error');
@@ -42,7 +41,7 @@ const DoctorServices = () => {
       const token = localStorage.getItem('token');
       
       // Different endpoints based on user role
-      const doctorsEndpoint = userRole === 'admin' 
+      const doctorsEndpoint = userRole === 'superAdmin' 
         ? `${import.meta.env.VITE_BACKEND_URL}/doctor-info`
         : `${import.meta.env.VITE_BACKEND_URL}/doctor-info/${userId}`;
 
@@ -71,27 +70,6 @@ const DoctorServices = () => {
       console.error('Error fetching data:', error);
       setError(error.response?.data?.message || 'Failed to load doctors and services');
       setLoading(false);
-    }
-  };
-
-  const fetchUserInfo = async (token) => {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      });
-
-      const { clinic } = response.data.user;
-      setUserClinic(clinic);
-    } catch (error) {
-      console.error('Error fetching user info:', error);
-      setError('Failed to fetch user information');
-      if (error.response && error.response.status === 401) {
-        alert('Session expired or invalid. Please log in again.');
-        // You might want to add navigation to login here
-      }
     }
   };
 
@@ -225,33 +203,16 @@ const DoctorServices = () => {
       
       <div className="doctors-list">
         <h3>Select a Doctor</h3>
-        {doctors
-          .filter(doctor => {
-            if (userRole === 'admin') return true;
-            if (doctor.clinic ===  clinic) return true;
-            return doctor.clinic === clinic;
-          })
-          .map(doctor => (
-            <div
-              key={doctor._id}
-              className={`doctor-item ${selectedDoctor === doctor._id ? 'selected' : ''}`}
-              onClick={() => handleDoctorSelect(doctor._id)}
-            >
-              <span>Dr. {doctor.firstName} {doctor.lastName}</span>
-              <span className={`clinic-tag ${doctor.clinic}`}>
-                {doctor.clinic.charAt(0).toUpperCase() + doctor.clinic.slice(1)}
-              </span>
-            </div>
-          ))}
-        {doctors.filter(doctor => {
-          if (userRole === 'admin') return true;
-          if (doctor.clinic === 'both' || clinic === 'both') return true;
-          return doctor.clinic === clinic;
-        }).length === 0 && (
-          <div className="no-doctors">
-            No doctors available for your clinic
+        {doctors.map(doctor => (
+          <div
+            key={doctor._id}
+            className={`doctor-item ${selectedDoctor === doctor._id ? 'selected' : ''}`}
+            onClick={() => handleDoctorSelect(doctor._id)}
+          >
+            <span>Dr. {doctor.firstName} {doctor.lastName}</span>
+            <span className="clinic-tag">{doctor.clinic}</span>
           </div>
-        )}
+        ))}
       </div>
 
       {selectedDoctor && (
@@ -354,4 +315,4 @@ const DoctorServices = () => {
   );
 };
 
-export default DoctorServices; 
+export default SuperDoctorServices; 

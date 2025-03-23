@@ -247,10 +247,7 @@ const AccountSettings = () => {
 
             <button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Submitting...' : 'Submit'}</button>
           </form>
-        </>
-      )}
-
-      <label>Doctor Image:</label>
+          <label>Doctor Image:</label>
       <input type="file" accept="image/*" onChange={(e) => {
         const file = e.target.files[0];
         if (file) {
@@ -262,6 +259,10 @@ const AccountSettings = () => {
           reader.readAsDataURL(file);
         }
       }} />
+        </>
+      )}
+
+      
       
       {doctorImagePreview && <img src={doctorImagePreview} alt="Doctor" style={{ maxWidth: '200px', marginTop: '10px' }} />}
 

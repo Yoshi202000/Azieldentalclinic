@@ -54,13 +54,14 @@ function SuperViewAppointment() {
     lastName: '',
     dob: '',
     phoneNumber: '',
-    bookedClinic: '', // Ensure this is initialized
+    bookedClinic: '',
     email: '',
     selectedDoctor: '',
     doctorEmail: '',
     doctorFirstName: '',
     doctorLastName: '',
     appointmentTimeFrom: '',
+    requiredSlots: 1, // Add default required slots
   });
 
   const [nameOne, setNameOne] = useState('Default Clinic 1'); // ✅ Add a fallback name
@@ -207,21 +208,56 @@ function SuperViewAppointment() {
   
 
   // Function to check slot status before updating
-  const checkSlotStatus = async (mainID, slotID) => {
+  const checkSlotStatus = async (mainID, slotIDs) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/check-slot-status/${mainID}/${slotID}`);
-      const result = await response.json();
+      // Split the slotIDs string into an array
+      const slotIDArray = slotIDs.split(',');
+      
+      // Check each slot individually
+      for (const slotID of slotIDArray) {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/check-slot-status/${mainID}/${slotID}`);
+        const result = await response.json();
 
-      if (response.ok) {
-        console.log('Slot Status:', result.status); // Log the slot status
-        return result.status; // Return the slot status
-      } else {
-        console.error('Error checking slot status:', result.message);
-        return null; // Return null in case of error
+        if (!response.ok) {
+          console.error('Error checking slot status:', result.message);
+          return null;
+        }
+
+        if (result.status === "Unavailable") {
+          return "Unavailable";
+        }
       }
+
+      return "Available";
     } catch (error) {
       console.error('Error checking slot status:', error);
-      return null; // Return null in case of error
+      return null;
+    }
+  };
+
+  const updateSlotsToUnavailable = async (mainID, slotIDs) => {
+    try {
+      // Split the slotIDs string into an array
+      const slotIDArray = slotIDs.split(',');
+      
+      // Update each slot individually
+      for (const slotID of slotIDArray) {
+        const response = await axios.put(
+          `${import.meta.env.VITE_BACKEND_URL}/api/schedule/update-slot-status/${mainID}/${slotID}`,
+          {},
+          { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        );
+        
+        if (response.status !== 200) {
+          console.error('Failed to update slot:', response.data.message);
+          return false;
+        }
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error updating slot status:', error);
+      return false;
     }
   };
 
@@ -273,9 +309,29 @@ function SuperViewAppointment() {
       setIsContainerExpanded(true);
       setShowTypeChange(false);
       setShowDateTimeChange(false);
-      setSelectedCard(appointment.appointmentType);
+      
+      // Set the selected card to the first appointment type if it's an array
+      setSelectedCard(Array.isArray(appointment.appointmentType) 
+        ? appointment.appointmentType[0] 
+        : appointment.appointmentType);
+      
       setSelectedDate(appointment.appointmentDate);
-      setSelectedTimeFrom(appointment.appointmentTimeFrom);  // ✅ Ensure time is set
+      setSelectedTimeFrom(appointment.appointmentTimeFrom);
+      
+      // Set form data with existing appointment details
+      setFormData(prev => ({
+        ...prev,
+        doctorEmail: appointment.doctor,
+        mainID: appointment.mainID,
+        slotID: appointment.slotID,
+        slotCount: appointment.slotCount,
+        selectedSlots: appointment.selectedSlots,
+        appointmentTimeFrom: appointment.appointmentTimeFrom,
+        appointmentTimeTo: appointment.appointmentTimeTo,
+        selectedServices: Array.isArray(appointment.appointmentType) 
+          ? appointment.appointmentType 
+          : [appointment.appointmentType]
+      }));
     }
   };
   
@@ -292,50 +348,79 @@ function SuperViewAppointment() {
 
   const handleUpdateAppointment = async () => {
     try {
-        const token = localStorage.getItem('token');
-        const updatedAppointment = {
-            appointmentType: selectedCard,
-            appointmentDate: selectedDate,
-            appointmentTimeFrom: selectedTimeFrom || editingAppointment.appointmentTimeFrom,
-            appointmentTimeTo: selectedTimeTo || editingAppointment.appointmentTimeTo,
-        };
+      const token = localStorage.getItem('token');
+      
+      // Check slot status before updating
+      const slotStatus = await checkSlotStatus(formData.mainID, formData.slotID);
 
-        if (selectedDate !== editingAppointment.appointmentDate) {
-            updatedAppointment.appointmentStatus = 'Rebooked';
-        }
+      if (slotStatus === "Unavailable") {
+        alert("The selected slot is unavailable. Cannot update appointment.");
+        return;
+      }
 
-        const response = await axios.put(
-            `${import.meta.env.VITE_BACKEND_URL}/api/updateAppointment/${editingAppointment._id}`,
-            updatedAppointment,
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
+      // Prepare appointment details
+      const updatedAppointment = {
+        patientFirstName: editingAppointment.patientFirstName,
+        patientLastName: editingAppointment.patientLastName,
+        patientEmail: editingAppointment.patientEmail,
+        patientPhone: editingAppointment.patientPhone,
+        patientDOB: editingAppointment.patientDOB,
+        bookedClinic: formData.bookedClinic,
+        appointmentDate: selectedDate,
+        appointmentTimeFrom: formData.appointmentTimeFrom,
+        appointmentType: formData.selectedServices || [selectedCard], // Ensure it's an array
+        fee: editingAppointment.fee,
+        doctor: formData.doctorEmail,
+        slotCount: formData.requiredSlots || 1,
+        selectedSlots: formData.selectedSlots,
+        mainID: formData.mainID,
+        slotID: formData.slotID
+      };
 
-        if (response.status === 200) {
-            alert('Appointment updated successfully');
-            await updateSlotToUnavailable(formData.mainID, formData.slotID);
-        } else {
-            alert(`Error: ${response.data.message}`);
-        }
+      // Update status to Rebooked if date changed
+      if (selectedDate !== editingAppointment.appointmentDate) {
+        updatedAppointment.appointmentStatus = 'Rebooked';
+      }
 
-        setAppointments(prevAppointments =>
+      console.log('Updating Appointment:', updatedAppointment);
+
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/updateAppointment/${editingAppointment._id}`,
+        updatedAppointment,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.status === 200) {
+        // Update slots to unavailable after successful update
+        const slotsUpdated = await updateSlotsToUnavailable(formData.mainID, formData.slotID);
+        
+        if (slotsUpdated) {
+          // Update the appointments list with the new data
+          setAppointments(prevAppointments =>
             prevAppointments.map(app =>
-                app._id === response.data._id ? {
-                    ...app,
-                    appointmentDate: response.data.appointmentDate,
-                    appointmentTimeFrom: response.data.appointmentTimeFrom,
-                    appointmentType: response.data.appointmentType,
-                    appointmentStatus: response.data.appointmentStatus
-                } : app
+              app._id === response.data._id ? {
+                ...app,
+                ...response.data,
+                appointmentType: response.data.appointmentType || [response.data.appointmentType] // Ensure it's an array
+              } : app
             )
-        );
+          );
+          
+          alert('Appointment updated successfully');
+        } else {
+          alert('Appointment updated but failed to update slot status');
+        }
+      } else {
+        alert(`Error: ${response.data.message}`);
+      }
 
-        setEditingAppointmentId(null);
-        setEditingAppointment(null);
-        setShowTypeChange(false);
-        setShowDateTimeChange(false);
+      setEditingAppointmentId(null);
+      setEditingAppointment(null);
+      setShowTypeChange(false);
+      setShowDateTimeChange(false);
     } catch (error) {
-        console.error('Error updating appointment:', error);
-        setError('Failed to update appointment');
+      console.error('Error updating appointment:', error);
+      setError('Failed to update appointment');
     }
   };
 
@@ -436,41 +521,35 @@ function SuperViewAppointment() {
   // teststep two constsssss
   const handleScheduleSelect = (scheduleInfo) => {
     setSelectedSchedule(scheduleInfo);
-    setSelectedTimeFrom(`${scheduleInfo.timeFrom} → ${scheduleInfo.timeTo}`); // Ensure proper format
-  
+    setSelectedTimeFrom(scheduleInfo.timeFrom);
+    setSelectedTimeTo(scheduleInfo.timeTo);
+    setSelectedDate(scheduleInfo.date);
+    
+    // Check if the selected slot is available
+    if (scheduleInfo.slotStatus === 'unavailable') {
+      alert('The selected slot is already taken. Please select a different time.');
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
-      appointmentTimeFrom: `${scheduleInfo.timeFrom} → ${scheduleInfo.timeTo}`, // Ensure correct format
       doctorEmail: scheduleInfo.doctorEmail,
       doctorFirstName: scheduleInfo.doctorFirstName,
       doctorLastName: scheduleInfo.doctorLastName,
-      mainID: scheduleInfo.mainID, // Store mainID
-      slotID: scheduleInfo.slotID, // Store slotID
+      appointmentTimeFrom: scheduleInfo.appointmentTimeFrom,
+      formattedTimeSlot: scheduleInfo.formattedTimeSlot,
+      mainID: scheduleInfo.mainID,
+      slotID: scheduleInfo.slotID,
+      slotCount: scheduleInfo.slotCount,
+      selectedSlots: scheduleInfo.selectedSlots,
     }));
-  
-    console.log('Selected Schedule:', scheduleInfo);
   };
   
-  const updateSlotToUnavailable = async (mainID, slotID) => {
-    try {
-        const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/update-slot-status/${mainID}/${slotID}`);
-        
-        if (response.status === 200) {
-            console.log('Slot updated successfully:', response.data);
-        } else {
-            console.error('Failed to update slot:', response.data.message);
-        }
-    } catch (error) {
-        console.error('Error updating slot status:', error);
-    }
-  };
-  
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
+      ...prevData,
+      [name]: value,
     }));
   };
 
@@ -493,7 +572,7 @@ function SuperViewAppointment() {
         >
           <option value="">All Appointment Types</option>
           {services.map((service) => (
-            <option key={service.id} value={service.name}>
+            <option key={service._id || service.id} value={service.name}>
               {service.name}
             </option>
           ))}
@@ -522,6 +601,7 @@ function SuperViewAppointment() {
                   <th>Clinic</th>
                   <th>Status</th>
                   <th>Actions</th>
+                  <th>Dental Chart</th>
                 </tr>
               </thead>
               <tbody>
@@ -531,21 +611,25 @@ function SuperViewAppointment() {
                       <td>{`${appointment.patientFirstName} ${appointment.patientLastName}`}</td>
                       <td>{new Date(appointment.appointmentDate).toLocaleDateString('en-CA')}</td>
                       <td>
-  {Array.isArray(appointment.appointmentTimeFrom)
-    ? appointment.appointmentTimeFrom.map((time, index) => (
-        <div key={index}>{time}</div>
-      ))
-    : <div>{appointment.appointmentTimeFrom}</div>
-  }
-</td>
-                      <td>{appointment.appointmentType}</td>
+                        {Array.isArray(appointment.appointmentTimeFrom)
+                          ? appointment.appointmentTimeFrom.join(', ')
+                          : appointment.appointmentTimeFrom || 'N/A'}
+                      </td>
+                      <td>
+                        {Array.isArray(appointment.appointmentType)
+                          ? appointment.appointmentType.join(', ')
+                          : appointment.appointmentType || 'N/A'}
+                      </td>
                       <td>{appointment.bookedClinic}</td>
                       <td>{appointment.appointmentStatus}</td>
                       <td>
-                        <button className="AdminAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
+                        <button type="button" className="AdminAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}
                         </button>
-                        <button className="AdminAppointmentButton" onClick={() => handleComplete(appointment)}>
+                        
+                      </td>
+                      <td>
+                      <button className="AdminAppointmentButton" onClick={() => handleComplete(appointment)}>
                           Create Dental Record
                         </button>
                       </td>
@@ -602,6 +686,7 @@ function SuperViewAppointment() {
                                     selectedDoctor={formData.selectedDoctor}
                                     onScheduleSelect={handleScheduleSelect}
                                     filterEmail={doctorEmailFilter}
+                                    requiredSlots={formData.requiredSlots || 1}
                                   />
                                 )}
                               </div>
@@ -661,7 +746,7 @@ function SuperViewAppointment() {
       <div className="pagination">
         <button onClick={handlePreviousPage} disabled={currentPage === 1}>Previous</button>
         <span>Page {currentPage} of {totalPages}</span>
-        <button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
+        <button  onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
       </div>
       {showUpdateFee && (
         <UpdateFee 

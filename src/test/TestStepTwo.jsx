@@ -326,7 +326,7 @@ const TestStepTwo = ({ selectedDoctor, onScheduleSelect, requiredSlots = 1 }) =>
         </div>
       )}
       
-      <style jsx>{`
+      <style>{`
         .invalid-slot:hover .tooltip {
           display: block;
         }

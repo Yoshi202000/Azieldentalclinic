@@ -13,7 +13,8 @@ import Chat from '../../component/chat';
 import SuperDoctorSignup from '../superComponent/SuperAddUser';
 import SuperViewAdminDoctor from '../superComponent/SuperViewAdminDoctor';
 import EditContent from '../../component/admin/EditContent.jsx'
-import DoctorServices from '../../component/admin/DoctorServices';
+import SuperDoctorServices from '../superComponent/SuperDoctorServices';
+import SuperTestSchedule from '../superComponent/SuperEditSchedule';
 
 function SuperDashboard() {
   const [activeComponent, setActiveComponent] = useState('AccountSettings');
@@ -41,7 +42,9 @@ function SuperDashboard() {
       case 'EditContent':
         return <EditContent/>
       case 'DoctorServices':
-        return <DoctorServices/>
+        return <SuperDoctorServices/>
+      case 'SuperTestSchedule':
+        return <SuperTestSchedule/>
       default:
         return <h2>Select an option</h2>;
     }
@@ -113,6 +116,12 @@ function SuperDashboard() {
             onClick={() => setActiveComponent('ViewFeedback')}
           >
             View Feedback
+          </button>
+          <button
+            className={activeComponent === 'SuperTestSchedule' ? 'active' : ''}
+            onClick={() => setActiveComponent('SuperTestSchedule')}
+          >
+            Test Schedule
           </button>
           </div>
         </div>

@@ -13,7 +13,7 @@ import Chat from '../../component/chat'
 import DoctorSignup from '../../component/admin/AddUser';
 import ViewAdminDoctor from '../../component/admin/ViewAdminDoctor';
 import DoctorServices from '../../component/admin/DoctorServices';
-import AdminSchedule from '../../component/admin/AdminSchedule';
+import AdminEditSchedule from '../../component/admin/AdminEditSchedule';
 
 function Dashboard() {
   const [activeComponent, setActiveComponent] = useState('AccountSettings');
@@ -41,7 +41,7 @@ function Dashboard() {
       case 'DoctorServices':
         return <DoctorServices/>
       case 'AdminSchedule':
-        return <AdminSchedule/>
+        return <AdminEditSchedule/>
       default:
         return <h2>Select an option</h2>;
     }

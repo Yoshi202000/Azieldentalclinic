@@ -77,8 +77,8 @@ html, body {
 /* Main Container */
 .DashMainContainer {
   flex-grow: 1;
-  padding: 25px;
-  width: 75%;
+  padding: 5px;
+  width: 100%;
   border-radius: 0 10px 10px 0;
   background-color: #ffffff;
 }

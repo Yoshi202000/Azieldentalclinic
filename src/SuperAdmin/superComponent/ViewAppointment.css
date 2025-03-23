@@ -32,6 +32,8 @@
 .AdminAppointmentTable th {
   background-color: #339999;
   color: white;
+  white-space: normal;
+  min-width: 150px;
 }
 
 .AdminAppointmentTable tr:nth-child(even) {

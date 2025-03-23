@@ -7,6 +7,7 @@ router.get('/ViewAppointment', async (req, res) => {
   try {
     const appointments = await ViewAppointment.find({});
     res.status(200).json(appointments);
+    console.log("Fetched Appointments:", appointments);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch appointments' });
   }

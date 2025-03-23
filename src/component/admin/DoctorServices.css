@@ -115,3 +115,27 @@
 .service-item:not(.assigned) .service-status {
   background-color: #6c757d;
 } 
+
+.doctor-info-card {
+  display: flex;
+  align-items: center;
+  
+  gap: 20px;
+}
+
+.doctor-info {
+  margin: 15px;
+}
+
+.current-services {
+  margin: 15px;
+}
+
+.current-services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+

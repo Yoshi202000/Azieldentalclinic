@@ -86,14 +86,22 @@ router.get('/doctor-services/:doctorId', async (req, res) => {
 router.put('/doctor-services/:doctorId', authenticateUser, async (req, res) => {
   try {
     const { services } = req.body;
-    const doctor = await User.findById(req.params.doctorId);
+    const doctorId = req.params.doctorId;
     
+    // Find the doctor
+    const doctor = await User.findById(doctorId);
     if (!doctor || doctor.role !== 'doctor') {
       return res.status(404).json({ message: 'Doctor not found' });
     }
 
+    // Get the authenticated user from the token
+    const authUser = await User.findById(req.userId);
+    if (!authUser) {
+      return res.status(401).json({ message: 'Authentication failed' });
+    }
+
     // Verify if the user is an admin or the doctor themselves
-    if (req.user.role !== 'admin' && req.user._id.toString() !== req.params.doctorId) {
+    if (authUser.role !== 'admin' && authUser._id.toString() !== doctorId) {
       return res.status(403).json({ message: 'Unauthorized to update services' });
     }
 
@@ -112,26 +120,28 @@ router.put('/doctor-services/:doctorId', authenticateUser, async (req, res) => {
         name: clinicService.name,
         description: clinicService.description,
         fee: clinicService.fee,
-        isActive: service.isActive ?? true
+        isActive: true
       };
     });
 
+    // Update doctor's services
     doctor.services = validatedServices;
     await doctor.save();
 
-    // Generate new token with updated services
+    // Generate new token with updated information
     const newToken = generateNewToken(doctor);
 
-    // Set the new token as an HTTP-only cookie
-    res.cookie('token', newToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Strict',
-      maxAge: 24 * 60 * 60 * 1000 // 1 day
-    });
-
     res.status(200).json({
-      message: 'Doctor services updated successfully',
+      message: 'Services updated successfully',
+      doctor: {
+        _id: doctor._id,
+        firstName: doctor.firstName,
+        lastName: doctor.lastName,
+        email: doctor.email,
+        role: doctor.role,
+        clinic: doctor.clinic,
+        services: doctor.services
+      },
       services: doctor.services,
       token: newToken
     });
