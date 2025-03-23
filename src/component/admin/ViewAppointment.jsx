@@ -618,6 +618,7 @@ function ViewAppointment() {
                       </td>
                     </tr>
                     {editingAppointmentId === appointment._id && (
+                      
                       <tr>
                         <td colSpan="10">
                           <div
@@ -627,7 +628,7 @@ function ViewAppointment() {
                             <h2>Edit Appointment</h2>
                             <div className="AdminAppointmentEditButtons">
                               <button 
-                                className="AdminAppointmentButton" 
+                                className="AdminAppointmentButton edit-details-button" 
                                 onClick={() => {
                                   setShowDateTimeChange(true);
                                   setShowStatusButtons(false);
@@ -637,7 +638,7 @@ function ViewAppointment() {
                                 Edit Appointment Details
                               </button>
                               <button 
-                                className="AdminAppointmentButton" 
+                                className="AdminAppointmentButton cancel-edit-button" 
                                 onClick={() => {
                                   setShowDateTimeChange(false);
                                   setShowStatusButtons(true);

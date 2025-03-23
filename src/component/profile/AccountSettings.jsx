@@ -204,6 +204,8 @@ const AccountSettings = () => {
   };
 
   const isDoctorRole = formData.role === 'doctor';
+  const isAdminRole = formData.role === 'admin';
+  const isSuperAdminRole = formData.role === 'superAdmin';
   const isadmin = formData.role === 'admin'|| formData.role === 'doctor' || formData.role === 'superAdmin';
 
   if (loading) return <p>Loading...</p>;
@@ -259,6 +261,19 @@ const AccountSettings = () => {
           reader.readAsDataURL(file);
         }
       }} />
+        </>
+      )}
+
+      {isAdminRole && (
+        <>
+          <label>Clinic:</label>
+          <input type="text" value={formData.clinic} readOnly />
+        </>
+      )}
+      {isSuperAdminRole && (
+        <>
+          <label>Clinic:</label>
+          <input type="text" value={formData.clinic} readOnly />
         </>
       )}
 

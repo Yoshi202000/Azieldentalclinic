@@ -1,3 +1,280 @@
+/* Main Container */
+.PIContainer {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.PITitle {
+  color: #2c3e50;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #eef2f7;
+}
+
+/* Search Header */
+.search-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.SearchInput {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  width: 300px;
+  max-width: 100%;
+  transition: all 0.3s ease;
+}
+
+.SearchInput:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+/* Clinic Badge */
+.clinic-info {
+  display: flex;
+  align-items: center;
+}
+
+.clinic-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Table Styles */
+.AdminAppointmentTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 1rem;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.AdminAppointmentTable th {
+  background: #4CAF50;
+  color: white;
+  font-weight: 600;
+  padding: 1rem;
+  text-align: left;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.AdminAppointmentTable td {
+  padding: 1rem;
+  border-bottom: 1px solid #eef2f7;
+  font-size: 0.95rem;
+  color: #2d3748;
+}
+
+/* Table Row Styles */
+.AdminAppointmentTable tr:hover {
+  background-color: #f8fafb;
+}
+
+.SelectedRow {
+  background-color: #e8f5e9 !important;
+}
+
+/* Clinic Tags in Table */
+.clinic-tag {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* Clinic Colors */
+.makati {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.manila {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.both {
+  background-color: #e8f5e9;
+  color: #388e3c;
+}
+
+/* No Results Message */
+.no-results {
+  text-align: center;
+  padding: 2rem;
+  color: #64748b;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  font-style: italic;
+}
+
+/* Error Message */
+.PIError {
+  padding: 1rem;
+  background: #fee2e2;
+  color: #dc2626;
+  border-radius: 8px;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+/* Edit Section Styles */
+.AdminAppointmentEditSection {
+  background: #f8fafc;
+  padding: 25px;
+  margin: 15px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.AdminAppointmentEditSection h2 {
+  color: #2c3e50;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+/* Button Styles */
+.AdminAppointmentEditButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.AdminAppointmentButton {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.AdminAppointmentButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.AdminAppointmentButton.UpdateButton {
+  background-color: #2196F3;
+  color: white;
+}
+
+.AdminAppointmentButton.UpdateButton:hover {
+  background-color: #1976D2;
+}
+
+.AdminAppointmentStatusButtons {
+  display: flex;
+  gap: 8px;
+  margin: 15px 0;
+  flex-wrap: wrap;
+}
+
+.AdminAppointmentStatusButton {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #6c757d;
+  color: white;
+  min-width: 90px;
+  max-width: 120px;
+}
+
+.AdminAppointmentStatusButton:hover {
+  background-color: #5a6268;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .AdminAppointmentEditSection {
+    padding: 15px;
+  }
+
+  .AdminAppointmentButton,
+  .AdminAppointmentStatusButton {
+    width: 100%;
+    min-width: 0; /* Remove min-width for smaller screens */
+  }
+
+  .AdminAppointmentEditButtons {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .AdminAppointmentEditSection h2 {
+    font-size: 1.3rem;
+  }
+
+  .AdminAppointmentButton,
+  .AdminAppointmentStatusButton {
+    padding: 8px;
+    font-size: 12px;
+  }
+}
+
+/* Loading State */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+/* Animation for hover effects */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.AdminAppointmentTable tr:hover {
+  animation: pulse 0.3s ease-in-out;
+}
+
 /* Container for Admin Appointments */
 .AdminAppointmentContainer {
   display: flex;
@@ -87,6 +364,7 @@
 
 /* Button Styles */
 .AdminAppointmentButton {
+  width: 4000px;
   padding: 6px 12px;
   margin: 4px;
   border: none;
@@ -118,170 +396,27 @@
   background-color: #1976D2;
 }
 
-/* Edit Section Styles */
-.AdminAppointmentEditSection {
-  background-color: #f8f9fa;
-  padding: 25px;
-  margin: 15px 0;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.AdminAppointmentEditSection h2 {
-  color: #2c3e50;
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-}
-
-/* Status Buttons */
-.AdminAppointmentStatusButtons {
+/* Edit Section Buttons */
+.AdminAppointmentEditButtons {
   display: flex;
-  gap: 8px;
-  margin: 15px 0;
+  justify-content: space-between;
+  margin-bottom: 15px;
   flex-wrap: wrap;
 }
 
-.AdminAppointmentStatusButtons button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background-color: #6c757d;
-  color: white;
-  min-width: 90px;
-  max-width: 120px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.AdminAppointmentStatusButtons button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Pagination Styles */
-.pagination {
+.AdminAppointmentNavigationButtons {
   display: flex;
-  justify-content: center;
-  align-items: center;
   gap: 8px;
-  margin-top: 25px;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
+  margin-top: 15px;
+  justify-content: center;
 }
 
-.pagination button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background-color: #4CAF50;
-  color: white;
-  min-width: 80px;
-  max-width: 100px;
-}
-
-.pagination button:hover:not(:disabled) {
-  background-color: #45a049;
-  transform: translateY(-1px);
-}
-
-.pagination button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-.pagination span {
-  font-size: 14px;
-  color: #666;
-}
-
-/* Array Items Display */
-.time-slots, .service-types {
+.AdminAppointmentActionButtons {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  margin-top: 15px;
+  justify-content: center;
 }
-
-.time-slot, .service-type {
-  padding: 6px 12px;
-  background-color: #f8f9fa;
-  border-radius: 4px;
-  font-size: 13px;
-  color: #555;
-  border-left: 3px solid #4CAF50;
-}
-
-.service-type {
-  border-left-color: #2196F3;
-  font-weight: 500;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .AdminAppointmentContainer {
-    margin: 10px;
-    padding: 15px;
-  }
-
-  .FilterSortSection {
-    grid-template-columns: 1fr;
-    padding: 15px;
-  }
-
-  .AdminAppointmentTable th,
-  .AdminAppointmentTable td {
-    padding: 10px;
-    font-size: 13px;
-  }
-
-  .AdminAppointmentButton,
-  .AdminAppointmentStatusButtons button,
-  .pagination button {
-    padding: 6px 12px;
-    font-size: 13px;
-  }
-
-  .AdminAppointmentEditSection {
-    padding: 15px;
-  }
-}
-
-/* Loading and Error States */
-.loading, .error {
-  text-align: center;
-  padding: 40px;
-  font-size: 16px;
-  color: #666;
-}
-
-.error {
-  color: #dc3545;
-  background-color: #f8d7da;
-  border-radius: 8px;
-  padding: 15px;
-  margin: 20px 0;
-}
-
-/* Empty State */
-.no-appointments {
-  text-align: center;
-  padding: 40px;
-  color: #666;
-  font-size: 16px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  margin: 20px 0;
-}
-
 
 .sales-summary-container {
   padding: 20px;
@@ -434,7 +569,7 @@
 /* Edit Section Buttons */
 .AdminAppointmentEditButtons {
   display: flex;
-  gap: 8px;
+  justify-content: space-between;
   margin-bottom: 15px;
   flex-wrap: wrap;
 }
@@ -451,6 +586,41 @@
   gap: 8px;
   margin-top: 15px;
   justify-content: center;
+}
+
+/* Edit Section Button Alignment */
+.AdminAppointmentEditButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.edit-details-button {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.cancel-edit-button {
+  background-color: #dc2626;
+  color: white;
+}
+
+.AdminAppointmentEditButtons button {
+  flex: 1;
+  margin: 0 5px;
+  min-width: 120px;
+}
+
+/* Responsive Design for Buttons */
+@media screen and (max-width: 768px) {
+  .AdminAppointmentEditButtons {
+    flex-direction: column;
+  }
+
+  .AdminAppointmentEditButtons button {
+    margin: 5px 0;
+  }
 }
 
 

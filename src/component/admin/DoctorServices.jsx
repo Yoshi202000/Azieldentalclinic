@@ -227,9 +227,8 @@ const DoctorServices = () => {
         <h3>Select a Doctor</h3>
         {doctors
           .filter(doctor => {
-            if (userRole === 'admin') return true;
-            if (doctor.clinic ===  clinic) return true;
-            return doctor.clinic === clinic;
+            if (doctor.clinic === userClinic) return true;
+            return doctor.clinic === userClinic;
           })
           .map(doctor => (
             <div
@@ -245,8 +244,8 @@ const DoctorServices = () => {
           ))}
         {doctors.filter(doctor => {
           if (userRole === 'admin') return true;
-          if (doctor.clinic === 'both' || clinic === 'both') return true;
-          return doctor.clinic === clinic;
+          if (doctor.clinic === userClinic) return true;
+          return doctor.clinic === userClinic;
         }).length === 0 && (
           <div className="no-doctors">
             No doctors available for your clinic
