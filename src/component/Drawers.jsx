@@ -78,7 +78,7 @@ const DrawerComponent = () => {
     <>
       {/* Drawer toggle button for smaller screens */}
       <button 
-        className={`drawer-toggle ${open ? 'hidden' : ''}`} 
+        className={`MainDrawer-toggle ${open ? 'hidden' : ''}`} 
         onClick={toggleDrawer(true)}
       >
         &#9776; {/* Unicode for hamburger icon */}
@@ -185,10 +185,10 @@ const DrawerComponent = () => {
       </nav>
 {/* Drawer for smaller screens */}
 <div className={`drawer ${open ? 'open' : ''}`}>
-        <button className="close-btn" onClick={toggleDrawer(false)}>
+        <button className="CloseButton close-btn" onClick={toggleDrawer(false)}>
           &times; {/* Unicode for close icon */}
         </button>
-  <div className="drawer-content">
+  <div className="MainDrawer-content">
     <ul>
       {isLoggedIn ? (
         <>

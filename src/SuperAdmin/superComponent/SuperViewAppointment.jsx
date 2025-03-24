@@ -623,13 +623,13 @@ function SuperViewAppointment() {
                       <td>{appointment.bookedClinic}</td>
                       <td>{appointment.appointmentStatus}</td>
                       <td>
-                        <button type="button" className="AdminAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
+                        <button type="button" className="AdminViewAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}
                         </button>
                         
                       </td>
                       <td>
-                      <button className="AdminAppointmentButton" onClick={() => handleComplete(appointment)}>
+                      <button className="AdminViewAppointmentButton" onClick={() => handleComplete(appointment)}>
                           Create Dental Record
                         </button>
                       </td>
@@ -644,7 +644,7 @@ function SuperViewAppointment() {
                             <h2>Edit Appointment</h2>
                             <div className="AdminAppointmentEditButtons">
                               <button 
-                                className="AdminAppointmentButton" 
+                                className="AdminViewAppointmentButton" 
                                 onClick={() => {
                                   setShowDateTimeChange(true);
                                   setShowStatusButtons(false);
@@ -654,7 +654,7 @@ function SuperViewAppointment() {
                                 Edit Appointment Details
                               </button>
                               <button 
-                                className="AdminAppointmentButton" 
+                                className="AdminViewAppointmentButton" 
                                 onClick={() => {
                                   setShowDateTimeChange(false);
                                   setShowStatusButtons(true);
@@ -728,7 +728,7 @@ function SuperViewAppointment() {
                               </div>
                             )}
                             <div className="AdminAppointmentActionButtons">
-                              <button className="AdminAppointmentButton UpdateButton" onClick={handleUpdateAppointment}>
+                              <button className="AdminViewAppointmentButton UpdateButton" onClick={handleUpdateAppointment}>
                                 Update Appointment
                               </button>
                             </div>

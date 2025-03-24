@@ -451,10 +451,10 @@ const TestSchedule = () => {
     <div className="test-schedule">
       {loading && <Spinner />} {/* Show loading spinner */}
       {errorMessage && <div class="alert alert-danger">{errorMessage}</div>} {/* Display error messages */}
-      <button class= "btn btn-primary me-2" onClick={() => setIsGeneratingSlots(true)}>Generate Slots</button>
-      <button class= "btn btn-primary me-2" onClick={() => setIsGeneratingSlots(false)}>Edit Schedule</button>
+      <button class= "GenerateButton btn btn-primary me-2" onClick={() => setIsGeneratingSlots(true)}>Generate Slots</button>
+      <button class= "GenerateButton btn btn-primary me-2" onClick={() => setIsGeneratingSlots(false)}>Edit Schedule</button>
 
-      <h1 class="text-center">{isGeneratingSlots ? 'Generate Slots' : 'Edit Schedule'}</h1>
+      <h1 class=" text-center">{isGeneratingSlots ? 'Generate Slots' : 'Edit Schedule'}</h1>
 
 
       {isGeneratingSlots ? (
@@ -494,7 +494,7 @@ const TestSchedule = () => {
               onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
             />
           </label>
-          <button class= "btn btn-primary me-2" onClick={handleGenerateSlots}>Generate Slots</button>
+          <button class= "GenerateButton btn btn-primary me-2" onClick={handleGenerateSlots}>Generate Slots</button>
 
           {/* Preview of generated slots */}
           {previewSlots.length > 0 && (

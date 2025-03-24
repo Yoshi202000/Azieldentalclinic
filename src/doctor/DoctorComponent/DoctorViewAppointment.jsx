@@ -620,13 +620,13 @@ function DoctorViewAppointment() {
                       <td>{appointment.bookedClinic}</td>
                       <td>{appointment.appointmentStatus}</td>
                       <td>
-                        <button className="AdminAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
+                        <button className="CancelEditButton" onClick={() => handleEditAppointment(appointment)}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}
                         </button>
                         
                       </td>
                       <td>
-                      <button className="AdminAppointmentButton" onClick={() => handleComplete(appointment)}>
+                      <button className="CancelEditButton" onClick={() => handleComplete(appointment)}>
                           Create Dental Record
                         </button>
                       </td>
@@ -641,7 +641,7 @@ function DoctorViewAppointment() {
                             <h2>Edit Appointment</h2>
                             <div className="AdminAppointmentEditButtons">
                               <button 
-                                className="AdminAppointmentButton" 
+                                className="AdminViewAppointmentButton" 
                                 onClick={() => {
                                   setShowDateTimeChange(true);
                                   setShowStatusButtons(false);
@@ -651,7 +651,7 @@ function DoctorViewAppointment() {
                                 Edit Appointment Details
                               </button>
                               <button 
-                                className="AdminAppointmentButton" 
+                                className="AdminViewAppointmentButton" 
                                 onClick={() => {
                                   setShowDateTimeChange(false);
                                   setShowStatusButtons(true);
@@ -693,7 +693,7 @@ function DoctorViewAppointment() {
                               <div className="AdminAppointmentNavigationButtons">
                                 {currentStep > 1 && (
                                   <button 
-                                    type="button" className="btn btn-primary btn-sm"
+                                    type="button" className="nextButton btn btn-primary btn-sm"
                                     onClick={() => setCurrentStep(currentStep - 1)}
                                   >
                                     Previous
@@ -701,7 +701,7 @@ function DoctorViewAppointment() {
                                 )}
                                 {currentStep === 1 && showDateTimeChange && (
                                   <button 
-                                    type="button" className="btn btn-primary btn-sm"
+                                    type="button" className="nextButton btn btn-primary btn-sm"
                                     onClick={() => setCurrentStep(currentStep + 1)}
                                   >
                                     Next
@@ -724,7 +724,7 @@ function DoctorViewAppointment() {
                               </div>
                             )}
                             <div className="AdminAppointmentActionButtons">
-                              <button className="AdminAppointmentButton UpdateButton" onClick={handleUpdateAppointment}>
+                              <button className="AdminViewAppointmentButton UpdateButton" onClick={handleUpdateAppointment}>
                                 Update Appointment
                               </button>
                             </div>
@@ -740,9 +740,9 @@ function DoctorViewAppointment() {
         </div>
       )}
       <div className="pagination">
-        <button onClick={handlePreviousPage} disabled={currentPage === 1}>Previous</button>
+        <button className= "nextButton" onClick={handlePreviousPage} disabled={currentPage === 1}>Previous</button>
         <span>Page {currentPage} of {totalPages}</span>
-        <button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
+        <button className= "nextButton"onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
       </div>
       {showUpdateFee && (
         <UpdateFee 

@@ -55,6 +55,7 @@ body, html {
 
 .navbar-item {
   padding: 0; /* Remove padding, we're using gap */
+  
 }
 
 .navbar-link {
@@ -109,12 +110,17 @@ body, html {
   right: 20px;
   font-size: 28px; /* Increase size */
 }
-
-.drawer-content {
+.CloseButton {
+  width: auto;
+  margin-bottom: 3px;
+}
+.MainDrawer-content {
+  flex: auto;
+  flex-direction: column;
   flex: 1;
-  overflow: visible;}
+  overflow:scroll;}
 
-.drawer-content ul {
+.MainDrawer-content ul {
   list-style-type: none;
   padding: 0;
   margin: 0;
@@ -147,11 +153,11 @@ body, html {
 }
 
 /* Drawer toggle button styles */
-.drawer-toggle {
-  display: none; /* Hide the drawer toggle button by default */
+.MainDrawer-toggle {
+  display: none; 
   position: fixed;
   top: 10px;
-  right: 10px;
+  right: 20px;
   padding: 10px;
   font-size: 24px; /* Larger size for the hamburger icon */
   background-color: #333;
@@ -162,7 +168,7 @@ body, html {
 }
 
 /* Hide the drawer toggle button when the drawer is open */
-.drawer-toggle.hidden {
+.MainDrawer-toggle.hidden {
   display: none;
 }
 
@@ -182,10 +188,11 @@ body, html {
     font-size: 40px;
   }
 
-  .drawer-toggle {
+  .MainDrawer-toggle {
     display: block; /* Show the drawer toggle button on smaller screens */
     top: 20px;
-    right: 20px;
+    right: 2px;
+    padding-left: 750px;
     background-color: transparent;
     color: #0F1035;
     font-size: 110px;
@@ -201,7 +208,7 @@ body, html {
     display: none; /* Hide the navbar on smaller screens */
   }
 
-  .drawer-toggle {
+  .MainDrawer-toggle {
     display: block; /* Show the drawer toggle button on smaller screens */
     top: 20px;
     right: 20px;

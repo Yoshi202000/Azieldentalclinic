@@ -75,7 +75,7 @@
   font-weight: 600;
   padding: 1rem;
   text-align: left;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   white-space: nowrap;
 }
 
@@ -166,8 +166,9 @@
   flex-wrap: wrap;
 }
 
-.AdminAppointmentButton {
-  padding: 10px 15px;
+.AdminViewAppointmentButton {
+  padding: 10px 35px;
+  margin: 20px;
   border: none;
   border-radius: 6px;
   font-size: 14px;
@@ -181,17 +182,17 @@
   gap: 0.5rem;
 }
 
-.AdminAppointmentButton:hover {
+.AdminViewAppointmentButton:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.AdminAppointmentButton.UpdateButton {
+.AdminViewAppointmentButton.UpdateButton {
   background-color: #2196F3;
   color: white;
 }
 
-.AdminAppointmentButton.UpdateButton:hover {
+.AdminViewAppointmentButton.UpdateButton:hover {
   background-color: #1976D2;
 }
 
@@ -199,7 +200,11 @@
   display: flex;
   gap: 8px;
   margin: 15px 0;
+  
   flex-wrap: wrap;
+}
+.AdminAppointmentStatusButtonButton button {
+  
 }
 
 .AdminAppointmentStatusButton {
@@ -218,6 +223,20 @@
 
 .AdminAppointmentStatusButton:hover {
   background-color: #5a6268;
+}
+
+.nextButton {
+  width: 250px;
+  height: 50px;
+}
+
+.CancelEditButton {
+  width: auto;
+  height: 40px;
+  border-radius: 15px;
+  padding-right: 30px;
+  padding-left: 30px;
+
 }
 
 /* Responsive Design */

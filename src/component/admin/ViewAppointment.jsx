@@ -606,13 +606,13 @@ function ViewAppointment() {
                       <td>{appointment.bookedClinic}</td>
                       <td>{appointment.appointmentStatus}</td>
                       <td>
-                        <button className="AdminAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
+                        <button className="AdminViewAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}
                         </button>
                         
                       </td>
                       <td>
-                      <button className="AdminAppointmentButton" onClick={() => handleComplete(appointment)}>
+                      <button className="AdminViewAppointmentButton" onClick={() => handleComplete(appointment)}>
                           Create Dental Record
                         </button>
                       </td>
@@ -628,7 +628,7 @@ function ViewAppointment() {
                             <h2>Edit Appointment</h2>
                             <div className="AdminAppointmentEditButtons">
                               <button 
-                                className="AdminAppointmentButton edit-details-button" 
+                                className="AdminViewAppointmentButton edit-details-button" 
                                 onClick={() => {
                                   setShowDateTimeChange(true);
                                   setShowStatusButtons(false);
@@ -638,7 +638,7 @@ function ViewAppointment() {
                                 Edit Appointment Details
                               </button>
                               <button 
-                                className="AdminAppointmentButton cancel-edit-button" 
+                                className="AdminViewAppointmentButton cancel-edit-button" 
                                 onClick={() => {
                                   setShowDateTimeChange(false);
                                   setShowStatusButtons(true);
@@ -711,7 +711,7 @@ function ViewAppointment() {
                               </div>
                             )}
                             <div className="AdminAppointmentActionButtons">
-                              <button className="AdminAppointmentButton UpdateButton" onClick={handleUpdateAppointment}>
+                              <button className="AdminViewAppointmentButton UpdateButton" onClick={handleUpdateAppointment}>
                                 Update Appointment
                               </button>
                             </div>
