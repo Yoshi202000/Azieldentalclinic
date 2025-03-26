@@ -24,8 +24,6 @@ import SuccessVerify from './pages/SuccessVerify/SuccessVerify.jsx';
 // Test components (for testing purposes)
 import UpdateFee from './test/UpdateFee.jsx';
 import DoctorDashboard from './doctor/DoctorDashboard/DoctorDashboard.jsx';
-import DentalChartForm from './component/DentalChart.jsx';
-import ViewDentalChart from './component/viewDentalChart.jsx';
 import SuperDashboard from './SuperAdmin/superDasboard/SuperDashboard.jsx';
 import ChangePass from './pages/ChangePass/ChangePass.jsx';
 import AppointmentsList from './test/TestTable.jsx';
