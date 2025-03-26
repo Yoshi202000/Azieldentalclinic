@@ -267,7 +267,8 @@ const SuperAdminSales = () => {
         <h3>Filter by Clinic:</h3>
         <button 
           onClick={() => handleClinicFilterChange(nameOne)} 
-          className={selectedClinic === nameOne ? 'active' : ''}
+          type="button" class="btn btn-primary btn-sm"
+          className={`clinic-filter-button ${selectedClinic === nameOne ? 'active' : ''}`}
         >
           {nameOne} ({appointments.filter(app => 
             app.bookedClinic === nameOne || 
@@ -276,7 +277,7 @@ const SuperAdminSales = () => {
         </button>
         <button 
           onClick={() => handleClinicFilterChange(nameTwo)} 
-          className={selectedClinic === nameTwo ? 'active' : ''}
+          className={`clinic-filter-button ${selectedClinic === nameTwo ? 'active' : ''}`}
         >
           {nameTwo} ({appointments.filter(app => 
             app.bookedClinic === nameTwo || 

@@ -139,7 +139,6 @@ const SuperDoctorServices = () => {
           isActive: true
         }));
 
-      // Log the data being sent for debugging AFTER updatedServices is defined
       console.log('Submitting services update:', {
         doctorId: selectedDoctor,
         services: updatedServices,
@@ -151,11 +150,10 @@ const SuperDoctorServices = () => {
         `${import.meta.env.VITE_BACKEND_URL}/doctor-services/${selectedDoctor}`,
         { 
           services: updatedServices,
-          userId: userId,
-          userRole: userRole
+          userRole: 'superAdmin',
+          userId: userId
         },
         {
-          withCredentials: true,
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -258,7 +256,7 @@ const SuperDoctorServices = () => {
                             <div key={service.serviceId} className="service-card">
                               <h5>{service.name}</h5>
                               <p>{service.description}</p>
-                              <p className="service-fee">₱{service.fee?.toLocaleString()}</p>
+                              
                             </div>
                           ))
                         ) : (

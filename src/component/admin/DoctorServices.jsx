@@ -296,7 +296,7 @@ const DoctorServices = () => {
                             <div key={service.serviceId} className="service-card">
                               <h5>{service.name}</h5>
                               <p>{service.description}</p>
-                              <p className="service-fee">₱{service.fee?.toLocaleString()}</p>
+                              
                             </div>
                           ))
                         ) : (

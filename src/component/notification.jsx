@@ -11,6 +11,7 @@ function Notification() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const notificationRef = useRef(null);
+  const [deletedNotifications, setDeletedNotifications] = useState(new Set());
 
   // Fetch notifications from the server
   const fetchNotifications = useCallback(async () => {
@@ -41,19 +42,21 @@ function Notification() {
       // Fetch notifications based on user role
       let notificationsResponse;
       if (userData.user.role.toLowerCase() === 'doctor' || 'admin') {
-        notificationsResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin-notifications`, {          headers: { Authorization: `Bearer ${token}` }
+        notificationsResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin-notifications`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
-        
       } else {
         notificationsResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/patient-notifications`, {
           headers: { Authorization: `Bearer ${token}` }
         });
       }
 
-      let roleSpecificNotifications = notificationsResponse.data.map(n => ({
-        ...n,
-        type: userData.user.role.toLowerCase()
-      }));
+      let roleSpecificNotifications = notificationsResponse.data
+        .filter(n => !deletedNotifications.has(n._id)) // Filter out deleted notifications
+        .map(n => ({
+          ...n,
+          type: userData.user.role.toLowerCase()
+        }));
 
       // Filter patient notifications by user email
       if (userData.user.role.toLowerCase() !== 'doctor' || 'admin') {
@@ -81,7 +84,7 @@ function Notification() {
         navigate('/login');
       }
     }
-  }, [navigate]);
+  }, [navigate, deletedNotifications]);
 
   // Toggle dropdown visibility and fetch notifications if opened
   const toggleDropdown = () => {
@@ -142,16 +145,40 @@ function Notification() {
   // Delete a notification
   const deleteNotification = async (notificationId) => {
     try {
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/delete-notification/${notificationId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token found');
+        return;
+      }
 
-      // Update the local state to remove the notification
-      setNotifications(prevNotifications =>
-        prevNotifications.filter(notification => notification._id !== notificationId)
+      console.log('Attempting to delete notification:', notificationId);
+      const response = await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/api/delete-notification/${notificationId}`,
+        {
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
       );
+
+      if (response.status === 200) {
+        console.log('Notification deleted successfully');
+        // Add the notification ID to the deleted set
+        setDeletedNotifications(prev => new Set([...prev, notificationId]));
+        // Update the local state to remove the notification
+        setNotifications(prevNotifications =>
+          prevNotifications.filter(notification => notification._id !== notificationId)
+        );
+      }
     } catch (error) {
       console.error('Error deleting notification:', error);
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+        alert('Failed to delete notification: ' + error.response.data.message);
+      } else {
+        alert('Failed to delete notification. Please try again.');
+      }
     }
   };
 

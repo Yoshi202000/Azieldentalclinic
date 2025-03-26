@@ -26,7 +26,8 @@ function Chat() {
     
     const fetchLoggedInUser = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {          method: 'GET',
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {          
+          method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -60,9 +61,9 @@ function Chat() {
         const data = await response.json();
 
         if (loggedInUser.role === 'patient') {
-          const adminUsers = data.filter(user => user.role === 'admin');
+          const adminUsers = data.filter(user => user.role === 'doctor');
           setUsers(adminUsers);
-        } else if (loggedInUser.role === 'admin') {
+        } else if (loggedInUser.role === 'doctor') {
           const patientUsers = data.filter(user => user.role === 'patient');
           setUsers(patientUsers);
         }
@@ -81,7 +82,8 @@ function Chat() {
       if (!token) return;
 
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages`, {          method: 'GET',
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages`, {          
+          method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
           },

@@ -101,7 +101,7 @@ router.put('/doctor-services/:doctorId', authenticateUser, async (req, res) => {
     }
 
     // Verify if the user is an admin or the doctor themselves
-    if (authUser.role !== 'admin' && authUser._id.toString() !== doctorId) {
+    if (authUser.role !== 'admin' && authUser.role !== 'superAdmin' && authUser._id.toString() !== doctorId) {
       return res.status(403).json({ message: 'Unauthorized to update services' });
     }
 

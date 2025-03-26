@@ -62,6 +62,7 @@ const allowedOrigins = [
     'https://localhost:5173',
     'https://213.190.4.136:5173',
     'http://localhost:5173',
+    'http://localhost:5174',
     'http://localhost:5000', // Allow requests from local test backend
 ];
 

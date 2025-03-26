@@ -278,11 +278,15 @@ const AccountSettings = () => {
       )}
 
       
-      
+{isDoctorRole && (
+        <>
       {doctorImagePreview && <img src={doctorImagePreview} alt="Doctor" style={{ maxWidth: '200px', marginTop: '10px' }} />}
 
       <button onClick={handleImageUpload}>Upload Image</button>
+      </>
+    )}
     </div>
+    
   );
 };
 

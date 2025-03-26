@@ -89,7 +89,7 @@
 
 .ProfileAppointmentContainer.expanded {
     padding-bottom: 20px;
-    height: 3000px;
+    height: auto;
 }
 
 .ProfileAppointmentUserInfo {
