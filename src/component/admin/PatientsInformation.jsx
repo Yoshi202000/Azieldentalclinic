@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import '../../admin/dashboard/Dashboard.css';
 import AppointmentStepOne from '../appointmentPage/AppointmentStepOne.jsx';
 import TestStepTwo from '../../test/TestStepTwo';
-import ViewDentalChart from '../viewDentalChart.jsx';
+import ViewDentalChart from '../ViewDentalChart.jsx';
 import { generateAvailableDates } from '../../utils/appDate';
 import './ViewAppointment.css'
 import axios from 'axios';
