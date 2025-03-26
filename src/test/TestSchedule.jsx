@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
-import './testSchedule.css';
+import './TestSchedule.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import Spinner from './Spinner'; // Assume you have a Spinner component for loading indication
 
