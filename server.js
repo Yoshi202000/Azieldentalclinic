@@ -134,8 +134,7 @@ app.use('/', MonthlyReminder);
 
 //     ws.on('close', () => {
 //         console.log('Client disconnected');
-//     });
-// });
+//     }); });
 
 
 const PORT = process.env.PORT || 5000; // Change from 443 to 5000
