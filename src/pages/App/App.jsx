@@ -38,11 +38,11 @@ function App() {
         <div className="app-card-container">
           {services.map((service, index) => (
             <Card
-              key={index}
-              name={service.name}
-              description={service.description}
-              image={service.image ? `${import.meta.env.VITE_API_BASE_URL}${service.image}` : null}
-            />
+            key={index}
+            name={service.name}
+            description={service.description}
+            image={service.image || null}
+          />          
           ))}
         </div>
 
