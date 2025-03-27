@@ -41,7 +41,7 @@ function App() {
               key={index}
               name={service.name}
               description={service.description}
-              image={service.image ? `${import.meta.env.VITE_BACKEND_URL}${service.image}` : null}
+              image={service.image ? `${import.meta.env.VITE_API_BASE_URL}${service.image}` : null}
             />
           ))}
         </div>
