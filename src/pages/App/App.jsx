@@ -14,7 +14,7 @@ function App() {
 
   useEffect(() => {
     // Fetch the services data from the backend when the component mounts
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`)
+    axios.get(`api/clinic`)
       .then(response => {
         if (response.data && response.data.services) {
           console.log('Fetched Services:', response.data.services);
