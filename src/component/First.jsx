@@ -18,9 +18,11 @@ const First = () => {
 
     const fetchClinicData = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
+        console.log('Fetching clinic data from:', `${import.meta.env.VITE_API_BASE_URL}/clinic`);
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/clinic`);
+        console.log('Clinic data response:', response.data);
+        
         if (response.data) {
-          console.log('Clinic data received:', response.data);
           setWelcomeMessage(response.data.welcomeMessage || 'Welcome to Our Dental Clinic');
         } else {
           setWelcomeMessage('Welcome to Our Dental Clinic');

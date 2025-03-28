@@ -19,16 +19,20 @@ function App() {
       try {
         console.log('Fetching from:', `${import.meta.env.VITE_API_BASE_URL}/clinic`);
         const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/clinic`);
-        if (response.data && response.data.services) {
+        console.log('Raw response:', response.data);
+        
+        if (response.data && Array.isArray(response.data.services)) {
           console.log('Fetched Services:', response.data.services);
           setServices(response.data.services);
         } else {
           console.error('Invalid response format:', response.data);
           setError('Invalid data format received from server');
+          setServices([]); // Set empty array to prevent mapping error
         }
       } catch (error) {
         console.error('Error fetching services data:', error);
         setError('Failed to load services. Please try again later.');
+        setServices([]); // Set empty array to prevent mapping error
       } finally {
         setLoading(false);
       }
@@ -50,14 +54,18 @@ function App() {
       <div className="main-content">
         <First />
         <div className="app-card-container">
-          {Array.isArray(services) && services.map((service, index) => (
-            <Card
-              key={index}
-              name={service.name}
-              description={service.description}
-              image={service.image ? `${import.meta.env.VITE_API_BASE_URL}${service.image}` : null}
-            />
-          ))}
+          {services && services.length > 0 ? (
+            services.map((service, index) => (
+              <Card
+                key={index}
+                name={service.name}
+                description={service.description}
+                image={service.image ? `${import.meta.env.VITE_API_BASE_URL}${service.image}` : null}
+              />
+            ))
+          ) : (
+            <div>No services available</div>
+          )}
         </div>
 
         {/* Doctors component */}
