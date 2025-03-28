@@ -4,37 +4,36 @@ import '../styles/First.css';
 import dentist from '../uploads/mainImg.png';
 import axios from 'axios';
 
-
 const First = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
-
   const [welcomeMessage, setWelcomeMessage] = useState('');
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Check if the user is logged in by checking for a token in localStorage
+    // Check if the user is logged in
     const token = localStorage.getItem('token');
-    if (token) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
+    setIsLoggedIn(!!token);
 
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`)
-    .then(response => {
-      if (response.data) {
-        const {
-          welcomeMessage,
-        } = response.data;
-        console.log('Clinic data received:', response.data); 
-        setWelcomeMessage(welcomeMessage);
+    const fetchClinicData = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
+        if (response.data) {
+          console.log('Clinic data received:', response.data);
+          setWelcomeMessage(response.data.welcomeMessage || 'Welcome to Our Dental Clinic');
+        } else {
+          setWelcomeMessage('Welcome to Our Dental Clinic');
+        }
+      } catch (error) {
+        console.error('Error fetching clinic data:', error);
+        setWelcomeMessage('Welcome to Our Dental Clinic');
+      } finally {
+        setLoading(false);
       }
-    })
-    .catch(error => {
-      console.error('Error fetching clinic data:', error);
-    });
+    };
 
+    fetchClinicData();
   }, []);
 
   const handleAppointmentClick = () => {
@@ -45,10 +44,12 @@ const First = () => {
     }
   };
 
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="error-message">{error}</div>;
+
   return (
     <div className="first-container">
       <div className="background-overlay"></div>
-
       <div className="content">
         <div className="text-section">
           <h1>{welcomeMessage}</h1>
@@ -61,7 +62,6 @@ const First = () => {
         <div className="image-section">
           <img src={dentist} alt="Dentist Team" className="dentist-image" />
         </div>
-        
       </div>
     </div>
   );

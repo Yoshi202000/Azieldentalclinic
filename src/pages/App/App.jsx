@@ -11,20 +11,34 @@ import HomeFeedback from '../../component/homeFeedback';
 
 function App() {
   const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch the services data from the backend when the component mounts
-    axios.get(`${import.meta.env.VITE_API_BASE_URL}/clinic`)
-      .then(response => {
+    const fetchServices = async () => {
+      try {
+        console.log('Fetching from:', `${import.meta.env.VITE_BACKEND_URL}/clinic`);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
         if (response.data && response.data.services) {
           console.log('Fetched Services:', response.data.services);
           setServices(response.data.services);
+        } else {
+          console.error('Invalid response format:', response.data);
+          setError('Invalid data format received from server');
         }
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error fetching services data:', error);
-      });
+        setError('Failed to load services. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
   }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="error-message">{error}</div>;
 
   return (
     <>
@@ -36,13 +50,13 @@ function App() {
       <div className="main-content">
         <First />
         <div className="app-card-container">
-          {services.map((service, index) => (
+          {Array.isArray(services) && services.map((service, index) => (
             <Card
-            key={index}
-            name={service.name}
-            description={service.description}
-            image={service.image || null}
-          />          
+              key={index}
+              name={service.name}
+              description={service.description}
+              image={service.image ? `${import.meta.env.VITE_BACKEND_URL}${service.image}` : null}
+            />
           ))}
         </div>
 
