@@ -21,7 +21,7 @@ const First = () => {
       setIsLoggedIn(false);
     }
 
-    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/clinic`)
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`)
     .then(response => {
       if (response.data) {
         const {
