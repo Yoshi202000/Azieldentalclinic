@@ -4,37 +4,31 @@ import '../styles/First.css';
 import dentist from '../uploads/mainImg.png';
 import axios from 'axios';
 
-
 const First = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
-
-  const [welcomeMessage, setWelcomeMessage] = useState('');
-
+  const [welcomeMessage, setWelcomeMessage] = useState('Welcome to Our Dental Clinic');
 
   useEffect(() => {
-    // Check if the user is logged in by checking for a token in localStorage
     const token = localStorage.getItem('token');
-    if (token) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
+    setIsLoggedIn(!!token);
 
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`)
-    .then(response => {
-      if (response.data) {
-        const {
-          welcomeMessage,
-        } = response.data;
-        console.log('Clinic data received:', response.data); 
-        setWelcomeMessage(welcomeMessage);
+    const fetchClinicData = async () => {
+      try {
+        console.log('Fetching clinic data from:', `${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
+        console.log('Clinic data response:', response.data);
+        
+        if (response.data && response.data.welcomeMessage) {
+          setWelcomeMessage(response.data.welcomeMessage);
+        }
+      } catch (error) {
+        console.error('Error fetching clinic data:', error);
+        // Keep the default welcome message if there's an error
       }
-    })
-    .catch(error => {
-      console.error('Error fetching clinic data:', error);
-    });
+    };
 
+    fetchClinicData();
   }, []);
 
   const handleAppointmentClick = () => {
@@ -48,7 +42,6 @@ const First = () => {
   return (
     <div className="first-container">
       <div className="background-overlay"></div>
-
       <div className="content">
         <div className="text-section">
           <h1>{welcomeMessage}</h1>
@@ -61,7 +54,6 @@ const First = () => {
         <div className="image-section">
           <img src={dentist} alt="Dentist Team" className="dentist-image" />
         </div>
-        
       </div>
     </div>
   );
