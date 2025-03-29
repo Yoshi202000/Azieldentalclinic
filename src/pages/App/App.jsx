@@ -17,8 +17,8 @@ function App() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        console.log('Fetching from:', `${import.meta.env.VITE_BACKEND_URL}/clinic`);
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
+        console.log('Fetching from:', `${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
         console.log('Raw response:', response.data);
         
         if (response.data && Array.isArray(response.data.services)) {
