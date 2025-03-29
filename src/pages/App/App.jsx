@@ -11,20 +11,38 @@ import HomeFeedback from '../../component/homeFeedback';
 
 function App() {
   const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch the services data from the backend when the component mounts
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`)
-      .then(response => {
-        if (response.data && response.data.services) {
+    const fetchServices = async () => {
+      try {
+        console.log('Fetching from:', `${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
+        console.log('Raw response:', response.data);
+        
+        if (response.data && Array.isArray(response.data.services)) {
           console.log('Fetched Services:', response.data.services);
           setServices(response.data.services);
+        } else {
+          console.error('Invalid response format:', response.data);
+          setError('Invalid data format received from server');
+          setServices([]);
         }
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error fetching services data:', error);
-      });
+        setError('Failed to load services. Please try again later.');
+        setServices([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
   }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="error-message">{error}</div>;
 
   return (
     <>
@@ -36,14 +54,18 @@ function App() {
       <div className="main-content">
         <First />
         <div className="app-card-container">
-          {services.map((service, index) => (
-            <Card
-              key={index}
-              name={service.name}
-              description={service.description}
-              image={service.image ? `${import.meta.env.VITE_BACKEND_URL}${service.image}` : null}
-            />
-          ))}
+          {services && services.length > 0 ? (
+            services.map((service, index) => (
+              <Card
+                key={index}
+                name={service.name}
+                description={service.description}
+                image={service.image ? `${import.meta.env.VITE_BACKEND_URL}${service.image}` : null}
+              />
+            ))
+          ) : (
+            <div>No services available</div>
+          )}
         </div>
 
         {/* Doctors component */}

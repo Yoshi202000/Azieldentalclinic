@@ -11,8 +11,8 @@ const Doctors = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        console.log('Fetching doctors from:', `${import.meta.env.VITE_API_BASE_URL}/api/doctor-info`);
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/doctor-info`);
+        console.log('Fetching doctors from:', `${import.meta.env.VITE_BACKEND_URL}/api/doctor-info`);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/doctor-info`);
         console.log('Doctors response:', response.data);
         
         if (response.data && Array.isArray(response.data.doctors)) {
@@ -45,7 +45,7 @@ const Doctors = () => {
           doctors.map((doctor) => (
             <div className="doctor-card" key={doctor._id}>
               <img 
-                src={doctor.doctorImage ? `${import.meta.env.VITE_API_BASE_URL}${doctor.doctorImage}` : doctor1} 
+                src={doctor.doctorImage ? `${import.meta.env.VITE_BACKEND_URL}${doctor.doctorImage}` : doctor1} 
                 className="doctor-image"
                 alt={`Dr. ${doctor.lastName}`}
               />
