@@ -50,7 +50,7 @@ const DrawerComponent = () => {
   const handleLogout = async () => {
     try {
       // Call the backend logout endpoint to clear the server-side cookie
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/logout`, {}, { withCredentials: true });
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/logout`, {}, { withCredentials: true });
   
       // Clear client-side storage
       localStorage.removeItem('token'); // Remove the token from localStorage
