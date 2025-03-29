@@ -10,7 +10,7 @@ const HomeFeedback = () => {
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/feedback/view`);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/feedback/view`);
         setFeedbacks(response.data.slice(0, 3)); // Get only the 3 most recent feedbacks
         setLoading(false);
       } catch (err) {
