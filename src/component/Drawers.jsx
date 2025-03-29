@@ -49,21 +49,31 @@ const DrawerComponent = () => {
 
   const handleLogout = async () => {
     try {
-      // Call the backend logout endpoint to clear the server-side cookie
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/logout`, {}, { withCredentials: true });
+      console.log('Attempting to logout...');
+      // Call the backend logout endpoint with the correct URL
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/logout`, {}, { 
+        withCredentials: true 
+      });
+      console.log('Logout successful');
   
       // Clear client-side storage
-      localStorage.removeItem('token'); // Remove the token from localStorage
-      sessionStorage.clear();           // Clear all session storage
+      localStorage.removeItem('token');
+      sessionStorage.clear();
   
       // Update the state to reflect that the user is logged out
       setIsLoggedIn(false);
-      setUserRole(null); // Reset user role
+      setUserRole(null);
   
       // Redirect to login page
       window.location.href = '/login';
     } catch (error) {
       console.error('Error logging out:', error);
+      // Even if the server request fails, we should still clear local storage and redirect
+      localStorage.removeItem('token');
+      sessionStorage.clear();
+      setIsLoggedIn(false);
+      setUserRole(null);
+      window.location.href = '/login';
     }
   };
 
