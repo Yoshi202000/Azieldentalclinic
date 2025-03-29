@@ -64,7 +64,7 @@ const Login = () => {
     
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/login`,
+        `${import.meta.env.VITE_BACKEND_URL}/login`,
         { email, password },
         {
           withCredentials: true, // Include cookies in the request if necessary

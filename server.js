@@ -89,7 +89,7 @@ mongoose.connect(process.env.MONGODB_URI)
 app.use('/api', signupRoutes);
 app.use('/api', loginRoutes);
 app.use('/api', verifyTokenRoutes);
-app.use('/api',appointmentRoutes);
+app.use('/api', appointmentRoutes);
 app.use('/api',logoutRoutes); // Add logout route
 app.use('/api',ForgotRoutes);
 app.use('/api',userInformationRoutes);
