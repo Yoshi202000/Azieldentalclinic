@@ -11,8 +11,8 @@ const Doctors = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        console.log('Fetching doctors from:', `${import.meta.env.VITE_BACKEND_URL}/api/doctor-info`);
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/doctor-info`);
+        console.log('Fetching doctors from:', `${import.meta.env.VITE_BACKEND_URL}/doctor-info`);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/doctor-info`);
         console.log('Doctors response:', response.data);
         
         if (response.data && Array.isArray(response.data.doctors)) {
