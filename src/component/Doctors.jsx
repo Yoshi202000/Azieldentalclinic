@@ -9,7 +9,7 @@ const Doctors = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/doctor-info`);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/doctor-info`);
         if (response.status === 200) {
           setDoctors(response.data.doctors);
         } else {
