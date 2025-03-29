@@ -88,12 +88,12 @@ mongoose.connect(process.env.MONGODB_URI)
 // Routes
 app.use('/api', signupRoutes);
 app.use('/api', loginRoutes);
-app.use('/', verifyTokenRoutes);
-app.use(appointmentRoutes);
-app.use(logoutRoutes); // Add logout route
-app.use(ForgotRoutes);
-app.use(userInformationRoutes);
-app.use(ViewAppointmentRoutes);
+app.use('/api', verifyTokenRoutes);
+app.use('/api',appointmentRoutes);
+app.use('/api',logoutRoutes); // Add logout route
+app.use('/api',ForgotRoutes);
+app.use('/api',userInformationRoutes);
+app.use('/api',ViewAppointmentRoutes);
 app.use('/api', updateAccountRoutes); // Mounting accountRoutes at the '/api' base path
 app.use('/api', updateAppointmentRoutes);
 app.use('/api/feedback', feedbackRoutes); // Add this line
