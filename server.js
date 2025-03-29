@@ -106,7 +106,7 @@ app.use('/api', healthRecordRoutes);
 app.use('/api', doctorSchedule);
 app.use('/', doctorsDescriptionRoutes);  // Mount at root level
 app.use('/appointmentFee', appointmentFee);
-app.use('/', clinicRoutes);
+app.use('/api', clinicRoutes);
 app.use('/', DentalChartForm);
 
 // test route for monthly reminder

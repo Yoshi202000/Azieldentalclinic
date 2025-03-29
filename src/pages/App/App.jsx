@@ -14,7 +14,7 @@ function App() {
 
   useEffect(() => {
     // Fetch the services data from the backend when the component mounts
-    axios.get(`${import.meta.env.VITE_API_BASE_URL}/clinic`)
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`)
       .then(response => {
         if (response.data && response.data.services) {
           console.log('Fetched Services:', response.data.services);
@@ -41,7 +41,7 @@ function App() {
               key={index}
               name={service.name}
               description={service.description}
-              image={service.image ? `${import.meta.env.VITE_API_BASE_URL}${service.image}` : null}
+              image={service.image ? `${import.meta.env.VITE_BACKEND_URL}${service.image}` : null}
             />
           ))}
         </div>
