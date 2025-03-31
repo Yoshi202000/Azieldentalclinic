@@ -69,7 +69,7 @@ const DentalChartForm = ({ initialFirstName = '', initialLastName = '', initialE
     
     try {
       const token = localStorage.getItem('token'); // Retrieve the token from local storage
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/add-dental-chart`, {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/add-dental-chart`, {
         ...formData,
         type: patientType, // Sending type as "adult" or "child"
       }, {

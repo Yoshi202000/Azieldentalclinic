@@ -13,6 +13,7 @@ function App() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dentalChart, setDentalChart] = useState(null);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -40,6 +41,25 @@ function App() {
 
     fetchServices();
   }, []);
+
+  const fetchDentalChart = async () => {
+    try {
+      console.log('Fetching dental chart...');
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/dental-chart`, {
+        withCredentials: true,
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      console.log('Dental chart response:', response.data);
+      setDentalChart(response.data);
+    } catch (error) {
+      console.error('Error fetching dental chart:', error);
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+      }
+    }
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="error-message">{error}</div>;
