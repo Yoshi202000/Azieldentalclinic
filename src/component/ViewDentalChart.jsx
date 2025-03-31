@@ -24,7 +24,7 @@ const ViewDentalChart = ({ email }) => {
         setSelectedDate('');
 
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/get-dental-chart/${emailInput}`, {
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/get-dental-chart/${emailInput}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
 
