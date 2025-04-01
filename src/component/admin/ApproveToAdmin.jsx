@@ -90,7 +90,19 @@ const ApproveToAdmin = () => {
     }
   };
 
+  const handleAction = (userId, user) => {
+    setActionUserId(userId);
+    setSelectedUser(user);
+    setSelectedRole(user.role);
+    setShowPasswordPopup(true);
+  };
+
   const handleRoleChange = async () => {
+    if (!selectedRole) {
+      alert('Please select a role');
+      return;
+    }
+
     const isVerified = await verifyUserPassword();
     if (!isVerified) return;
 
@@ -107,27 +119,24 @@ const ApproveToAdmin = () => {
       });
 
       if (response.ok) {
+        const updatedUser = await response.json();
         setUsers((prevUsers) =>
-          prevUsers.map((user) =>
-            user._id === actionUserId ? { ...user, role: selectedRole } : user
+          prevUsers.map((u) =>
+            u._id === actionUserId ? { ...u, role: selectedRole, clinic: updatedUser.user.clinic } : u
           )
         );
         setPassword('');
         setShowPasswordPopup(false);
         alert('User role updated successfully');
       } else {
-        console.error('Failed to update user role');
-        alert('Failed to update user role');
+        const errorData = await response.json();
+        console.error('Failed to update user role:', errorData);
+        alert(errorData.error || 'Failed to update user role');
       }
     } catch (err) {
       console.error('Error updating user role:', err);
       alert('Error updating user role');
     }
-  };
-
-  const handleAction = (userId) => {
-    setActionUserId(userId);
-    setShowPasswordPopup(true);
   };
 
   const filteredUsers = users.filter(
@@ -154,15 +163,25 @@ const ApproveToAdmin = () => {
           {showPasswordPopup && selectedUser && (
             <div className="PasswordPopup styled-popup">
               <h3>Manage Role for {selectedUser.firstName} {selectedUser.lastName}</h3>
-              <select
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
-                className="styled-select"
-              >
-                <option value="patient">Patient</option>
-                <option value="admin">Admin</option>
-                <option value="doctor">Doctor</option>
-              </select>
+              <p>Current Role: {selectedUser.role}</p>
+              <p>Current Clinic: {selectedUser.clinic}</p>
+              <div className="role-select-container">
+                <label>Select New Role:</label>
+                <select
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value)}
+                  className="styled-select"
+                >
+                  <option value="">Select a role</option>
+                  <option value="patient">Patient</option>
+                  <option value="admin">Admin</option>
+                  <option value="doctor">Doctor</option>
+                </select>
+              </div>
+              <p className="clinic-info">
+                Note: {selectedRole === 'patient' ? 'Patient will be assigned to both clinics' : 
+                      `User will be assigned to ${user.clinic} clinic`}
+              </p>
               <p>Please enter your password to confirm the role change:</p>
               <input
                 type="password"
@@ -172,8 +191,23 @@ const ApproveToAdmin = () => {
                 className="PasswordInput styled-input"
               />
               <div className="ButtonContainer">
-                <button onClick={handleRoleChange} className="PIButton">Confirm Role Change</button>
-                <button onClick={() => setShowPasswordPopup(false)} className="CancelButton">Cancel</button>
+                <button 
+                  onClick={handleRoleChange} 
+                  className="PIButton"
+                  disabled={!selectedRole || !password}
+                >
+                  Confirm Role Change
+                </button>
+                <button 
+                  onClick={() => {
+                    setShowPasswordPopup(false);
+                    setPassword('');
+                    setSelectedRole('');
+                  }} 
+                  className="CancelButton"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           )}
@@ -202,7 +236,7 @@ const ApproveToAdmin = () => {
                     <td>
                       <button 
                         className="PIButton" 
-                        onClick={() => handleAction(user._id)}
+                        onClick={() => handleAction(user._id, user)}
                       >
                         Manage Role
                       </button>

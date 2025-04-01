@@ -3,10 +3,10 @@ import User from '../models/User.js'; // Assuming you have a User model for Mong
 
 const router = express.Router();
 
-// Route to update user role to admin and set clinic to the same as logged-in user's clinic
+// Route to update user role
 router.put('/updateUserRole/:userId', async (req, res) => {
   const { userId } = req.params;
-  const loggedInUserClinic = req.body.loggedInUserClinic;
+  const { newRole, loggedInUserClinic } = req.body;
 
   try {
     // Find the user by ID
@@ -15,14 +15,30 @@ router.put('/updateUserRole/:userId', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Update the user's role to 'admin' and set the clinic to the same as logged-in user's clinic
-    user.role = 'admin';
-    user.clinic = loggedInUserClinic;
+    // Validate the new role
+    if (!['admin', 'doctor', 'patient'].includes(newRole)) {
+      return res.status(400).json({ error: 'Invalid role specified' });
+    }
+
+    // Update the user's role and clinic based on the new role
+    user.role = newRole;
+    
+    // Set clinic based on role
+    if (newRole === 'admin') {
+      user.clinic = loggedInUserClinic; // Admin gets the same clinic as the logged-in user
+    } else if (newRole === 'doctor') {
+      user.clinic = loggedInUserClinic; // Doctor gets the same clinic as the logged-in user
+    } else {
+      user.clinic = 'both'; // Patient gets 'both' clinics
+    }
 
     // Save the updated user
     await user.save();
 
-    res.status(200).json({ message: 'User role updated to admin successfully', user });
+    res.status(200).json({ 
+      message: `User role updated to ${newRole} successfully`, 
+      user 
+    });
   } catch (error) {
     console.error('Error updating user role:', error);
     res.status(500).json({ error: 'Internal server error' });
