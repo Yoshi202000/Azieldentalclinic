@@ -53,7 +53,7 @@ const ViewAdminDoctor = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/UserInformation`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/UserInformation`,
         {
           headers: {
             Authorization: `Bearer ${token}`

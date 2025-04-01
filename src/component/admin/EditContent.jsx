@@ -66,7 +66,7 @@ const EditContent = () => {
   useEffect(() => {
     // Fetch existing clinic data from the backend
     axios
-      .get(`${import.meta.env.VITE_BACKEND_URL}/clinic`)
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`)
       .then(response => {
         if (response.data) {
           const {
@@ -224,7 +224,7 @@ const EditContent = () => {
 
       // Update the endpoint URL to match your backend route structure
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/clinic/service-image/${services[index]._id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/clinic/service-image/${services[index]._id}`,
         formData,
         {
           headers: {
@@ -352,10 +352,10 @@ const EditContent = () => {
     }
     // Handle both old and new format service image paths
     if (imagePath.startsWith('Service')) {
-      return `${import.meta.env.VITE_BACKEND_URL}/uploads/${imagePath}`;
+      return `${import.meta.env.VITE_BACKEND_URL}/api/uploads/${imagePath}`;
     }
     // For any other case, assume it's a relative path and construct the URL
-    return `${import.meta.env.VITE_BACKEND_URL}/uploads/${imagePath}`;
+    return `${import.meta.env.VITE_BACKEND_URL}/api/uploads/${imagePath}`;
   };
 
   // Update handleSubmit to properly handle image uploads

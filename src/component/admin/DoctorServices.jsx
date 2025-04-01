@@ -43,8 +43,8 @@ const DoctorServices = () => {
       
       // Different endpoints based on user role
       const doctorsEndpoint = userRole === 'admin' 
-        ? `${import.meta.env.VITE_BACKEND_URL}/doctor-info`
-        : `${import.meta.env.VITE_BACKEND_URL}/doctor-info/${userId}`;
+        ? `${import.meta.env.VITE_BACKEND_URL}/api/doctor-info`
+        : `${import.meta.env.VITE_BACKEND_URL}/api/doctor-info/${userId}`;
 
       const [doctorsResponse, clinicResponse] = await Promise.all([
         axios.get(doctorsEndpoint, {
@@ -52,7 +52,7 @@ const DoctorServices = () => {
             'Authorization': `Bearer ${token}`
           }
         }),
-        axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`, {
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -100,7 +100,7 @@ const DoctorServices = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/doctor-services/${doctorId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/doctor-services/${doctorId}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -170,7 +170,7 @@ const DoctorServices = () => {
       });
 
       const response = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/doctor-services/${selectedDoctor}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/doctor-services/${selectedDoctor}`,
         { 
           services: updatedServices,
           userId: userId,

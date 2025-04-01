@@ -69,7 +69,7 @@ const AdminEditSchedule = () => {
         }
 
         // Then fetch doctors filtered by clinic
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/doctor-info`);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/doctor-info`);
         if (response.status === 200) {
           // Filter doctors by clinic
           const filteredDoctors = response.data.doctors.filter(doctor => 

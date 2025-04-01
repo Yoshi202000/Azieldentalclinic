@@ -61,7 +61,7 @@ const CompletedAppointment = () => {
   // Function to fetch appointments from the backend
   const fetchAppointments = async (token, clinic) => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment`, {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/ViewAppointment`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
