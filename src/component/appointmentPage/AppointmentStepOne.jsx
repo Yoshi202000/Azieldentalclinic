@@ -169,8 +169,11 @@ const AppointmentStepOne = ({
             key={doctor._id}
             name={`Dr. ${doctor.firstName} ${doctor.lastName}`}
             description={doctor.specialization}
-            image={doctor.doctorImage ? `${import.meta.env.VITE_BACKEND_URL}${doctor.doctorImage}` : null}
-            isSelected={formData.selectedDoctor === doctor.email}
+            image={
+              doctor.doctorImage
+                ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api/${doctor.doctorImage.replace(/^\/+/, '')}`
+                : null
+            }            isSelected={formData.selectedDoctor === doctor.email}
             onClick={() => {
               if (formData.bookedClinic) {
                 handleInputChange({ target: { name: "selectedDoctor", value: doctor.email } });
@@ -194,8 +197,11 @@ const AppointmentStepOne = ({
                 <Card
                   name={service.name}
                   description={service.description}
-                  image={service.image ? `${import.meta.env.VITE_BACKEND_URL}${service.image}` : null}
-                  isSelected={selectedServices.includes(service.name)}
+                  image={
+                    service.image
+                      ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api/${service.image.replace(/^\/+/, '')}`
+                      : null
+                  }                                    isSelected={selectedServices.includes(service.name)}
                   onClick={() => handleServiceSelect(service.name)}
                   fee={service.fee}
                 />
