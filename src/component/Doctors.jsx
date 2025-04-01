@@ -45,11 +45,12 @@ const Doctors = () => {
           doctors.map((doctor) => (
             <div className="doctor-card" key={doctor._id}>
               <img 
-                src={
-                  doctor.doctorImage
-                    ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/${doctor.doctorImage.replace(/^\//, '')}`
-                    : doctor1
-                }                className="doctor-image"
+              src={
+                doctor.doctorImage
+                  ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api/${doctor.doctorImage.replace(/^\/+/, '')}`
+                  : doctor1
+              }
+                className="doctor-image"
                 alt={`Dr. ${doctor.lastName}`}
               />
               <div className="doctor-info">
