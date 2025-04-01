@@ -92,7 +92,7 @@ const DoctorPatientsInformation = () => {
   // Function to fetch users from the backend
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/UserInformation`); // Ensure the correct URL
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/UserInformation`); // Ensure the correct URL
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -107,7 +107,7 @@ const DoctorPatientsInformation = () => {
   // New function to fetch appointments
   const fetchAppointments = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment`);
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/ViewAppointment`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -306,7 +306,7 @@ const DoctorPatientsInformation = () => {
 
   const fetchServicesData = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
       if (response.data) {
         const { 
           nameOne, 
@@ -356,7 +356,7 @@ const DoctorPatientsInformation = () => {
         await fetchServicesData();
 
         // Fetch doctors
-        const doctorsResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/doctor-info`);
+        const doctorsResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/doctor-info`);
         if (!doctorsResponse.ok) {
           throw new Error('Failed to fetch doctors');
         }
