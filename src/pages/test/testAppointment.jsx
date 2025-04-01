@@ -9,7 +9,7 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
 
   React.useEffect(() => {
     axios
-    .get(`${import.meta.env.VITE_BACKEND_URL}/verify-token`, {
+    .get(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
       withCredentials: true, // Include cookies with the request
       })
       .then((response) => {

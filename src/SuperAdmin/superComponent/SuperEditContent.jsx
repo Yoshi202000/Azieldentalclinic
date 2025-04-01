@@ -28,7 +28,7 @@ const SuperEditContent = () => {
   useEffect(() => {
     // Fetch existing clinic data from the backend
     axios
-      .get(`${import.meta.env.VITE_BACKEND_URL}/clinic`)
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`)
       .then(response => {
         if (response.data) {
           const {
@@ -94,7 +94,7 @@ const SuperEditContent = () => {
     setServices(prev => prev.filter((_, i) => i !== index));
 
     if (serviceId) {
-      axios.delete(`${import.meta.env.VITE_BACKEND_URL}/clinic/service/${serviceId}`)
+      axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/clinic/service/${serviceId}`)
         .then(() => {
           console.log(`Service with ID: ${serviceId} removed successfully`);
         })
@@ -232,7 +232,7 @@ const SuperEditContent = () => {
     }
 
     axios
-      .put(`${import.meta.env.VITE_BACKEND_URL}/clinic`, formData, {
+      .put(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       .then((response) => {

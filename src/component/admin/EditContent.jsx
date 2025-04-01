@@ -467,7 +467,7 @@ const EditContent = () => {
     try {
       // Send the update request
       const response = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/clinic`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/clinic`,
         formData,
         {
           headers: {

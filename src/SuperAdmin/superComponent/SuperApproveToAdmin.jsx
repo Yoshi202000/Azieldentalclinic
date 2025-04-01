@@ -50,7 +50,7 @@ const SuperApproveToAdmin = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/UserInformation`);
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/UserInformation`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -69,7 +69,7 @@ const SuperApproveToAdmin = () => {
   const verifyUserPassword = async () => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/login`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/login`,
         { email: user.email, password },
         {
           withCredentials: true,

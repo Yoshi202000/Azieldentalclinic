@@ -55,7 +55,7 @@ const AdminSales = () => {
   // Function to fetch clinic services
   const fetchClinicServices = async (token) => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`, {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -73,7 +73,7 @@ const AdminSales = () => {
   // Fetch appointments from the backend and filter by user's clinic
   const fetchAppointments = async (token, clinic) => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment`, {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/ViewAppointment`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

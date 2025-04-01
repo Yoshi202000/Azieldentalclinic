@@ -9,7 +9,7 @@ const AppointmentsList = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment`);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/ViewAppointment`);
         console.log("Fetched Appointments:", response.data);
         setAppointments(response.data);
       } catch (err) {

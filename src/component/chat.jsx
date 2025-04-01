@@ -56,7 +56,7 @@ function Chat() {
       if (!loggedInUser) return;
 
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/UserInformation`);
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/UserInformation`);
         if (!response.ok) throw new Error('Failed to fetch users');
         const data = await response.json();
 

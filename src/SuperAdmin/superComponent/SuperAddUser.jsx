@@ -26,7 +26,7 @@ function SuperDoctorSignup() {
     const fetchClinicNames = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`, {
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

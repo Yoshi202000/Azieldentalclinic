@@ -101,7 +101,7 @@ function DoctorViewAppointment() {
 
   const fetchServicesData = async () => {
     try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
         if (response.data && response.data.services) {
             setServices(response.data.services);
 
@@ -150,7 +150,7 @@ function DoctorViewAppointment() {
 
   const fetchDoctors = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/doctor-info`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/doctor-info`);
       if (response.status === 200) {
         setDoctors(response.data.doctors);
       } else {
@@ -186,7 +186,7 @@ function DoctorViewAppointment() {
   const fetchAppointments = async (clinic) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment`, {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/ViewAppointment`, {
         headers: { Authorization: `Bearer ${token}` },
       });
   
@@ -273,7 +273,7 @@ function DoctorViewAppointment() {
         return; // Stop execution if the slot is unavailable
       }
 
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment/updateStatus`, 
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/ViewAppointment/updateStatus`, 
         { appointmentId, newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -503,7 +503,7 @@ const DoctorPatientsInformation = () => {
       }
 
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/ViewAppointment/updateStatus`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/ViewAppointment/updateStatus`,
         { appointmentId, newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );

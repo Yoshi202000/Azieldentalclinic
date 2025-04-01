@@ -29,7 +29,7 @@ const AccountSettings = () => {
   useEffect(() => {
     const fetchServicesData = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
         if (response.data && response.data.services) {
           setAvailableServices(response.data.services);
         } else {
@@ -124,7 +124,7 @@ const AccountSettings = () => {
       formDataObj.append('doctorImage', doctorImage);
 
       const uploadResponse = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/upload-doctor-image`, 
+        `${import.meta.env.VITE_BACKEND_URL}/api/upload-doctor-image`, 
         formDataObj, 
         {
           headers: { 
@@ -174,7 +174,7 @@ const AccountSettings = () => {
 
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/update-doctor-information`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/update-doctor-information`,
         requestData,
         {
           headers: {

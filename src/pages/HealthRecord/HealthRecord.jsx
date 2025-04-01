@@ -70,7 +70,7 @@ const HealthRecord = () => {
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
       if (response.data) {
         const { 
           questionOne,

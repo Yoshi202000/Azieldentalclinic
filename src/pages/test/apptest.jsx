@@ -23,7 +23,7 @@ const TestLogin = () => {
       return;
     }
 
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/verify-token`, {
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
       headers: {
           Authorization: `${token}`,
         },

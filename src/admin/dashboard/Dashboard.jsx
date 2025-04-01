@@ -14,6 +14,7 @@ import DoctorSignup from '../../component/admin/AddUser';
 import ViewAdminDoctor from '../../component/admin/ViewAdminDoctor';
 import DoctorServices from '../../component/admin/DoctorServices';
 import AdminEditSchedule from '../../component/admin/AdminEditSchedule';
+import ApproveToAdmin from '../../component/admin/ApproveToAdmin';
 
 function Dashboard() {
   const [activeComponent, setActiveComponent] = useState('AccountSettings');
@@ -42,6 +43,8 @@ function Dashboard() {
         return <DoctorServices/>
       case 'AdminSchedule':
         return <AdminEditSchedule/>
+      case 'ApproveToAdmin':
+        return <ApproveToAdmin/>
       default:
         return <h2>Select an option</h2>;
     }
@@ -94,6 +97,12 @@ function Dashboard() {
             className={activeComponent === 'DoctorServices' ? 'active' : ''}
             onClick={() => setActiveComponent('DoctorServices')}
           >
+            <button
+            className={activeComponent === 'ApproveToAdmin' ? 'active' : ''}
+            onClick={() => setActiveComponent('ApproveToAdmin')}
+          >
+            Approve to Admin
+          </button>
             Manage Doctor Services
           </button>
           <button
@@ -114,6 +123,7 @@ function Dashboard() {
           >
             Edit Schedule
           </button>
+          
           </div>
         </div>
         <div className='DashMainContainer'>

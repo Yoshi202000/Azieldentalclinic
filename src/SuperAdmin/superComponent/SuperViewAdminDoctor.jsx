@@ -11,7 +11,7 @@ const SuperViewAdminDoctor = () => {
   // Fetch users
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/UserInformation`);
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/UserInformation`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

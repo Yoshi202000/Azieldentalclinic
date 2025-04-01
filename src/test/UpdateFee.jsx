@@ -26,7 +26,7 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
   // Fetch services with fees
   const fetchServices = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
       if (response.data && response.data.services) {
         setServices(response.data.services);
       }
@@ -39,7 +39,7 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
   // Fetch medicines
   const fetchMedicines = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
       if (response.data && response.data.medicines) {
         setMedicines(response.data.medicines);
       }
@@ -64,7 +64,7 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
 
   const fetchAppointments = async (token) => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment`, {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/ViewAppointment`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -91,7 +91,7 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
         try {
           const token = localStorage.getItem('token');
           const response = await axios.get(
-            `${import.meta.env.VITE_BACKEND_URL}/UserInformation/${selectedAppointment.userId}`,
+            `${import.meta.env.VITE_BACKEND_URL}/api/UserInformation/${selectedAppointment.userId}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`
@@ -137,7 +137,7 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
 
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/appointmentFee/update-fee/${selectedAppointment._id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/appointmentFee/update-fee/${selectedAppointment._id}`,
         { 
           fee: parseFloat(fee),
           discountType: discountType,

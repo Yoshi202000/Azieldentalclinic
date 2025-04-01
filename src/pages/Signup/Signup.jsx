@@ -25,7 +25,7 @@ function Signup() {
     });
         
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`)
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`)
       .then(response => {
         if (response.data && response.data.termsAndConditions) {
           const {

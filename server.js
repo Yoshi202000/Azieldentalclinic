@@ -90,21 +90,21 @@ app.use('/api', signupRoutes);
 app.use('/api', loginRoutes);
 app.use('/api', verifyTokenRoutes);
 app.use('/api', appointmentRoutes);
-app.use('/api',logoutRoutes); // Add logout route
+app.use('/api',logoutRoutes);
 app.use('/api',ForgotRoutes);
 app.use('/api',userInformationRoutes);
 app.use('/api',ViewAppointmentRoutes);
-app.use('/api', updateAccountRoutes); // Mounting accountRoutes at the '/api' base path
+app.use('/api', updateAccountRoutes); 
 app.use('/api', updateAppointmentRoutes);
-app.use('/api/feedback', feedbackRoutes); // Add this line
+app.use('/api/feedback', feedbackRoutes); 
 app.use('/api/feedback', viewFeedbackRoutes);
-app.use('/api', notificationRoutes); // Add this line
-app.use('/api', messageRoutes);  // Add this line
+app.use('/api', notificationRoutes); 
+app.use('/api', messageRoutes);  
 app.use('/api', updateUserRoutes);
 app.use('/api', unreadRoutes);
 app.use('/api', healthRecordRoutes);
 app.use('/api', doctorSchedule);
-app.use('/', doctorsDescriptionRoutes);  // Mount at root level
+app.use('/', doctorsDescriptionRoutes); 
 app.use('/appointmentFee', appointmentFee);
 app.use('/api', clinicRoutes);
 app.use('/api', DentalChartForm);

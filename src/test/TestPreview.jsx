@@ -14,7 +14,7 @@ const TestPreview = () => {
 
   useEffect(() => {
     // Fetch existing clinic data from the backend when the component mounts
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`)
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`)
       .then(response => {
         if (response.data) {
           const {

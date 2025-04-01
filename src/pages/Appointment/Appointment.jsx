@@ -72,7 +72,7 @@ const Appointment = () => {
 
  const fetchServicesData = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
       if (response.data && response.data.services) {
         const { nameOne, nameTwo } = response.data; 
         setServices(response.data.services);
@@ -88,7 +88,7 @@ const Appointment = () => {
 
   const fetchBookedAppointments = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/booked-appointments`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/booked-appointments`);
       if (response.status === 200) {
         setBookedAppointments(response.data.bookedAppointments);
       } else {
@@ -101,7 +101,7 @@ const Appointment = () => {
 
   const fetchDoctors = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/doctor-info`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/doctor-info`);
       if (response.status === 200) {
         setDoctors(response.data.doctors);
       } else {
@@ -243,7 +243,7 @@ const Appointment = () => {
     console.log('Appointment Details:', appointmentDetails);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/appointments`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/appointments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

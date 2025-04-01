@@ -17,7 +17,7 @@ const Login = () => {
   const [loginDescription, setLoginDescription] = useState('');
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`)
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`)
       .then(response => {
         if (response.data) {
           const { loginMessage, loginDescription } = response.data;
