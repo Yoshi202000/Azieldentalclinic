@@ -39,6 +39,8 @@ const AdminEditSchedule = () => {
   const [visibleSlots, setVisibleSlots] = useState({});
   const [doctors, setDoctors] = useState([]);
   const [userClinic, setUserClinic] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveProgress, setSaveProgress] = useState(0);
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -270,6 +272,26 @@ const AdminEditSchedule = () => {
       return;
     }
 
+    setIsSaving(true);
+    setSaveProgress(0);
+    let successCount = 0;
+    let errorCount = 0;
+    const totalSchedules = previewSlots.length;
+
+    // Create a loading message element
+    const loadingMessage = document.createElement('div');
+    loadingMessage.className = 'alert alert-info alert-dismissible fade show';
+    loadingMessage.innerHTML = `
+      <div class="d-flex align-items-center">
+        <div class="spinner-border spinner-border-sm me-2" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        Creating schedules... <span class="ms-2">${successCount}/${totalSchedules}</span>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    document.querySelector('.test-schedule').insertBefore(loadingMessage, document.querySelector('.test-schedule').firstChild);
+
     // Iterate over each date in previewSlots and send a separate request
     for (const dateSlot of previewSlots) {
       const requestData = {
@@ -294,24 +316,56 @@ const AdminEditSchedule = () => {
         });
 
         if (response.status === 201) {
-          console.log(`Slots for ${dateSlot.date} saved successfully!`);
-          alert(`Schedule added successfully for ${dateSlot.date}`);
+          successCount++;
+          // Update the loading message with progress
+          loadingMessage.innerHTML = `
+            <div class="d-flex align-items-center">
+              <div class="spinner-border spinner-border-sm me-2" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              Creating schedules... <span class="ms-2">${successCount}/${totalSchedules}</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          `;
         }
       } catch (error) {
         console.error('Error saving slots for date:', dateSlot.date, error);
-        if (error.response) {
-          console.error('Error Response Data:', error.response.data);
-          alert('Failed to save slots for ' + dateSlot.date + ': ' + (error.response.data.message || error.message));
-        } else {
-          alert('Failed to save slots for ' + dateSlot.date + ': ' + error.message);
-        }
+        errorCount++;
       }
     }
+
+    // Remove the loading message
+    loadingMessage.remove();
+
+    // Show final success/error message
+    const finalMessage = document.createElement('div');
+    finalMessage.className = `alert ${errorCount === 0 ? 'alert-success' : 'alert-warning'} alert-dismissible fade show`;
+    
+    if (errorCount === 0) {
+      finalMessage.innerHTML = `
+        <div class="d-flex align-items-center">
+          <i class="fas fa-check-circle me-2"></i>
+          Successfully created ${successCount} schedule(s) from ${previewSlots[0].date} to ${previewSlots[previewSlots.length - 1].date}
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      `;
+    } else {
+      finalMessage.innerHTML = `
+        <div class="d-flex align-items-center">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          Created ${successCount} schedule(s) with ${errorCount} error(s)
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      `;
+    }
+
+    document.querySelector('.test-schedule').insertBefore(finalMessage, document.querySelector('.test-schedule').firstChild);
 
     // Clear preview slots after saving
     setPreviewSlots([]);
     // Refresh the schedules after saving
     fetchSchedules();
+    setIsSaving(false);
   };
 
   const handleEditSchedule = (date) => {

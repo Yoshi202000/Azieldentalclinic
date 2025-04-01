@@ -169,7 +169,7 @@ const DrawerComponent = () => {
                 href={ userRole === 'patient' ? '/profile' : '#'} 
                 className="navbar-link"
               >
-                {userRole === 'patient' ? 'Profile' : ''}
+                {userRole === 'patient' ? 'Profile and Appointments' : ''}
               </a>
             </li>
             {isLoggedIn && (
@@ -223,7 +223,7 @@ const DrawerComponent = () => {
               <li className="drawer-item"><a href="/appointment" className="drawer-link">Appointment</a></li>
               <li className="drawer-item"><a href="/feedback" className="drawer-link">Feedback</a></li>
               <li className="drawer-item"><a href="/services" className="drawer-link">Services</a></li>
-              <li className="drawer-item"><a href="/profile" className="drawer-link">Profile</a></li>
+              <li className="drawer-item"><a href="/profile" className="drawer-link">Profile and Appointments</a></li>
             </>
           )}
           <li className="drawer-item">
