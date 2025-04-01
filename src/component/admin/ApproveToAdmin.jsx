@@ -9,10 +9,10 @@ const ApproveToAdmin = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [user, setUser] = useState(null);
-  const [password, setPassword] = useState(''); // State for password input
-  const [actionUserId, setActionUserId] = useState(null); // State for storing action user ID
-  const [actionType, setActionType] = useState(null); // State for action type ('approve' or 'revert')
-  const [showPasswordPopup, setShowPasswordPopup] = useState(false); // State for showing password popup
+  const [password, setPassword] = useState('');
+  const [actionUserId, setActionUserId] = useState(null);
+  const [showPasswordPopup, setShowPasswordPopup] = useState(false);
+  const [selectedRole, setSelectedRole] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,6 +64,7 @@ const ApproveToAdmin = () => {
 
   const handleUserClick = (user) => {
     setSelectedUser(user);
+    setSelectedRole(user.role);
   };
 
   const verifyUserPassword = async () => {
@@ -99,65 +100,34 @@ const ApproveToAdmin = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ loggedInUserClinic: user.clinic }),
+        body: JSON.stringify({ 
+          newRole: selectedRole,
+          loggedInUserClinic: user.clinic 
+        }),
       });
 
       if (response.ok) {
         setUsers((prevUsers) =>
           prevUsers.map((user) =>
-            user._id === actionUserId ? { ...user, role: 'admin', clinic: user.clinic } : user
+            user._id === actionUserId ? { ...user, role: selectedRole } : user
           )
         );
-        setPassword(''); // Clear the password input
-        setShowPasswordPopup(false); // Hide the password popup
+        setPassword('');
+        setShowPasswordPopup(false);
+        alert('User role updated successfully');
       } else {
         console.error('Failed to update user role');
+        alert('Failed to update user role');
       }
     } catch (err) {
       console.error('Error updating user role:', err);
+      alert('Error updating user role');
     }
   };
 
-  const revertUserRole = async () => {
-    const isVerified = await verifyUserPassword();
-    if (!isVerified) return;
-
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/revertUserRole/${actionUserId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        setUsers((prevUsers) =>
-          prevUsers.map((user) =>
-            user._id === actionUserId ? { ...user, role: 'patient', clinic: 'both' } : user
-          )
-        );
-        setPassword(''); // Clear the password input
-        setShowPasswordPopup(false); // Hide the password popup
-      } else {
-        console.error('Failed to revert user role');
-      }
-    } catch (err) {
-      console.error('Error reverting user role:', err);
-    }
-  };
-
-  const handleAction = (userId, type) => {
+  const handleAction = (userId) => {
     setActionUserId(userId);
-    setActionType(type);
-    setShowPasswordPopup(true); // Show the password popup
-  };
-
-  const executeAction = () => {
-    if (actionType === 'approve') {
-      handleRoleChange();
-    } else if (actionType === 'revert') {
-      revertUserRole();
-    }
+    setShowPasswordPopup(true);
   };
 
   const filteredUsers = users.filter(
@@ -168,12 +138,12 @@ const ApproveToAdmin = () => {
 
   return (
     <div className="PIContainer">
-      <h1 className="PITitle">Users Information</h1>
+      <h1 className="PITitle">User Role Management</h1>
       {error ? (
         <p className="PIError">Error fetching data: {error}</p>
       ) : (
         <>
-        <p>search user</p>
+          <p>Search user</p>
           <input
             type="text"
             placeholder="Search by user name"
@@ -183,7 +153,17 @@ const ApproveToAdmin = () => {
           />
           {showPasswordPopup && selectedUser && (
             <div className="PasswordPopup styled-popup">
-              <p>Are you sure you want to change {selectedUser.firstName} {selectedUser.lastName}'s role to {actionType === 'approve' ? 'admin' : 'patient'} and clinic to {actionType === 'approve' ? user.clinic : 'both'}?</p>
+              <h3>Manage Role for {selectedUser.firstName} {selectedUser.lastName}</h3>
+              <select
+                value={selectedRole}
+                onChange={(e) => setSelectedRole(e.target.value)}
+                className="styled-select"
+              >
+                <option value="patient">Patient</option>
+                <option value="admin">Admin</option>
+                <option value="doctor">Doctor</option>
+              </select>
+              <p>Please enter your password to confirm the role change:</p>
               <input
                 type="password"
                 placeholder="Enter your password to confirm"
@@ -192,7 +172,7 @@ const ApproveToAdmin = () => {
                 className="PasswordInput styled-input"
               />
               <div className="ButtonContainer">
-                <button onClick={executeAction} className="PIButton">Confirm Action</button>
+                <button onClick={handleRoleChange} className="PIButton">Confirm Role Change</button>
                 <button onClick={() => setShowPasswordPopup(false)} className="CancelButton">Cancel</button>
               </div>
             </div>
@@ -205,14 +185,14 @@ const ApproveToAdmin = () => {
                   <th>Last Name</th>
                   <th>Email</th>
                   <th>Phone Number</th>
-                  <th>Role</th>
+                  <th>Current Role</th>
                   <th>Clinic</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredUsers.map((user) => (
-                  <tr key={user._id} onClick={() => handleUserClick(user)}>
+                  <tr key={user._id}>
                     <td>{user.firstName}</td>
                     <td>{user.lastName}</td>
                     <td>{user.email}</td>
@@ -220,16 +200,12 @@ const ApproveToAdmin = () => {
                     <td>{user.role}</td>
                     <td>{user.clinic}</td>
                     <td>
-                      {user.role === 'patient' && (
-                        <button className="PIButton" onClick={() => handleAction(user._id, 'approve')}>
-                          Approve as Admin
-                        </button>
-                      )}
-                      {user.role === 'admin' && (
-                        <button className="PIButton" onClick={() => handleAction(user._id, 'revert')}>
-                          Revert to Patient
-                        </button>
-                      )}
+                      <button 
+                        className="PIButton" 
+                        onClick={() => handleAction(user._id)}
+                      >
+                        Manage Role
+                      </button>
                     </td>
                   </tr>
                 ))}

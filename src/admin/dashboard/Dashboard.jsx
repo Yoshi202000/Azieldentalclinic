@@ -102,7 +102,7 @@ function Dashboard() {
             className={activeComponent === 'ApproveToAdmin' ? 'active' : ''}
             onClick={() => setActiveComponent('ApproveToAdmin')}
           >
-            Approve to Admin
+            Manage Role
           </button>
           <button
             className={activeComponent === 'AdminSales' ? 'active' : ''}
