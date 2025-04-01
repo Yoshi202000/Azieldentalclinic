@@ -152,6 +152,7 @@ const Login = () => {
             <h2>Sign in</h2>
             <form onSubmit={handleLogin}>
               <input
+                className="form-control"
                 type="email"
                 placeholder="Email"
                 value={email}
@@ -159,6 +160,7 @@ const Login = () => {
                 required
               />
               <input
+                className="form-control"
                 type="password"
                 placeholder="Password"
                 value={password}

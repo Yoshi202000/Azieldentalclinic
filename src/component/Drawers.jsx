@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/Drawer.css'; // Import the CSS file for styling
 import Notification from './notification'; // Import the Notification component
+import clinicLogo from '../uploads/clinicLogo.png';
 
 const DrawerComponent = () => {
   const [open, setOpen] = useState(false);
@@ -98,7 +99,7 @@ const DrawerComponent = () => {
       <nav className="Aziel-navcontainer">
         <nav className="Aziel-navbar">
           <div className="logo-container">
-            <img src="src/uploads/clinicLogo.png" alt="Logo" className="logo" />
+            <img src={clinicLogo} alt="Logo" className="logo" />
           </div>
           <ul className="navbar-menu">
           {isLoggedIn ? (
