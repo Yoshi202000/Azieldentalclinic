@@ -14,7 +14,6 @@ import DoctorSignup from '../../component/admin/AddUser';
 import ViewAdminDoctor from '../../component/admin/ViewAdminDoctor';
 import DoctorServices from '../../component/admin/DoctorServices';
 import AdminEditSchedule from '../../component/admin/AdminEditSchedule';
-import ApproveToAdmin from '../../component/admin/ApproveToAdmin';
 
 function Dashboard() {
   const [activeComponent, setActiveComponent] = useState('AccountSettings');
