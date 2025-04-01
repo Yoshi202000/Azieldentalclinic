@@ -9,10 +9,12 @@ const SuperApproveToAdmin = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [user, setUser] = useState(null);
-  const [password, setPassword] = useState(''); // State for password input
-  const [actionUserId, setActionUserId] = useState(null); // State for storing action user ID
-  const [actionType, setActionType] = useState(null); // State for action type ('approve' or 'revert')
-  const [showPasswordPopup, setShowPasswordPopup] = useState(false); // State for showing password popup
+  const [password, setPassword] = useState('');
+  const [actionUserId, setActionUserId] = useState(null);
+  const [actionType, setActionType] = useState(null);
+  const [showPasswordPopup, setShowPasswordPopup] = useState(false);
+  const [clinics, setClinics] = useState([]);
+  const [selectedClinic, setSelectedClinic] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,7 +27,22 @@ const SuperApproveToAdmin = () => {
 
     fetchUserInfo(token);
     fetchUsers();
+    fetchClinics();
   }, []);
+
+  const fetchClinics = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setClinics(data);
+    } catch (err) {
+      console.error('Error fetching clinics:', err);
+      setError('Failed to fetch clinic information');
+    }
+  };
 
   const fetchUserInfo = async (token) => {
     try {
@@ -90,6 +107,11 @@ const SuperApproveToAdmin = () => {
   };
 
   const handleRoleChange = async () => {
+    if (!selectedClinic) {
+      alert('Please select a clinic');
+      return;
+    }
+
     const isVerified = await verifyUserPassword();
     if (!isVerified) return;
 
@@ -99,22 +121,31 @@ const SuperApproveToAdmin = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ loggedInUserClinic: user.clinic }),
+        body: JSON.stringify({ 
+          newRole: 'admin',
+          loggedInUserClinic: selectedClinic 
+        }),
       });
 
       if (response.ok) {
+        const updatedUser = await response.json();
         setUsers((prevUsers) =>
-          prevUsers.map((user) =>
-            user._id === actionUserId ? { ...user, role: 'admin', clinic: user.clinic } : user
+          prevUsers.map((u) =>
+            u._id === actionUserId ? { ...u, role: 'admin', clinic: selectedClinic } : u
           )
         );
-        setPassword(''); // Clear the password input
-        setShowPasswordPopup(false); // Hide the password popup
+        setPassword('');
+        setSelectedClinic('');
+        setShowPasswordPopup(false);
+        alert('User role updated successfully');
       } else {
-        console.error('Failed to update user role');
+        const errorData = await response.json();
+        console.error('Failed to update user role:', errorData);
+        alert(errorData.error || 'Failed to update user role');
       }
     } catch (err) {
       console.error('Error updating user role:', err);
+      alert('Error updating user role');
     }
   };
 
@@ -149,7 +180,8 @@ const SuperApproveToAdmin = () => {
   const handleAction = (userId, type) => {
     setActionUserId(userId);
     setActionType(type);
-    setShowPasswordPopup(true); // Show the password popup
+    setSelectedClinic(''); // Reset clinic selection
+    setShowPasswordPopup(true);
   };
 
   const executeAction = () => {
@@ -173,7 +205,7 @@ const SuperApproveToAdmin = () => {
         <p className="PIError">Error fetching data: {error}</p>
       ) : (
         <>
-        <p>search user</p>
+          <p>search user</p>
           <input
             type="text"
             placeholder="Search by user name"
@@ -183,7 +215,27 @@ const SuperApproveToAdmin = () => {
           />
           {showPasswordPopup && selectedUser && (
             <div className="PasswordPopup styled-popup">
-              <p>Are you sure you want to change {selectedUser.firstName} {selectedUser.lastName}'s role to {actionType === 'approve' ? 'admin' : 'patient'} and clinic to {actionType === 'approve' ? user.clinic : 'both'}?</p>
+              <h3>Manage Role for {selectedUser.firstName} {selectedUser.lastName}</h3>
+              <p>Current Role: {selectedUser.role}</p>
+              <p>Current Clinic: {selectedUser.clinic}</p>
+              {actionType === 'approve' && (
+                <div className="clinic-select-container">
+                  <label>Select Clinic:</label>
+                  <select
+                    value={selectedClinic}
+                    onChange={(e) => setSelectedClinic(e.target.value)}
+                    className="styled-select"
+                  >
+                    <option value="">Select a clinic</option>
+                    {clinics.map((clinic) => (
+                      <option key={clinic._id} value={clinic.nameOne}>
+                        {clinic.nameOne}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <p>Please enter your password to confirm the role change:</p>
               <input
                 type="password"
                 placeholder="Enter your password to confirm"
@@ -192,8 +244,23 @@ const SuperApproveToAdmin = () => {
                 className="PasswordInput styled-input"
               />
               <div className="ButtonContainer">
-                <button onClick={executeAction} className="PIButton">Confirm Action</button>
-                <button onClick={() => setShowPasswordPopup(false)} className="CancelButton">Cancel</button>
+                <button 
+                  onClick={executeAction} 
+                  className="PIButton"
+                  disabled={actionType === 'approve' && (!selectedClinic || !password)}
+                >
+                  Confirm Action
+                </button>
+                <button 
+                  onClick={() => {
+                    setShowPasswordPopup(false);
+                    setPassword('');
+                    setSelectedClinic('');
+                  }} 
+                  className="CancelButton"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           )}
@@ -212,7 +279,7 @@ const SuperApproveToAdmin = () => {
               </thead>
               <tbody>
                 {filteredUsers.map((user) => (
-                  <tr key={user._id} onClick={() => handleUserClick(user)}>
+                  <tr key={user._id}>
                     <td>{user.firstName}</td>
                     <td>{user.lastName}</td>
                     <td>{user.email}</td>
@@ -221,12 +288,18 @@ const SuperApproveToAdmin = () => {
                     <td>{user.clinic}</td>
                     <td>
                       {user.role === 'patient' && (
-                        <button className="PIButton" onClick={() => handleAction(user._id, 'approve')}>
+                        <button 
+                          className="PIButton" 
+                          onClick={() => handleAction(user._id, 'approve')}
+                        >
                           Approve as Admin
                         </button>
                       )}
                       {user.role === 'admin' && (
-                        <button className="PIButton" onClick={() => handleAction(user._id, 'revert')}>
+                        <button 
+                          className="PIButton" 
+                          onClick={() => handleAction(user._id, 'revert')}
+                        >
                           Revert to Patient
                         </button>
                       )}

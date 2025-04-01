@@ -100,6 +100,12 @@ function SuperDashboard() {
             Manage Doctor Services
           </button>
           <button
+            className={activeComponent === 'ToAdmin' ? 'active' : ''}
+            onClick={() => setActiveComponent('ToAdmin')}
+          >
+            Manage Role
+          </button>
+          <button
             className={activeComponent === 'AdminSales' ? 'active' : ''}
             onClick={() => setActiveComponent('AdminSales')}
           >
