@@ -428,6 +428,10 @@ function ViewAppointment() {
     updateAppointmentStatus(appointmentId, 'Cancelled');
   };
 
+  const handleApprovedAppointment = (appointmentId) => {
+    updateAppointmentStatus(appointmentId, 'Approved');
+  };
+
   const filteredAppointments = appointments.filter(appointment => {
     const nameMatch = `${appointment.patientFirstName} ${appointment.patientLastName}`.toLowerCase().includes(nameFilter.toLowerCase());
     const typeMatch = !typeFilter || appointment.appointmentType.toLowerCase() === typeFilter.toLowerCase();
