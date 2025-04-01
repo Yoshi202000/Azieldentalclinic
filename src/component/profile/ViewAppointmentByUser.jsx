@@ -109,7 +109,7 @@ function ViewAppointmentByUser() {
 
   const fetchAppointments = async (token, userEmail) => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment`, {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/ViewAppointment`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -130,7 +130,7 @@ function ViewAppointmentByUser() {
 
   const fetchBookedAppointments = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/booked-appointments`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/booked-appointments`);
       if (response.status === 200) {
         setBookedAppointments(response.data.bookedAppointments);
       } else {
@@ -143,7 +143,7 @@ function ViewAppointmentByUser() {
 
   const fetchDoctors = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/doctor-info`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/doctor-info`);
       if (response.status === 200) {
         setDoctors(response.data.doctors);
       } else {
@@ -157,7 +157,7 @@ function ViewAppointmentByUser() {
   const fetchServicesData = async () => {
     console.log('Fetching services data...');
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clinic`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
       console.log('Services response:', response.data);
       if (response.data && response.data.services) {
         setServices(response.data.services);
@@ -256,7 +256,7 @@ function ViewAppointmentByUser() {
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/ViewAppointment/updateStatus`, 
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/ViewAppointment/updateStatus`, 
         { appointmentId, newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
