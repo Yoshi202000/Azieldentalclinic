@@ -428,8 +428,27 @@ function ViewAppointment() {
     updateAppointmentStatus(appointmentId, 'Cancelled');
   };
 
-  const handleApprovedAppointment = (appointmentId) => {
-    updateAppointmentStatus(appointmentId, 'Approved');
+  const handleApprovedAppointment = async (appointmentId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/ViewAppointment/updateStatus`, 
+        { appointmentId, newStatus: 'Approved' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.status === 200) {
+        // Update the appointments list with the new status
+        setAppointments(prevAppointments =>
+          prevAppointments.map(app =>
+            app._id === appointmentId ? { ...app, appointmentStatus: 'Approved' } : app
+          )
+        );
+        alert('Appointment approved successfully');
+      }
+    } catch (error) {
+      console.error('Error approving appointment:', error);
+      alert('Failed to approve appointment. Please try again.');
+    }
   };
 
   const filteredAppointments = appointments.filter(appointment => {
@@ -613,10 +632,17 @@ function ViewAppointment() {
                         <button className="AdminViewAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}
                         </button>
-                        
+                        {appointment.appointmentStatus === 'pending' && (
+                          <button 
+                            className="AdminViewAppointmentButton approve-button" 
+                            onClick={() => handleApprovedAppointment(appointment._id)}
+                          >
+                            Approve
+                          </button>
+                        )}
                       </td>
                       <td>
-                      <button className="AdminViewAppointmentButton" onClick={() => handleComplete(appointment)}>
+                        <button className="AdminViewAppointmentButton" onClick={() => handleComplete(appointment)}>
                           Create Dental Record
                         </button>
                       </td>
