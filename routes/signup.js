@@ -84,7 +84,7 @@ router.post('/signup', async (req, res) => {
         const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
         // Verification email content
-        const verificationLink = `https://azieldentalclinic.xyz/api/verify-email?token=${token}`;
+        const verificationLink = `${process.env.BACKEND_URL}/api/verify-email?token=${token}`;
 
         // Send verification email
         try {
@@ -93,6 +93,23 @@ router.post('/signup', async (req, res) => {
                 to: email,
                 subject: 'Verify your email',
                 text: `Click this link to verify your email: ${verificationLink}`,
+                html: `
+                    <h2>Email Verification</h2>
+                    <p>Please click the button below to verify your email address:</p>
+                    <a href="${verificationLink}" style="
+                        background-color: #4CAF50;
+                        border: none;
+                        color: white;
+                        padding: 15px 32px;
+                        text-align: center;
+                        text-decoration: none;
+                        display: inline-block;
+                        font-size: 16px;
+                        margin: 4px 2px;
+                        cursor: pointer;
+                        border-radius: 4px;
+                    ">Verify Email</a>
+                `
             });
             console.log('Verification email sent to:', newUser.email);
         } catch (emailError) {
