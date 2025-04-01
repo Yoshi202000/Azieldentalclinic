@@ -23,7 +23,7 @@ const verificationCodes = new Map();
 
 
 // Send verification code to the email
-router.post('/api/send-code', async (req, res) => {
+router.post('/send-code', async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
 
