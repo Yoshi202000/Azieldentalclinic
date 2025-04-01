@@ -192,7 +192,7 @@ function ViewAppointment() {
   
       const filteredAppointments = response.data.filter(
         appointment =>
-          (appointment.appointmentStatus === 'pending' || appointment.appointmentStatus === 'Rebooked')
+          (appointment.appointmentStatus === 'pending' || appointment.appointmentStatus === 'Rebooked' || appointment.appointmentStatus === 'Approved')
        
       );
   
