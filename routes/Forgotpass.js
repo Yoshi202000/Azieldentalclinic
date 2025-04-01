@@ -58,7 +58,7 @@ router.post('/send-code', async (req, res) => {
 });
 
 // Verify code
-router.post('/api/verify-code', async (req, res) => {
+router.post('/verify-code', async (req, res) => {
   const { email, code } = req.body;
   const storedCode = verificationCodes.get(email.toLowerCase()); // Convert email to lowercase here
 
@@ -73,7 +73,7 @@ router.post('/api/verify-code', async (req, res) => {
 });
 
 // Change password
-router.post('/api/change-password', async (req, res) => {
+router.post('/change-password', async (req, res) => {
   const { email, newPassword } = req.body;
 
   const normalizedEmail = email.toLowerCase(); // Normalize email before looking it up
