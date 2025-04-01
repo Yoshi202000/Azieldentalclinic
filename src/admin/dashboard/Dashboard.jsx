@@ -96,13 +96,13 @@ function Dashboard() {
             className={activeComponent === 'DoctorServices' ? 'active' : ''}
             onClick={() => setActiveComponent('DoctorServices')}
           >
-            <button
+            Manage Doctor Services
+          </button>
+          <button
             className={activeComponent === 'ApproveToAdmin' ? 'active' : ''}
             onClick={() => setActiveComponent('ApproveToAdmin')}
           >
             Approve to Admin
-          </button>
-            Manage Doctor Services
           </button>
           <button
             className={activeComponent === 'AdminSales' ? 'active' : ''}
