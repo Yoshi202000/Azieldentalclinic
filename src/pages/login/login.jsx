@@ -152,7 +152,7 @@ const Login = () => {
             <h2>Sign in</h2>
             <form onSubmit={handleLogin}>
               <input
-                className="form-control"
+                className="form-control form-control-sm"
                 type="email"
                 placeholder="Email"
                 value={email}
@@ -160,7 +160,7 @@ const Login = () => {
                 required
               />
               <input
-                className="form-control"
+                className="form-control form-control-sm"
                 type="password"
                 placeholder="Password"
                 value={password}
