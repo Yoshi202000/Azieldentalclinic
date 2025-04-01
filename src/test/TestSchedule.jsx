@@ -36,6 +36,7 @@ const TestSchedule = () => {
   const [nextAvailableDate, setNextAvailableDate] = useState(null);
   const [maxEndDate, setMaxEndDate] = useState(null);
   const [visibleSlots, setVisibleSlots] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -498,68 +499,75 @@ const TestSchedule = () => {
 
           {/* Preview of generated slots */}
           {previewSlots.length > 0 && (
-            <div class="justify-content-center">
-              <div>
-              <h3>Preview Slots</h3>
-              {/* Calendar for Selecting Dates */}
-      <div className="d-flex justify-content-center">
-        <DatePicker
-          selected={selectedDate}
-          onChange={handleDateChange}
-          dateFormat="yyyy-MM-dd"
-          class="form-control text-center w-50"
-          placeholderText="Pick a date"
-          inline
-          highlightDates={availableDates} 
-        />
-      </div></div>
+            <div className="justify-content-center">
+              <div className="d-flex justify-content-between align-items-center mb-4">
+                <h3>Preview Slots</h3>
+                <button 
+                  className="btn btn-primary btn-lg px-4 py-2" 
+                  onClick={finalizeSlots}
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Saving...
+                    </>
+                  ) : (
+                    'Save All Slots'
+                  )}
+                </button>
+              </div>
+              <div className="d-flex justify-content-center">
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={handleDateChange}
+                  dateFormat="yyyy-MM-dd"
+                  className="form-control text-center w-50"
+                  placeholderText="Pick a date"
+                  inline
+                  highlightDates={availableDates} 
+                />
+              </div>
 
-      {/* Display Slots for the Selected Date */}
-      {selectedDate && (
-        <>
-          <h4 className="text-center mt-3">
-            Available Slots for {selectedDate}
-          </h4>
-          {previewSlots.map((dateSlots, dateIndex) => {
-            // Check if the date matches the selected date
-            if (dateSlots.date === selectedDate) {
-              return (
-                <div key={dateIndex} className="">
-                  <div className="card-body">
-                    {dateSlots.slots.map((slot, slotIndex) => (
-                      <div key={slotIndex} className="d-flex justify-content-between align-items-center mb-2">
-                        <span className="fw-bold">{slot.timeFrom} - {slot.timeTo}</span>
-                        <select
-                          className="form-select w-100"
-                          value={slot.status}
-                          onChange={(e) => handleSlotStatusChange(slotIndex, e.target.value)}
-                        >
-                          <option value="Available">Available</option>
-                          <option value="Unavailable">Unavailable</option>
-                        </select>
-                      </div>
-                    ))}
-                  </div>
-                  {/* Buttons to make all slots available/unavailable */}
-                  <div className="d-flex justify-content-center gap-3 mt-3">
-                    <button type="button" className="btn btn-success btn-lg px-4 py-2" onClick={() => makeAllAvailable(dateIndex)}>
-                      Make All Available
-                    </button>
-                    <button type="button" className="btn btn-danger btn-lg px-4 py-2" onClick={() => makeAllUnavailable(dateIndex)}>
-                      Make All Unavailable
-                    </button>
-                  </div>
-                </div>
-              );
-            }
-            return null; // Return null for dates that do not match
-          })}
-        </>
-      )}
+              {selectedDate && (
+                <>
+                  <h4 className="text-center mt-3">
+                    Available Slots for {selectedDate}
+                  </h4>
+                  {previewSlots.map((dateSlots, dateIndex) => {
+                    if (dateSlots.date === selectedDate) {
+                      return (
+                        <div key={dateIndex} className="">
+                          <div className="card-body">
+                            {dateSlots.slots.map((slot, slotIndex) => (
+                              <div key={slotIndex} className="d-flex justify-content-between align-items-center mb-2">
+                                <span className="fw-bold">{slot.timeFrom} - {slot.timeTo}</span>
+                                <select
+                                  className="form-select w-100"
+                                  value={slot.status}
+                                  onChange={(e) => handleSlotStatusChange(slotIndex, e.target.value)}
+                                >
+                                  <option value="Available">Available</option>
+                                  <option value="Unavailable">Unavailable</option>
+                                </select>
+                              </div>
+                            ))}
+                          </div>
                           <div className="d-flex justify-content-center gap-3 mt-3">
-
-                  <button class="btn btn-primary me-2" onClick={finalizeSlots}>Save Slots</button>
-                  </div>
+                            <button type="button" className="btn btn-success btn-lg px-4 py-2" onClick={() => makeAllAvailable(dateIndex)}>
+                              Make All Available
+                            </button>
+                            <button type="button" className="btn btn-danger btn-lg px-4 py-2" onClick={() => makeAllUnavailable(dateIndex)}>
+                              Make All Unavailable
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
+                </>
+              )}
             </div>
           )}
         </div>

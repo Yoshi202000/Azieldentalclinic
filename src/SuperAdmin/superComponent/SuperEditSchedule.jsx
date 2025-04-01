@@ -38,6 +38,7 @@ const SuperEditSchedule = () => {
   const [maxEndDate, setMaxEndDate] = useState(null);
   const [visibleSlots, setVisibleSlots] = useState({});
   const [doctors, setDoctors] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -236,6 +237,8 @@ const SuperEditSchedule = () => {
       return;
     }
 
+    setIsSaving(true);
+
     // Iterate over each date in previewSlots and send a separate request
     for (const dateSlot of previewSlots) {
       const requestData = {
@@ -278,6 +281,7 @@ const SuperEditSchedule = () => {
     setPreviewSlots([]);
     // Refresh the schedules after saving
     fetchSchedules();
+    setIsSaving(false);
   };
 
   const handleEditSchedule = (date) => {
@@ -487,19 +491,33 @@ const SuperEditSchedule = () => {
 
               {previewSlots.length > 0 && (
                 <div className="justify-content-center">
-                  <div>
+                  <div className="d-flex justify-content-between align-items-center mb-4">
                     <h3>Preview Slots</h3>
-                    <div className="d-flex justify-content-center">
-                      <DatePicker
-                        selected={selectedDate}
-                        onChange={handleDateChange}
-                        dateFormat="yyyy-MM-dd"
-                        className="form-control text-center w-50"
-                        placeholderText="Pick a date"
-                        inline
-                        highlightDates={availableDates} 
-                      />
-                    </div>
+                    <button 
+                      className="btn btn-primary btn-lg px-4 py-2" 
+                      onClick={finalizeSlots}
+                      disabled={isSaving}
+                    >
+                      {isSaving ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Saving...
+                        </>
+                      ) : (
+                        'Save All Slots'
+                      )}
+                    </button>
+                  </div>
+                  <div className="d-flex justify-content-center">
+                    <DatePicker
+                      selected={selectedDate}
+                      onChange={handleDateChange}
+                      dateFormat="yyyy-MM-dd"
+                      className="form-control text-center w-50"
+                      placeholderText="Pick a date"
+                      inline
+                      highlightDates={availableDates} 
+                    />
                   </div>
 
                   {selectedDate && (
@@ -539,9 +557,6 @@ const SuperEditSchedule = () => {
                         }
                         return null;
                       })}
-                      <div className="d-flex justify-content-center gap-3 mt-3">
-                        <button className="btn btn-primary me-2" onClick={finalizeSlots}>Save Slots</button>
-                      </div>
                     </>
                   )}
                 </div>
