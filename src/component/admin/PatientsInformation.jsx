@@ -646,6 +646,7 @@ const PatientsInformation = () => {
                           <th>Date</th>
                           <th>Time</th>
                           <th>Type</th>
+                          <th>Clinic</th>
                           <th>Status</th>
                           <th>Actions</th>
                         </tr>
@@ -657,6 +658,7 @@ const PatientsInformation = () => {
                             <td>{new Date(appointment.appointmentDate).toLocaleDateString('en-CA')}</td>
                             <td>{appointment.appointmentTimeFrom}</td>
                               <td>{appointment.appointmentType}</td>
+                              <td>{appointment.bookedClinic}</td>
                               <td>{appointment.appointmentStatus}</td>
                               <td>
                                 <button className="PIButton" onClick={() => handleEditAppointment(appointment)}>
@@ -749,7 +751,7 @@ const PatientsInformation = () => {
 
                                     {showStatusButtons && (
                                       <div className="AdminAppointmentStatusButtons">
-                                        {['Cancelled', 'Completed', 'No Show'].map(status => (
+                                        {['Cancelled', 'Completed', 'No Show', 'Approved'].map(status => (
                                           <button
                                             key={status}
                                             className="AdminAppointmentStatusButton"
