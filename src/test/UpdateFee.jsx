@@ -21,6 +21,7 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
   const [discountId, setDiscountId] = useState('');
   const [showDiscountIdField, setShowDiscountIdField] = useState(false);
   const [discountIdError, setDiscountIdError] = useState('');
+  const [selectedAppointmentType, setSelectedAppointmentType] = useState('');
   const navigate = useNavigate();
 
   // Fetch services with fees
@@ -286,6 +287,12 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
     }
   };
 
+  const handleAppointmentTypeChange = (event) => {
+    setSelectedAppointmentType(event.target.value);
+    // Reset the selected fee when appointment type changes
+    setSelectedFee(null);
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
@@ -325,9 +332,23 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
               <Typography>
                 Time: {selectedAppointment.appointmentTimeFrom}
               </Typography>
-              <Typography>
-                Service: {selectedAppointment.appointmentType}
-              </Typography>
+              
+              {/* New Appointment Type Selection */}
+              <FormControl fullWidth sx={{ my: 2 }}>
+                <InputLabel>Select Service Type</InputLabel>
+                <Select
+                  value={selectedAppointmentType}
+                  onChange={handleAppointmentTypeChange}
+                  label="Select Service Type"
+                >
+                  {selectedAppointment.appointmentType.map((type, index) => (
+                    <MenuItem key={index} value={type}>
+                      {type}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
               <Typography>
                 Status: {selectedAppointment.appointmentStatus}
               </Typography>
@@ -344,6 +365,7 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
               value={selectedFee || ''}
               onChange={(e) => handleFeeSelection(e.target.value)}
               label="Select Service Fee"
+              disabled={!selectedAppointmentType} // Disable if no appointment type selected
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   {selected.feeType} - ₱{selected.amount} ({selected.description})
@@ -356,7 +378,7 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
               )}
             >
               {services
-                .find(service => service.name === selectedAppointment.appointmentType)
+                .find(service => service.name === selectedAppointmentType)
                 ?.fees.map((fee, index) => (
                   <MenuItem key={index} value={fee}>
                     {fee.feeType} - ₱{fee.amount} ({fee.description})

@@ -397,14 +397,15 @@ const SuperEditContent = () => {
                    <img
                     src={
                       typeof service.image === 'string'
-                        ? service.image // Existing image URL
+                        ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api/${service.image.replace(/^\/+/, '')}`
                         : service.image instanceof File
-                        ? URL.createObjectURL(service.image) // Preview for newly selected files
-                        : servicesImage // Fallback image
-                    }                    
+                        ? URL.createObjectURL(service.image)
+                        : servicesImage
+                    }
                     alt={`Service ${index + 1}`}
                     style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                   />
+
                     <button
                       type="button"
                       onClick={() => {
