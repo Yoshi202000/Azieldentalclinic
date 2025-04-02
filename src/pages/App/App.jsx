@@ -18,9 +18,13 @@ function App() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        console.log('Fetching from:', `${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
-        console.log('Raw response:', response.data);
+        const apiUrl = `${import.meta.env.VITE_BACKEND_URL}/api/clinic`;
+        console.log('API URL:', apiUrl);
+        
+        const response = await axios.get(apiUrl);
+        console.log('Response headers:', response.headers);
+        console.log('Response status:', response.status);
+        console.log('Response data:', response.data);
         
         if (response.data && Array.isArray(response.data.services)) {
           console.log('Fetched Services:', response.data.services);
@@ -31,7 +35,8 @@ function App() {
           setServices([]);
         }
       } catch (error) {
-        console.error('Error fetching services data:', error);
+        console.error('Full error object:', error);
+        console.error('Error response:', error.response);
         setError('Failed to load services. Please try again later.');
         setServices([]);
       } finally {
