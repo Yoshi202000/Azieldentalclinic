@@ -18,6 +18,10 @@ function App() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
+        if (!import.meta.env.VITE_BACKEND_URL) {
+          throw new Error('Backend URL is not configured. Please check your environment variables.');
+        }
+
         const apiUrl = `${import.meta.env.VITE_BACKEND_URL}/api/clinic`;
         console.log('API URL:', apiUrl);
         
@@ -35,9 +39,8 @@ function App() {
           setServices([]);
         }
       } catch (error) {
-        console.error('Full error object:', error);
-        console.error('Error response:', error.response);
-        setError('Failed to load services. Please try again later.');
+        console.error('Error fetching services data:', error);
+        setError(error.message || 'Failed to load services. Please try again later.');
         setServices([]);
       } finally {
         setLoading(false);

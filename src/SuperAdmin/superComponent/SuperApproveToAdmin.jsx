@@ -15,6 +15,7 @@ const SuperApproveToAdmin = () => {
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [clinics, setClinics] = useState([]);
   const [selectedClinic, setSelectedClinic] = useState('');
+  const [selectedRole, setSelectedRole] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -106,9 +107,17 @@ const SuperApproveToAdmin = () => {
     }
   };
 
+  const handleAction = (userId, user) => {
+    setActionUserId(userId);
+    setSelectedUser(user);
+    setSelectedRole(user.role);
+    setSelectedClinic('');
+    setShowPasswordPopup(true);
+  };
+
   const handleRoleChange = async () => {
-    if (!selectedClinic) {
-      alert('Please select a clinic');
+    if (!selectedClinic || !selectedRole) {
+      alert('Please select both a clinic and a role');
       return;
     }
 
@@ -122,7 +131,7 @@ const SuperApproveToAdmin = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          newRole: 'admin',
+          newRole: selectedRole,
           loggedInUserClinic: selectedClinic 
         }),
       });
@@ -131,11 +140,12 @@ const SuperApproveToAdmin = () => {
         const updatedUser = await response.json();
         setUsers((prevUsers) =>
           prevUsers.map((u) =>
-            u._id === actionUserId ? { ...u, role: 'admin', clinic: selectedClinic } : u
+            u._id === actionUserId ? { ...u, role: selectedRole, clinic: selectedClinic } : u
           )
         );
         setPassword('');
         setSelectedClinic('');
+        setSelectedRole('');
         setShowPasswordPopup(false);
         alert('User role updated successfully');
       } else {
@@ -147,41 +157,6 @@ const SuperApproveToAdmin = () => {
       console.error('Error updating user role:', err);
       alert('Error updating user role');
     }
-  };
-
-  const revertUserRole = async () => {
-    const isVerified = await verifyUserPassword();
-    if (!isVerified) return;
-
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/revertUserRole/${actionUserId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        setUsers((prevUsers) =>
-          prevUsers.map((user) =>
-            user._id === actionUserId ? { ...user, role: 'patient', clinic: 'both' } : user
-          )
-        );
-        setPassword(''); // Clear the password input
-        setShowPasswordPopup(false); // Hide the password popup
-      } else {
-        console.error('Failed to revert user role');
-      }
-    } catch (err) {
-      console.error('Error reverting user role:', err);
-    }
-  };
-
-  const handleAction = (userId, type) => {
-    setActionUserId(userId);
-    setActionType(type);
-    setSelectedClinic(''); // Reset clinic selection
-    setShowPasswordPopup(true);
   };
 
   const executeAction = () => {
@@ -218,7 +193,20 @@ const SuperApproveToAdmin = () => {
               <h3>Manage Role for {selectedUser.firstName} {selectedUser.lastName}</h3>
               <p>Current Role: {selectedUser.role}</p>
               <p>Current Clinic: {selectedUser.clinic}</p>
-              {actionType === 'approve' && (
+              <div className="role-select-container">
+                <label>Select New Role:</label>
+                <select
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value)}
+                  className="styled-select"
+                >
+                  <option value="">Select a role</option>
+                  <option value="patient">Patient</option>
+                  <option value="admin">Admin</option>
+                  <option value="doctor">Doctor</option>
+                </select>
+              </div>
+              {selectedRole !== 'patient' && (
                 <div className="clinic-select-container">
                   <label>Select Clinic:</label>
                   <select
@@ -228,14 +216,22 @@ const SuperApproveToAdmin = () => {
                   >
                     <option value="">Select a clinic</option>
                     {clinics.map((clinic) => (
-                      <option key={clinic._id} value={clinic.nameOne}>
-                        {clinic.nameOne}
-                      </option>
+                      <>
+                        <option key={`${clinic._id}-1`} value={clinic.nameOne}>
+                          {clinic.nameOne}
+                        </option>
+                        <option key={`${clinic._id}-2`} value={clinic.nameTwo}>
+                          {clinic.nameTwo}
+                        </option>
+                      </>
                     ))}
                   </select>
                 </div>
               )}
-              <p>Please enter your password to confirm the role change:</p>
+              <p className="clinic-info">
+                Note: {selectedRole === 'patient' ? 'Patient will be assigned to both clinics' : 
+                      'User will be assigned to selected clinic'}
+              </p>
               <input
                 type="password"
                 placeholder="Enter your password to confirm"
@@ -245,17 +241,18 @@ const SuperApproveToAdmin = () => {
               />
               <div className="ButtonContainer">
                 <button 
-                  onClick={executeAction} 
+                  onClick={handleRoleChange} 
                   className="PIButton"
-                  disabled={actionType === 'approve' && (!selectedClinic || !password)}
+                  disabled={(!selectedClinic && selectedRole !== 'patient') || !selectedRole || !password}
                 >
-                  Confirm Action
+                  Confirm Role Change
                 </button>
                 <button 
                   onClick={() => {
                     setShowPasswordPopup(false);
                     setPassword('');
                     setSelectedClinic('');
+                    setSelectedRole('');
                   }} 
                   className="CancelButton"
                 >
@@ -287,22 +284,12 @@ const SuperApproveToAdmin = () => {
                     <td>{user.role}</td>
                     <td>{user.clinic}</td>
                     <td>
-                      {user.role === 'patient' && (
-                        <button 
-                          className="PIButton" 
-                          onClick={() => handleAction(user._id, 'approve')}
-                        >
-                          Approve as Admin
-                        </button>
-                      )}
-                      {user.role === 'admin' && (
-                        <button 
-                          className="PIButton" 
-                          onClick={() => handleAction(user._id, 'revert')}
-                        >
-                          Revert to Patient
-                        </button>
-                      )}
+                      <button 
+                        className="PIButton" 
+                        onClick={() => handleAction(user._id, user)}
+                      >
+                        Manage Role
+                      </button>
                     </td>
                   </tr>
                 ))}
