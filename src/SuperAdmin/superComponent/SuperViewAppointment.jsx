@@ -64,8 +64,8 @@ function SuperViewAppointment() {
     requiredSlots: 1, // Add default required slots
   });
 
-  const [nameOne, setNameOne] = useState('Default Clinic 1'); // ✅ Add a fallback name
-  const [nameTwo, setNameTwo] = useState('Default Clinic 2'); // ✅ Add a fallback name
+  const [nameOne, setNameOne] = useState('Default Clinic 1'); 
+  const [nameTwo, setNameTwo] = useState('Default Clinic 2'); 
   
   const [selectedDoctor, setSelectedDoctor] = useState(''); // State to hold the selected doctor
 
@@ -296,7 +296,10 @@ function SuperViewAppointment() {
       setError('Failed to update appointment status');
     }
   };
-
+  const handleShowDentalChart = (appointment) => {
+    setSelectedAppointment(appointment);
+    setShowDentalChart(true);
+  };
   const handleEditAppointment = (appointment) => {
     if (editingAppointmentId === appointment._id) {
       setEditingAppointmentId(null);
@@ -633,7 +636,7 @@ function SuperViewAppointment() {
                         
                       </td>
                       <td>
-                      <button className="AdminViewAppointmentButton" onClick={() => handleComplete(appointment)}>
+                      <button className="AdminViewAppointmentButton" onClick={() => handleShowDentalChart(appointment)}>
                           Create Dental Record
                         </button>
                       </td>
