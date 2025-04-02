@@ -176,25 +176,38 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
 
   // Calculate total fee with discount
   const calculateTotalFee = (selectedMeds, totalServiceFees = 0) => {
+    // Calculate medicine fees
     const medicineFees = selectedMeds.reduce((sum, medicine) => 
       sum + (parseFloat(medicine.medicineAmount) || 0), 0
     );
 
-    // Calculate discountable amount for medicines
+    // Calculate total service fees from all selected services
+    const totalServices = serviceFees.reduce((sum, fee) => 
+      sum + (parseFloat(fee?.amount) || 0), 0
+    );
+
+    // Calculate discountable amounts
     const discountableMedicineFees = selectedMeds
       .filter(medicine => medicine.isDiscountable || medicine.discountApplicable)
       .reduce((sum, medicine) => sum + (parseFloat(medicine.medicineAmount) || 0), 0);
 
+    const discountableServiceFees = serviceFees
+      .filter(fee => fee?.discountApplicable)
+      .reduce((sum, fee) => sum + (parseFloat(fee?.amount) || 0), 0);
+
+    // Calculate non-discountable amounts
     const nonDiscountableMedicineFees = medicineFees - discountableMedicineFees;
+    const nonDiscountableServiceFees = totalServices - discountableServiceFees;
 
-    // Calculate discountable service fees
-    const discountableServiceFees = totalServiceFees;
-    const nonDiscountableServiceFees = 0;
-
+    // Calculate total discountable amount
     const discountableSubtotal = discountableMedicineFees + discountableServiceFees;
-    const discountAmount = discountId ? (discountableSubtotal * (discount || 0)) : 0;
 
+    // Calculate discount amount only if discount ID exists and discount is set
+    const discountAmount = (discountId && discount) ? (discountableSubtotal * discount) : 0;
+
+    // Calculate final total
     const total = (discountableSubtotal - discountAmount) + nonDiscountableMedicineFees + nonDiscountableServiceFees;
+    
     setTotalFee(total);
     setFee(total.toString());
   };
@@ -248,7 +261,6 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
       setDiscountId('');
       setDiscountIdError('');
     } else {
-      // Show discount ID field when selecting a discount type
       setDiscountType(type);
       setShowDiscountIdField(true);
       // Only apply discount if there's an existing discount ID
@@ -256,7 +268,11 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
         setDiscount(0.20);
       }
     }
-    calculateTotalFee(selectedMedicines, selectedFee?.amount || 0);
+    // Recalculate total with current medicines and service fees
+    const totalServiceFees = serviceFees.reduce((sum, fee) => 
+      sum + (parseFloat(fee?.amount) || 0), 0
+    );
+    calculateTotalFee(selectedMedicines, totalServiceFees);
   };
 
   // Handle discount ID change and update
@@ -288,12 +304,19 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
       } else {
         setDiscount(0);
       }
-      calculateTotalFee(selectedMedicines, selectedFee?.amount || 0);
+      
+      // Recalculate total with current medicines and service fees
+      const totalServiceFees = serviceFees.reduce((sum, fee) => 
+        sum + (parseFloat(fee?.amount) || 0), 0
+      );
+      calculateTotalFee(selectedMedicines, totalServiceFees);
     } catch (error) {
       console.error('Error updating discount ID:', error);
       setDiscountIdError(error.response?.data?.message || 'Invalid discount ID');
       setDiscount(0);
-      calculateTotalFee(selectedMedicines, selectedFee?.amount || 0);
+      calculateTotalFee(selectedMedicines, serviceFees.reduce((sum, fee) => 
+        sum + (parseFloat(fee?.amount) || 0), 0
+      ));
     }
   };
 
@@ -409,11 +432,13 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
               Subtotal: ₱{(
                 selectedMedicines.reduce((sum, medicine) => 
                   sum + (parseFloat(medicine.medicineAmount) || 0), 0
-                ) + serviceFees.reduce((sum, fee) => sum + (parseFloat(fee?.amount) || 0), 0)
+                ) + serviceFees.reduce((sum, fee) => 
+                  sum + (parseFloat(fee?.amount) || 0), 0
+                )
               ).toFixed(2)}
             </Typography>
             
-            {discount > 0 && (
+            {discount > 0 && discountId && (
               <>
                 <Typography variant="body2" sx={{ mt: 1 }}>
                   Discountable Items:
@@ -425,17 +450,22 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
                       {medicine.medicineName}: ₱{medicine.medicineAmount}
                     </Typography>
                   ))}
-                {selectedFee?.discountApplicable && (
-                  <Typography variant="body2" sx={{ ml: 2 }}>
-                    Service Fee: ₱{selectedFee.amount}
-                  </Typography>
-                )}
+                {serviceFees.map((fee, index) => (
+                  fee?.discountApplicable && (
+                    <Typography key={`service-fee-${index}`} variant="body2" sx={{ ml: 2 }}>
+                      Service Fee ({selectedAppointment.appointmentType[index]}): ₱{fee.amount}
+                    </Typography>
+                  )
+                ))}
                 <Typography variant="body2" color="error" sx={{ mt: 1 }}>
                   {discountType} Discount (20%): -₱{(
                     (selectedMedicines
                       .filter(medicine => medicine.isDiscountable || medicine.discountApplicable)
                       .reduce((sum, medicine) => sum + (parseFloat(medicine.medicineAmount) || 0), 0) +
-                    (selectedFee?.discountApplicable ? (parseFloat(selectedFee?.amount) || 0) : 0)) * 0.20
+                    serviceFees
+                      .filter(fee => fee?.discountApplicable)
+                      .reduce((sum, fee) => sum + (parseFloat(fee?.amount) || 0), 0)
+                    ) * 0.20
                   ).toFixed(2)}
                 </Typography>
               </>
@@ -451,11 +481,13 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
                   {medicine.medicineName}: ₱{medicine.medicineAmount}
                 </Typography>
               ))}
-            {selectedFee && !selectedFee.discountApplicable && (
-              <Typography variant="body2" sx={{ ml: 2 }}>
-                Service Fee: ₱{selectedFee.amount}
-              </Typography>
-            )}
+            {serviceFees.map((fee, index) => (
+              !fee?.discountApplicable && fee && (
+                <Typography key={`service-fee-non-disc-${index}`} variant="body2" sx={{ ml: 2 }}>
+                  Service Fee ({selectedAppointment.appointmentType[index]}): ₱{fee.amount}
+                </Typography>
+              )
+            ))}
 
             <Typography variant="h6" sx={{ mt: 2, fontWeight: 'bold' }}>
               Total Fee: ₱{totalFee.toFixed(2)}
