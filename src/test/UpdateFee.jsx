@@ -22,6 +22,7 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
   const [showDiscountIdField, setShowDiscountIdField] = useState(false);
   const [discountIdError, setDiscountIdError] = useState('');
   const [selectedAppointmentType, setSelectedAppointmentType] = useState('');
+  const [serviceFees, setServiceFees] = useState([]);
   const navigate = useNavigate();
 
   // Fetch services with fees
@@ -138,17 +139,23 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
 
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/appointmentFee/update-fee/${selectedAppointment._id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/update-fee/${selectedAppointment._id}`,
         { 
           fee: parseFloat(fee),
           discountType: discountType,
-          discountAmount: discount ? (totalFee * 0.20) : 0
+          discountAmount: discount ? (totalFee * 0.20) : 0,
+          serviceFees: serviceFees.map((fee, index) => ({
+            serviceType: selectedAppointment.appointmentType[index],
+            amount: fee?.amount || 0,
+            feeType: fee?.feeType || '',
+            description: fee?.description || ''
+          }))
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.data) {
-        setOpenSuccessDialog(true); // Show success dialog
+        setOpenSuccessDialog(true);
       }
     } catch (error) {
       console.error('Error updating fee:', error);
@@ -168,7 +175,7 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
   };
 
   // Calculate total fee with discount
-  const calculateTotalFee = (selectedMeds, serviceFee = 0) => {
+  const calculateTotalFee = (selectedMeds, totalServiceFees = 0) => {
     const medicineFees = selectedMeds.reduce((sum, medicine) => 
       sum + (parseFloat(medicine.medicineAmount) || 0), 0
     );
@@ -180,15 +187,14 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
 
     const nonDiscountableMedicineFees = medicineFees - discountableMedicineFees;
 
-    // Always make service fee discountable
-    const discountableServiceFee = parseFloat(serviceFee) || 0;
-    const nonDiscountableServiceFee = 0;
+    // Calculate discountable service fees
+    const discountableServiceFees = totalServiceFees;
+    const nonDiscountableServiceFees = 0;
 
-    const discountableSubtotal = discountableMedicineFees + discountableServiceFee;
-    // Only apply discount if there's a discount ID
+    const discountableSubtotal = discountableMedicineFees + discountableServiceFees;
     const discountAmount = discountId ? (discountableSubtotal * (discount || 0)) : 0;
 
-    const total = (discountableSubtotal - discountAmount) + nonDiscountableMedicineFees + nonDiscountableServiceFee;
+    const total = (discountableSubtotal - discountAmount) + nonDiscountableMedicineFees + nonDiscountableServiceFees;
     setTotalFee(total);
     setFee(total.toString());
   };
@@ -219,13 +225,17 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
   };
 
   // Update service fee selection handler to properly handle discountability
-  const handleFeeSelection = (selectedFee) => {
-    // Make sure to set the discountApplicable property correctly
-    setSelectedFee({
+  const handleFeeSelection = (selectedFee, index) => {
+    const updatedFees = [...serviceFees];
+    updatedFees[index] = {
       ...selectedFee,
-      discountApplicable: true // Force all service fees to be discountable
-    });
-    calculateTotalFee(selectedMedicines, selectedFee.amount);
+      discountApplicable: true
+    };
+    setServiceFees(updatedFees);
+    
+    // Calculate total fee with all service fees
+    const totalServiceFees = updatedFees.reduce((sum, fee) => sum + (parseFloat(fee?.amount) || 0), 0);
+    calculateTotalFee(selectedMedicines, totalServiceFees);
   };
 
   // Handle discount selection
@@ -359,44 +369,48 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
           )}
 
           {/* Service Fee Selection */}
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>Select Service Fee</InputLabel>
-            <Select
-              value={selectedFee || ''}
-              onChange={(e) => handleFeeSelection(e.target.value)}
-              label="Select Service Fee"
-              disabled={!selectedAppointmentType} // Disable if no appointment type selected
-              renderValue={(selected) => (
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  {selected.feeType} - ₱{selected.amount} ({selected.description})
-                  {selected.discountApplicable && (
-                    <Typography variant="caption" color="success.main" sx={{ ml: 1 }}>
-                      (Discountable)
-                    </Typography>
-                  )}
-                </Box>
-              )}
-            >
-              {services
-                .find(service => service.name === selectedAppointmentType)
-                ?.fees.map((fee, index) => (
-                  <MenuItem key={index} value={fee}>
-                    {fee.feeType} - ₱{fee.amount} ({fee.description})
-                    {fee.discountApplicable && (
+          {selectedAppointment?.appointmentType.map((type, index) => (
+            <FormControl key={index} fullWidth sx={{ mb: 2 }}>
+              <InputLabel>{`Select Service Fee for ${type}`}</InputLabel>
+              <Select
+                value={serviceFees[index] || ''}
+                onChange={(e) => handleFeeSelection(e.target.value, index)}
+                label={`Select Service Fee for ${type}`}
+                renderValue={(selected) => (
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    {selected.feeType} - ₱{selected.amount} ({selected.description})
+                    {selected.discountApplicable && (
                       <Typography variant="caption" color="success.main" sx={{ ml: 1 }}>
                         (Discountable)
                       </Typography>
                     )}
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
+                  </Box>
+                )}
+              >
+                {services
+                  .find(service => service.name === type)
+                  ?.fees.map((fee, feeIndex) => (
+                    <MenuItem key={feeIndex} value={fee}>
+                      {fee.feeType} - ₱{fee.amount} ({fee.description})
+                      {fee.discountApplicable && (
+                        <Typography variant="caption" color="success.main" sx={{ ml: 1 }}>
+                          (Discountable)
+                        </Typography>
+                      )}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+          ))}
 
           {/* Total Fee Display with Discountable Information */}
           <Paper sx={{ p: 2, mb: 2, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
             <Typography variant="h6">
-              Subtotal: ₱{selectedMedicines.reduce((sum, medicine) => 
-                sum + (parseFloat(medicine.medicineAmount) || 0), 0) + (parseFloat(selectedFee?.amount) || 0)}
+              Subtotal: ₱{(
+                selectedMedicines.reduce((sum, medicine) => 
+                  sum + (parseFloat(medicine.medicineAmount) || 0), 0
+                ) + serviceFees.reduce((sum, fee) => sum + (parseFloat(fee?.amount) || 0), 0)
+              ).toFixed(2)}
             </Typography>
             
             {discount > 0 && (

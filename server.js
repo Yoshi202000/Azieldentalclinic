@@ -105,7 +105,7 @@ app.use('/api', unreadRoutes);
 app.use('/api', healthRecordRoutes);
 app.use('/api', doctorSchedule);
 app.use('/api', doctorsDescriptionRoutes); 
-app.use('/appointmentFee', appointmentFee);
+app.use('/api', appointmentFee);
 app.use('/api', clinicRoutes);
 app.use('/api', DentalChartForm);
 
