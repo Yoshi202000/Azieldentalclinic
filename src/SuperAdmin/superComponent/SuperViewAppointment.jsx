@@ -298,6 +298,11 @@ function SuperViewAppointment() {
   };
   const handleShowDentalChart = (appointment) => {
     setSelectedAppointment(appointment);
+    setDentalChartData({
+      firstName: appointment.patientFirstName,
+      lastName: appointment.patientLastName,
+      email: appointment.patientEmail
+    });
     setShowDentalChart(true);
   };
   const handleEditAppointment = (appointment) => {
@@ -763,9 +768,9 @@ function SuperViewAppointment() {
       )}
       {showDentalChart && (
         <DentalChartForm 
-          initialFirstName={dentalChartData.firstName}
-          initialLastName={dentalChartData.lastName}
-          initialEmail={dentalChartData.email}
+          initialFirstName={selectedAppointment.patientFirstName}
+          initialLastName={selectedAppointment.patientLastName}
+          initialEmail={selectedAppointment.patientEmail}
           onClose={() => setShowDentalChart(false)}
         />
       )}
