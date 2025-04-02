@@ -70,4 +70,40 @@ router.put('/revertUserRole/:userId', async (req, res) => {
   }
 });
 
+// Route for super admin to update user role and clinic
+router.put('/superAdminUpdateRole/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const { newRole, selectedClinic } = req.body;
+
+  try {
+    // Find the user by ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Validate the new role
+    if (!['admin', 'doctor', 'patient'].includes(newRole)) {
+      return res.status(400).json({ error: 'Invalid role specified' });
+    }
+
+    // Update the user's role
+    user.role = newRole;
+    
+    // Set clinic based on role and selection
+    user.clinic = newRole === 'patient' ? 'both' : selectedClinic;
+
+    // Save the updated user
+    await user.save();
+
+    res.status(200).json({ 
+      message: `User role updated to ${newRole} successfully`, 
+      user 
+    });
+  } catch (error) {
+    console.error('Error updating user role:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 export default router;

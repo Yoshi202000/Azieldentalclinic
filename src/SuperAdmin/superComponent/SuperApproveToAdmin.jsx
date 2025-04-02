@@ -38,10 +38,11 @@ const SuperApproveToAdmin = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setClinics(data);
+      setClinics(Array.isArray(data) ? data : [data]);
     } catch (err) {
       console.error('Error fetching clinics:', err);
       setError('Failed to fetch clinic information');
+      setClinics([]);
     }
   };
 
@@ -116,8 +117,8 @@ const SuperApproveToAdmin = () => {
   };
 
   const handleRoleChange = async () => {
-    if (!selectedClinic || !selectedRole) {
-      alert('Please select both a clinic and a role');
+    if ((!selectedClinic && selectedRole !== 'patient') || !selectedRole) {
+      alert('Please select required fields');
       return;
     }
 
@@ -125,14 +126,14 @@ const SuperApproveToAdmin = () => {
     if (!isVerified) return;
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/updateUserRole/${actionUserId}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/superAdminUpdateRole/${actionUserId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
           newRole: selectedRole,
-          loggedInUserClinic: selectedClinic 
+          selectedClinic: selectedRole === 'patient' ? 'both' : selectedClinic 
         }),
       });
 
@@ -140,7 +141,7 @@ const SuperApproveToAdmin = () => {
         const updatedUser = await response.json();
         setUsers((prevUsers) =>
           prevUsers.map((u) =>
-            u._id === actionUserId ? { ...u, role: selectedRole, clinic: selectedClinic } : u
+            u._id === actionUserId ? { ...u, role: selectedRole, clinic: selectedRole === 'patient' ? 'both' : selectedClinic } : u
           )
         );
         setPassword('');
@@ -215,16 +216,14 @@ const SuperApproveToAdmin = () => {
                     className="styled-select"
                   >
                     <option value="">Select a clinic</option>
-                    {clinics.map((clinic) => (
-                      <>
-                        <option key={`${clinic._id}-1`} value={clinic.nameOne}>
-                          {clinic.nameOne}
-                        </option>
-                        <option key={`${clinic._id}-2`} value={clinic.nameTwo}>
-                          {clinic.nameTwo}
-                        </option>
-                      </>
-                    ))}
+                    {Array.isArray(clinics) && clinics.map((clinic) => [
+                      <option key={`${clinic._id}-1`} value={clinic.nameOne}>
+                        {clinic.nameOne}
+                      </option>,
+                      <option key={`${clinic._id}-2`} value={clinic.nameTwo}>
+                        {clinic.nameTwo}
+                      </option>
+                    ])}
                   </select>
                 </div>
               )}
