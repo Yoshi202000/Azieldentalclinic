@@ -567,6 +567,11 @@ function ViewAppointment() {
     }));
   };
 
+  const handleShowDentalChart = (appointment) => {
+    setSelectedAppointment(appointment);
+    setShowDentalChart(true);
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
@@ -642,7 +647,7 @@ function ViewAppointment() {
                         )}
                       </td>
                       <td>
-                        <button className="AdminViewAppointmentButton" onClick={() => handleComplete(appointment)}>
+                        <button className="AdminViewAppointmentButton" onClick={() => handleShowDentalChart(appointment)}>
                           Create Dental Record
                         </button>
                       </td>
@@ -769,9 +774,9 @@ function ViewAppointment() {
       )}
       {showDentalChart && (
         <DentalChartForm 
-          initialFirstName={dentalChartData.firstName}
-          initialLastName={dentalChartData.lastName}
-          initialEmail={dentalChartData.email}
+          initialFirstName={selectedAppointment.patientFirstName}
+          initialLastName={selectedAppointment.patientLastName}
+          initialEmail={selectedAppointment.patientEmail}
           onClose={() => setShowDentalChart(false)}
         />
       )}

@@ -172,15 +172,8 @@ function DoctorViewAppointment() {
   };
   
   const handleComplete = (appointment) => {
-    setSelectedAppointment({
-      ...appointment,
-      // Include patient information from the appointment
-      userId: appointment.userId, // Patient's user ID
-      patientFirstName: appointment.patientFirstName,
-      patientLastName: appointment.patientLastName,
-      patientEmail: appointment.patientEmail
-    });
-    setShowUpdateFee(true);
+    setSelectedAppointment(appointment);
+    setShowDentalChart(true);
   };
 
   const fetchAppointments = async (clinic) => {
@@ -630,7 +623,7 @@ function DoctorViewAppointment() {
                         
                       </td>
                       <td>
-                      <button className="CancelEditButton" onClick={() => handleComplete(appointment)}>
+                        <button className="CancelEditButton" onClick={() => handleComplete(appointment)}>
                           Create Dental Record
                         </button>
                       </td>
@@ -756,9 +749,9 @@ function DoctorViewAppointment() {
       )}
       {showDentalChart && (
         <DentalChartForm 
-          initialFirstName={dentalChartData.firstName}
-          initialLastName={dentalChartData.lastName}
-          initialEmail={dentalChartData.email}
+          initialFirstName={selectedAppointment.patientFirstName}
+          initialLastName={selectedAppointment.patientLastName}
+          initialEmail={selectedAppointment.patientEmail}
           onClose={() => setShowDentalChart(false)}
         />
       )}
