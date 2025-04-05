@@ -54,10 +54,17 @@ const Services = () => {
               <div key={index} className="service-card">
                 {service.image && (
                   <img
-                    src={service.image ? `${import.meta.env.VITE_BACKEND_URL}${service.image}` : null}
-                    alt={service.name}
-                    className="doctor-image"
-                  />
+                  src={
+                    typeof service.image === 'string'
+                      ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api/${service.image.replace(/^\/+/, '')}`
+                      : service.image instanceof File
+                      ? URL.createObjectURL(service.image)
+                      : servicesImage
+                  }
+                  alt={`Service ${index + 1}`}
+                  style={{ width: '100px', height: '100px', objectFit: 'cover' }}   
+                />
+                
                 )}
                 <div className="doctor-info">
                   <h3 className="doctor-name">{service.name}</h3>
