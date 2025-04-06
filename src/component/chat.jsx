@@ -254,7 +254,10 @@ function Chat() {
   // Scroll to the bottom when messages change or chat is opened
   useEffect(() => {
     if (shouldAutoScroll && messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      // Use a small timeout to ensure the DOM has updated
+      setTimeout(() => {
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     }
   }, [messages, isChatVisible, shouldAutoScroll]);
 
@@ -263,7 +266,8 @@ function Chat() {
     const container = messagesContainerRef.current;
     if (container) {
       const { scrollTop, scrollHeight, clientHeight } = container;
-      const isBottom = scrollTop + clientHeight >= scrollHeight - 10; // 10px threshold
+      // Use a more generous threshold (20px) to determine if user is at bottom
+      const isBottom = scrollTop + clientHeight >= scrollHeight - 20;
       setIsAtBottom(isBottom);
       setShouldAutoScroll(isBottom); // Only auto-scroll if user is at the bottom
     }
@@ -283,6 +287,25 @@ function Chat() {
       }
     };
   }, []);
+
+  // Force scroll to bottom when chat is opened
+  useEffect(() => {
+    if (isChatVisible && messagesEndRef.current) {
+      setShouldAutoScroll(true);
+      setTimeout(() => {
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [isChatVisible]);
+
+  // Force scroll to bottom when a new message is received
+  useEffect(() => {
+    if (messages.length > 0 && shouldAutoScroll && messagesEndRef.current) {
+      setTimeout(() => {
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [messages.length, shouldAutoScroll]);
 
   if (loading) {
     return <p>Loading...</p>;
