@@ -17,6 +17,7 @@ function Chat() {
   const messagesEndRef = useRef(null); // Reference for scrolling to the bottom
   const messagesContainerRef = useRef(null); // Reference for messages container
   const [isAtBottom, setIsAtBottom] = useState(true); // Track if user is at the bottom
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true); // New state to control auto-scrolling
 
   // Fetch logged-in user information
   useEffect(() => {
@@ -142,7 +143,8 @@ function Chat() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages/${selectedUser.email}`, {        headers: {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages/${selectedUser.email}`, {        
+        headers: {
           Authorization: `Bearer ${token}`,
         },
       });
@@ -175,14 +177,10 @@ function Chat() {
       const data = await response.json();
       
       const unreads = data.filter(message => message.receiverId === loggedInUser.email && message.readAt === null);
+      setUnreadCount(unreads.length);
     } catch (error) {
       console.error('Error fetching unread messages count:', error);
     }
-    /*
-    const unreadMessages = messagesToMark.filter(msg => msg.readAt == null && msg.receiverId === loggedInUser.email);
-    console.log('update count :'+unreadMessages.length);
-    console.log('update const');
-    */
   };
 
   // Function to mark messages as read
@@ -235,7 +233,7 @@ function Chat() {
       const sentMessage = await response.json();
       setMessages(prevMessages => [...prevMessages, sentMessage]);
       setNewMessage('');
-      //await updateUnreadCount();
+      setShouldAutoScroll(true); // Ensure we scroll to bottom after sending a message
     } catch (error) {
       console.error('Error sending message:', error);
     }
@@ -245,6 +243,7 @@ function Chat() {
   const handleUserSelect = (user) => {
     setSelectedUser(user);
     setMessages([]);
+    setShouldAutoScroll(true); // Reset auto-scroll when selecting a new user
   };
 
   const handleBackToUserList = () => {
@@ -252,30 +251,21 @@ function Chat() {
     setMessages([]);
   };
 
-  // Scroll to the bottom when the chat is opened
+  // Scroll to the bottom when messages change or chat is opened
   useEffect(() => {
-    if (isChatVisible) {
-      // Timeout to ensure the DOM is updated before scrolling
-      setTimeout(() => {
-        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-      }, 0);
-    } else {
-      // Reset scroll position when chat is closed
-      setIsAtBottom(true);
+    if (shouldAutoScroll && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [isChatVisible]);
+  }, [messages, isChatVisible, shouldAutoScroll]);
 
   // Handle scroll event to check if user is at the bottom
   const handleScroll = () => {
     const container = messagesContainerRef.current;
     if (container) {
       const { scrollTop, scrollHeight, clientHeight } = container;
-      setIsAtBottom(scrollTop + clientHeight >= scrollHeight - 1);
-      
-      // If the user scrolls up, do not scroll to the bottom
-      if (!isAtBottom) {
-        return;
-      }
+      const isBottom = scrollTop + clientHeight >= scrollHeight - 10; // 10px threshold
+      setIsAtBottom(isBottom);
+      setShouldAutoScroll(isBottom); // Only auto-scroll if user is at the bottom
     }
   };
 
@@ -284,13 +274,15 @@ function Chat() {
     const container = messagesContainerRef.current;
     if (container) {
       container.addEventListener('scroll', handleScroll);
+      // Initial check
+      handleScroll();
     }
     return () => {
       if (container) {
         container.removeEventListener('scroll', handleScroll);
       }
     };
-  }, [messagesContainerRef]);
+  }, []);
 
   if (loading) {
     return <p>Loading...</p>;
@@ -339,7 +331,7 @@ function Chat() {
             </div>
           )}
 
-          <div className="messages">
+          <div className="messages" ref={messagesContainerRef}>
             <div className="messages-content">
               {messages.map((message) => (
                 <div 
