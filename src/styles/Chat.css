@@ -340,9 +340,13 @@
     max-height: 80vh;
   }
 
+  .chat-title {
+    padding: 10px;
+  }
+
   .chat-title h1,
   .chat-title h2 {
-    font-size: 1.1em;
+    font-size: 1em;
   }
 
   .message-item p {
@@ -374,7 +378,7 @@
   }
 
   .chat-title {
-    padding: 10px;
+    padding: 8px;
   }
 
   .chat-title h1,
@@ -515,5 +519,70 @@
   background-color: #6c757d;
   cursor: not-allowed;
   opacity: 0.7;
+}
+
+/* Chat Actions */
+.chat-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.close-chat {
+  background: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5em;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.close-chat:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive adjustments for chat actions */
+@media (max-width: 576px) {
+  .chat-title {
+    padding: 10px;
+  }
+  
+  .chat-title h1,
+  .chat-title h2 {
+    font-size: 1em;
+  }
+  
+  .close-chat {
+    width: 25px;
+    height: 25px;
+    font-size: 1.3em;
+  }
+  
+  .chat-actions button {
+    padding: 5px 8px;
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 375px) {
+  .chat-title {
+    padding: 8px;
+  }
+  
+  .close-chat {
+    width: 22px;
+    height: 22px;
+    font-size: 1.2em;
+  }
+  
+  .chat-actions button {
+    padding: 4px 6px;
+    font-size: 0.85em;
+  }
 }
 
