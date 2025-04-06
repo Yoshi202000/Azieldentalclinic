@@ -247,6 +247,7 @@ function Chat() {
   const handleBackToUserList = () => {
     setSelectedUser(null);
     setMessages([]);
+    // Don't hide the chat, just return to user selection view
   };
 
   // Scroll to the bottom when messages change or chat is opened
