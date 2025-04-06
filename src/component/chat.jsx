@@ -11,6 +11,7 @@ function Chat() {
   const [users, setUsers] = useState([]);
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [messagesLoading, setMessagesLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const pollingIntervalRef = useRef(null);
   const [unreadMessages, setUnreadMessages] = useState([]);
@@ -27,6 +28,7 @@ function Chat() {
     
     const fetchLoggedInUser = async () => {
       try {
+        setLoading(true);
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {          
           method: 'GET',
           headers: {
@@ -41,9 +43,10 @@ function Chat() {
 
         const data = await response.json();
         setLoggedInUser(data.user);
-        setLoading(false);
       } catch (error) {
         console.error('Error fetching logged-in user:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -57,6 +60,7 @@ function Chat() {
       if (!loggedInUser) return;
 
       try {
+        setLoading(true);
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/UserInformation`);
         if (!response.ok) throw new Error('Failed to fetch users');
         const data = await response.json();
@@ -70,6 +74,8 @@ function Chat() {
         }
       } catch (error) {
         console.error('Error fetching users:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -142,6 +148,7 @@ function Chat() {
     if (!selectedUser) return;
 
     try {
+      setMessagesLoading(true);
       const token = localStorage.getItem('token');
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages/${selectedUser.email}`, {        
         headers: {
@@ -159,6 +166,8 @@ function Chat() {
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
+    } finally {
+      setMessagesLoading(false);
     }
   };
 
@@ -216,6 +225,7 @@ function Chat() {
     if (newMessage.trim() === '' || !selectedUser) return;
 
     try {
+      setMessagesLoading(true);
       const token = localStorage.getItem('token');
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages`, {
         method: 'POST',
@@ -236,6 +246,8 @@ function Chat() {
       setShouldAutoScroll(true); // Ensure we scroll to bottom after sending a message
     } catch (error) {
       console.error('Error sending message:', error);
+    } finally {
+      setMessagesLoading(false);
     }
   };
 
@@ -244,11 +256,13 @@ function Chat() {
     setSelectedUser(user);
     setMessages([]);
     setShouldAutoScroll(true); // Reset auto-scroll when selecting a new user
+    fetchMessages(); // Fetch messages immediately when selecting a user
   };
 
   const handleBackToUserList = () => {
     setSelectedUser(null);
     setMessages([]);
+    setIsChatVisible(false); // Hide the chat box when back is pressed
   };
 
   // Scroll to the bottom when messages change or chat is opened
@@ -308,7 +322,12 @@ function Chat() {
   }, [messages.length, shouldAutoScroll]);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="chat-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading chat...</p>
+      </div>
+    );
   }
 
   return (
@@ -336,46 +355,57 @@ function Chat() {
 
           {!selectedUser && (
             <div className="user-list">
-              {users.map((user) => {
-                // Check if the user has unread messages
-                const hasUnreadMessages = unreadMessages.some(message => message.senderId === user.email);
-                return (
-                  <div 
-                    key={user._id} 
-                    className={`user-item ${selectedUser?._id === user._id ? 'active' : ''}`}
-                    onClick={() => handleUserSelect(user)}
-                  >
-                    <span style={{ fontWeight: hasUnreadMessages ? 'bold' : 'normal' }}>
-                      {user.firstName} {user.lastName}
-                    </span>
-                  </div>
-                );
-              })}
+              {users.length === 0 ? (
+                <div className="no-users">No users available</div>
+              ) : (
+                users.map((user) => {
+                  // Check if the user has unread messages
+                  const hasUnreadMessages = unreadMessages.some(message => message.senderId === user.email);
+                  return (
+                    <div 
+                      key={user._id} 
+                      className={`user-item ${selectedUser?._id === user._id ? 'active' : ''}`}
+                      onClick={() => handleUserSelect(user)}
+                    >
+                      <span style={{ fontWeight: hasUnreadMessages ? 'bold' : 'normal' }}>
+                        {user.firstName} {user.lastName}
+                      </span>
+                    </div>
+                  );
+                })
+              )}
             </div>
           )}
 
           <div className="messages" ref={messagesContainerRef}>
             <div className="messages-content">
-              {messages.map((message) => (
-                <div 
-                  key={message._id} 
-                  className={`message-item ${message.senderId === loggedInUser.email ? 'message-own' : ''}`}
-                >
-                  <div className="message-content">
-                    <p className="message-text">{message.content}</p>
-                    <div className="message-info">
-                      <span className="message-time">
-                        {new Date(message.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                      {message.readAt && (
-                        <span className="message-read-status">
-                          {`Read at: ${new Date(message.readAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+              {messagesLoading && messages.length === 0 ? (
+                <div className="messages-loading">
+                  <div className="loading-spinner small"></div>
+                  <p>Loading messages...</p>
+                </div>
+              ) : (
+                messages.map((message) => (
+                  <div 
+                    key={message._id} 
+                    className={`message-item ${message.senderId === loggedInUser.email ? 'message-own' : ''}`}
+                  >
+                    <div className="message-content">
+                      <p className="message-text">{message.content}</p>
+                      <div className="message-info">
+                        <span className="message-time">
+                          {new Date(message.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
-                      )}
+                        {message.readAt && (
+                          <span className="message-read-status">
+                            {`Read at: ${new Date(message.readAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
               <div ref={messagesEndRef} /> {/* Reference for scrolling */}
             </div>
           </div>
@@ -387,8 +417,15 @@ function Chat() {
               placeholder="Type a message..."
               className="message-input"
               rows="3"
+              disabled={messagesLoading}
             />
-            <button type="submit" className="message-submit">Send</button>
+            <button 
+              type="submit" 
+              className="message-submit"
+              disabled={messagesLoading || newMessage.trim() === ''}
+            >
+              {messagesLoading ? 'Sending...' : 'Send'}
+            </button>
           </form>
         </div>
       )}
