@@ -11,9 +11,7 @@ function Chat() {
   const [users, setUsers] = useState([]);
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [messagesLoading, setMessagesLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const pollingIntervalRef = useRef(null);
   const [unreadMessages, setUnreadMessages] = useState([]);
   const messagesEndRef = useRef(null); // Reference for scrolling to the bottom
   const messagesContainerRef = useRef(null); // Reference for messages container
@@ -113,42 +111,14 @@ function Chat() {
 
     if (loggedInUser) {
       fetchUnreadMessages();
-      const interval = setInterval(fetchUnreadMessages, 5000);
-      return () => clearInterval(interval);
     }
   }, [loggedInUser]);
-
-  // Start polling messages when a user is selected
-  useEffect(() => {
-    console.log('polling effect');
-    if (selectedUser) {
-      startPolling();
-    } else {
-      stopPolling();
-    }
-
-    return () => stopPolling();
-  }, [selectedUser]);
-
-  const startPolling = () => {
-    pollingIntervalRef.current = setInterval(() => {
-      fetchMessages();
-    }, 2000);
-  };
-
-  const stopPolling = () => {
-    if (pollingIntervalRef.current) {
-      clearInterval(pollingIntervalRef.current);
-      pollingIntervalRef.current = null;
-    }
-  };
 
   // Fetch messages for selected user
   const fetchMessages = async () => {
     if (!selectedUser) return;
 
     try {
-      setMessagesLoading(true);
       const token = localStorage.getItem('token');
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages/${selectedUser.email}`, {        
         headers: {
@@ -166,8 +136,6 @@ function Chat() {
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
-    } finally {
-      setMessagesLoading(false);
     }
   };
 
@@ -225,7 +193,6 @@ function Chat() {
     if (newMessage.trim() === '' || !selectedUser) return;
 
     try {
-      setMessagesLoading(true);
       const token = localStorage.getItem('token');
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages`, {
         method: 'POST',
@@ -246,8 +213,6 @@ function Chat() {
       setShouldAutoScroll(true); // Ensure we scroll to bottom after sending a message
     } catch (error) {
       console.error('Error sending message:', error);
-    } finally {
-      setMessagesLoading(false);
     }
   };
 
@@ -346,10 +311,16 @@ function Chat() {
             {selectedUser ? (
               <>
                 <h2>Chat with {selectedUser.firstName}</h2>
-                <button onClick={handleBackToUserList}>Back</button>
+                <div className="chat-actions">
+                  <button onClick={handleBackToUserList}>Back</button>
+                  <button className="close-chat" onClick={() => setIsChatVisible(false)}>×</button>
+                </div>
               </>
             ) : (
-              <h2>Select a user</h2>
+              <>
+                <h2>Select a user</h2>
+                <button className="close-chat" onClick={() => setIsChatVisible(false)}>×</button>
+              </>
             )}
           </div>
 
@@ -379,11 +350,8 @@ function Chat() {
 
           <div className="messages" ref={messagesContainerRef}>
             <div className="messages-content">
-              {messagesLoading && messages.length === 0 ? (
-                <div className="messages-loading">
-                  <div className="loading-spinner small"></div>
-                  <p>Loading messages...</p>
-                </div>
+              {messages.length === 0 ? (
+                <div className="no-messages">No messages yet. Start a conversation!</div>
               ) : (
                 messages.map((message) => (
                   <div 
@@ -417,14 +385,13 @@ function Chat() {
               placeholder="Type a message..."
               className="message-input"
               rows="3"
-              disabled={messagesLoading}
             />
             <button 
               type="submit" 
               className="message-submit"
-              disabled={messagesLoading || newMessage.trim() === ''}
+              disabled={newMessage.trim() === ''}
             >
-              {messagesLoading ? 'Sending...' : 'Send'}
+              Send
             </button>
           </form>
         </div>

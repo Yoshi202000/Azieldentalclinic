@@ -363,6 +363,109 @@
   }
 }
 
+/* Extra Small Screens - Small Mobile */
+@media (max-width: 375px) {
+  .chat {
+    width: 100%;
+    left: 0;
+    bottom: 70px;
+    max-height: 85vh;
+    border-radius: 0;
+  }
+
+  .chat-title {
+    padding: 10px;
+  }
+
+  .chat-title h1,
+  .chat-title h2 {
+    font-size: 1em;
+  }
+
+  .message-content {
+    padding: 8px 12px;
+  }
+
+  .message-item p {
+    font-size: 0.95em;
+  }
+
+  .message-info span {
+    font-size: 0.75em;
+  }
+
+  .chat-input-form {
+    padding: 10px;
+  }
+
+  .message-input {
+    font-size: 0.95em;
+    padding: 8px 12px;
+  }
+
+  .message-submit {
+    padding: 8px 15px;
+    font-size: 0.95em;
+  }
+
+  .chat-icon {
+    width: 50px;
+    height: 50px;
+    bottom: 15px;
+    left: 15px;
+  }
+  
+  .chat-icon span {
+    font-size: 28px;
+  }
+}
+
+/* Landscape Mode */
+@media (max-height: 500px) and (orientation: landscape) {
+  .chat {
+    max-height: 90vh;
+    bottom: 60px;
+  }
+
+  .chat-title {
+    padding: 8px;
+  }
+
+  .message-content {
+    padding: 8px 12px;
+  }
+
+  .message-input {
+    rows: 2;
+  }
+
+  .chat-icon {
+    bottom: 10px;
+    left: 10px;
+  }
+}
+
+/* Large Screens */
+@media (min-width: 1200px) {
+  .chat {
+    width: 400px;
+    max-height: 75vh;
+  }
+
+  .message-content {
+    max-width: 85%;
+  }
+}
+
+/* No Messages State */
+.no-messages {
+  padding: 20px;
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  margin: 20px 0;
+}
+
 /* Loading Styles */
 .chat-loading {
   display: flex;
@@ -378,15 +481,6 @@
   z-index: 2000;
 }
 
-.messages-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  color: #6c757d;
-}
-
 .loading-spinner {
   width: 40px;
   height: 40px;
@@ -395,13 +489,6 @@
   border-top-color: #007bff;
   animation: spin 1s ease-in-out infinite;
   margin-bottom: 10px;
-}
-
-.loading-spinner.small {
-  width: 24px;
-  height: 24px;
-  border-width: 3px;
-  margin-bottom: 5px;
 }
 
 @keyframes spin {
