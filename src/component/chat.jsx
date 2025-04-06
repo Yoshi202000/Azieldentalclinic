@@ -10,7 +10,7 @@ function Chat() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [loggedInUser, setLoggedInUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState([]);
   const messagesEndRef = useRef(null); // Reference for scrolling to the bottom

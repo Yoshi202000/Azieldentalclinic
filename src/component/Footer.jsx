@@ -52,19 +52,18 @@ const Footer = () => {
   }));
 
   return (
-    <footer className="footer-area clear-both">
-            <div className="Footerontainer">
-                <div className="row">
-                    <FooterCol key={1} menuTitle="Services" menuItems={formattedServices}/>
-                    <FooterCol key={2} menuTitle="Address for Aziel Dental Clinica" menuItems={AzielAddress}/> 
-                    <FooterCol key={3} menuTitle="Address for Arts of Millennials Dental Clinic" menuItems={ArtsAddress}> 
-                    </FooterCol>
-                </div>
-                <div className="copyRight text-center">
-                    <p>Copyright {(new Date()).getFullYear()} All Rights Reserved</p>
-                </div>
-            </div>
-        </footer>
+    <footer className="footer-area">
+      <div className="FooterContainer">
+        <div className="row">
+          <FooterCol key={1} menuTitle="Services" menuItems={formattedServices}/>
+          <FooterCol key={2} menuTitle="Address for Aziel Dental Clinica" menuItems={AzielAddress}/> 
+          <FooterCol key={3} menuTitle="Address for Arts of Millennials Dental Clinic" menuItems={ArtsAddress}/> 
+        </div>
+        <div className="copyRight">
+          <p>Copyright {(new Date()).getFullYear()} All Rights Reserved</p>
+        </div>
+      </div>
+    </footer>
   );
 };
 
