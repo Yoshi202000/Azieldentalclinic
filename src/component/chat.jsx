@@ -17,6 +17,7 @@ function Chat() {
   const messagesContainerRef = useRef(null); // Reference for messages container
   const [isAtBottom, setIsAtBottom] = useState(true); // Track if user is at the bottom
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true); // New state to control auto-scrolling
+  const pollingIntervalRef = useRef(null); // Reference for the polling interval
 
   // Fetch logged-in user information
   useEffect(() => {
@@ -139,6 +140,26 @@ function Chat() {
     }
   };
 
+  // Set up polling for messages when a user is selected
+  useEffect(() => {
+    if (selectedUser) {
+      // Fetch messages immediately
+      fetchMessages();
+      
+      // Set up polling interval (every 2 seconds)
+      pollingIntervalRef.current = setInterval(() => {
+        fetchMessages();
+      }, 2000);
+      
+      // Clean up interval when component unmounts or user changes
+      return () => {
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current);
+        }
+      };
+    }
+  }, [selectedUser]);
+
   // Function to update unread count
   const updateUnreadCount = async () => {
     
@@ -150,21 +171,18 @@ function Chat() {
         },
       });
 
-      if (!response.ok) throw new Error('Failed to fetch unread messages count');
+      if (!response.ok) throw new Error('Failed to fetch unread count');
       const data = await response.json();
-      
-      const unreads = data.filter(message => message.receiverId === loggedInUser.email && message.readAt === null);
-      setUnreadCount(unreads.length);
+      setUnreadCount(data);
     } catch (error) {
-      console.error('Error fetching unread messages count:', error);
+      console.error('Error fetching unread count:', error);
     }
   };
 
   // Function to mark messages as read
-  const markMessagesAsRead = async (messagesToMark) => {
-    const unreadMessages = messagesToMark.filter(msg => !msg.readAt && msg.receiverId === loggedInUser.email);
-    if (unreadMessages.length === 0) return;
-
+  const markMessagesAsRead = async (messages) => {
+    if (!selectedUser || !messages.length) return;
+    
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages/read/${selectedUser.email}`, {
@@ -175,11 +193,13 @@ function Chat() {
       });
 
       if (!response.ok) throw new Error('Failed to mark messages as read');
-      setMessages(prevMessages =>
+      
+      // Update local messages to show as read
+      setMessages(prevMessages => 
         prevMessages.map(msg => 
-          (!msg.readAt && msg.receiverId === loggedInUser.email 
+          msg.receiverId === loggedInUser.email && !msg.readAt 
             ? { ...msg, readAt: new Date().toISOString() } 
-            : msg)
+            : msg
         )
       );
     } catch (error) {
@@ -190,8 +210,8 @@ function Chat() {
   // Function to handle sending messages
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (newMessage.trim() === '' || !selectedUser) return;
-
+    if (!newMessage.trim() || !selectedUser) return;
+    
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/messages`, {
@@ -202,15 +222,16 @@ function Chat() {
         },
         body: JSON.stringify({
           receiverId: selectedUser.email,
-          content: newMessage,
+          content: newMessage.trim(),
         }),
       });
 
       if (!response.ok) throw new Error('Failed to send message');
+      
       const sentMessage = await response.json();
       setMessages(prevMessages => [...prevMessages, sentMessage]);
       setNewMessage('');
-      setShouldAutoScroll(true); // Ensure we scroll to bottom after sending a message
+      setShouldAutoScroll(true); // Ensure we scroll to bottom after sending
     } catch (error) {
       console.error('Error sending message:', error);
     }
@@ -219,24 +240,19 @@ function Chat() {
   // Handle user selection
   const handleUserSelect = (user) => {
     setSelectedUser(user);
-    setMessages([]);
+    setMessages([]); // Clear messages when selecting a new user
     setShouldAutoScroll(true); // Reset auto-scroll when selecting a new user
-    fetchMessages(); // Fetch messages immediately when selecting a user
   };
 
   const handleBackToUserList = () => {
     setSelectedUser(null);
     setMessages([]);
-    setIsChatVisible(false); // Hide the chat box when back is pressed
   };
 
   // Scroll to the bottom when messages change or chat is opened
   useEffect(() => {
     if (shouldAutoScroll && messagesEndRef.current) {
-      // Use a small timeout to ensure the DOM has updated
-      setTimeout(() => {
-        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isChatVisible, shouldAutoScroll]);
 
@@ -245,14 +261,14 @@ function Chat() {
     const container = messagesContainerRef.current;
     if (container) {
       const { scrollTop, scrollHeight, clientHeight } = container;
-      // Use a more generous threshold (20px) to determine if user is at bottom
-      const isBottom = scrollTop + clientHeight >= scrollHeight - 20;
+      // Consider "at bottom" if within 50px of the bottom
+      const isBottom = scrollTop + clientHeight >= scrollHeight - 50;
       setIsAtBottom(isBottom);
-      setShouldAutoScroll(isBottom); // Only auto-scroll if user is at the bottom
+      setShouldAutoScroll(isBottom);
     }
   };
 
-  // Add the scroll event listener
+  // Add scroll event listener
   useEffect(() => {
     const container = messagesContainerRef.current;
     if (container) {
@@ -260,6 +276,7 @@ function Chat() {
       // Initial check
       handleScroll();
     }
+    
     return () => {
       if (container) {
         container.removeEventListener('scroll', handleScroll);
@@ -276,15 +293,6 @@ function Chat() {
       }, 100);
     }
   }, [isChatVisible]);
-
-  // Force scroll to bottom when a new message is received
-  useEffect(() => {
-    if (messages.length > 0 && shouldAutoScroll && messagesEndRef.current) {
-      setTimeout(() => {
-        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    }
-  }, [messages.length, shouldAutoScroll]);
 
   if (loading) {
     return (
