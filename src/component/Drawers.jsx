@@ -22,6 +22,9 @@ const DrawerComponent = () => {
 
       try {
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/verify-token`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
           withCredentials: true,
         });
 
