@@ -68,8 +68,9 @@ router.post('/login', async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'Strict',
-            maxAge: 1 * 24 * 60 * 60 * 1000 // 1 day in milliseconds
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Strict',
+            maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day in milliseconds
+            domain: process.env.NODE_ENV === 'production' ? '.azieldentalclinic.xyz' : undefined
         });
 
         // Send the token and expiration time in the response
