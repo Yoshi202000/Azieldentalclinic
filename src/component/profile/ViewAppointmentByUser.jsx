@@ -6,6 +6,8 @@ import TestStepTwo from '../../test/TestStepTwo';
 import { generateAvailableDates } from '../../utils/appDate';
 import '../../pages/Profile/Profile.css'
 import '../../styles/ViewAppointmentByUser.css'
+import doctor1 from '../../assets/doctor1.png';
+
 
 function ViewAppointmentByUser() {
   const [user, setUser] = useState(null);
@@ -586,7 +588,10 @@ function ViewAppointmentByUser() {
                     {appointment.paymentImage ? (
                       <div className="payment-image-container">
                         <img 
-                          src={`${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api${appointment.paymentImage}`} 
+                          src={appointment.paymentImage
+                            ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api/uploads/${appointment.paymentImage.split('/').pop()}`
+                            : doctor1
+                          }
                           alt="Payment proof" 
                           className="payment-image-preview"
                         />
