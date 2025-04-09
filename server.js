@@ -63,7 +63,8 @@ const allowedOrigins = [
     'https://213.190.4.136:5173',
     'http://localhost:5173',
     'http://localhost:5174',
-    'http://localhost:5000', // Allow requests from local test backend
+    'http://localhost:5000', 
+    'http://localhost:3000',
 ];
 
 app.use(cors({

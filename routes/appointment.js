@@ -6,8 +6,42 @@ import PatientNotification from '../models/PatientNotification.js';
 import nodemailer from 'nodemailer';
 import User from '../models/User.js'; // Assuming your User model is in the models folder
 import MonthlyReminder from '../models/MonthlyReminder.js';
+import multer from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
+import fs from 'fs';
 
 const router = express.Router();
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadsDir);
+  },
+  filename: function (req, file, cb) {
+    // Generate a unique filename using UUID
+    const uniqueFilename = `${uuidv4()}${path.extname(file.originalname)}`;
+    cb(null, uniqueFilename);
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: function (req, file, cb) {
+    // Accept only image files
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+      return cb(new Error('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+  }
+});
 
 const transporter = nodemailer.createTransport({
   service: 'Gmail', // or another email service
@@ -20,15 +54,20 @@ const transporter = nodemailer.createTransport({
 const authenticateToken = (req, res, next) => {
   //const token = req.cookies.authToken; // Read token from cookies
   const tokenHeaderKey = 'authorization';
+  const tokenHeaderKeyUpper = 'Authorization';
 
-  const token = req.headers[tokenHeaderKey];
+  // Check for both lowercase and uppercase Authorization headers
+  const token = req.headers[tokenHeaderKey] || req.headers[tokenHeaderKeyUpper];
 
 
   if (!token) {
       return res.status(401).json({ message: 'No token provided' });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  // Extract the token from the Authorization header (format: "Bearer <token>")
+  const tokenValue = token.startsWith('Bearer ') ? token.substring(7) : token;
+
+  jwt.verify(tokenValue, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.status(403).json({ message: 'Invalid token' });
       req.user = user;
       next();
@@ -185,5 +224,44 @@ router.get('/booked-appointments', async (req, res) => {
   }
 });
 
+// Route to upload payment image and update appointment
+router.post('/upload-payment-image/:appointmentId', authenticateToken, upload.single('paymentImage'), async (req, res) => {
+  try {
+    const { appointmentId } = req.params;
+    
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+    
+    // Get the relative path to the uploaded file
+    const imagePath = `/src/uploads/${req.file.filename}`;
+    
+    // Update the appointment with the image path
+    const updatedAppointment = await Appointment.findByIdAndUpdate(
+      appointmentId,
+      { paymentImage: imagePath },
+      { new: true }
+    );
+    
+    if (!updatedAppointment) {
+      // If appointment not found, delete the uploaded file
+      fs.unlinkSync(req.file.path);
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+    
+    res.status(200).json({ 
+      message: 'Payment image uploaded successfully',
+      imagePath: imagePath,
+      appointment: updatedAppointment
+    });
+  } catch (error) {
+    console.error('Error uploading payment image:', error);
+    // If there's an error, delete the uploaded file
+    if (req.file) {
+      fs.unlinkSync(req.file.path);
+    }
+    res.status(500).json({ message: 'Error uploading payment image: ' + error.message });
+  }
+});
 
 export default router;

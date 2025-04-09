@@ -16,6 +16,7 @@ const appointmentSchema = new mongoose.Schema({
     userEmail: { type: String, required: true },
     fee: { type: Number, required: false },
     doctor: { type: String, required:true },
+    paymentImage: { type: String, required: false },
 }, { timestamps: true });   
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);

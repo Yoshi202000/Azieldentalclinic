@@ -14,6 +14,8 @@ function ViewAppointmentByUser() {
   const [error, setError] = useState(null);
   const [bookedAppointments, setBookedAppointments] = useState([]);
   const navigate = useNavigate();
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
 
   const [editingAppointment, setEditingAppointment] = useState(null);
   const [showTypeChange, setShowTypeChange] = useState(false);
@@ -482,6 +484,57 @@ function ViewAppointmentByUser() {
     setStatusFilter(event.target.value);
   };
 
+  // Handle payment image upload
+  const handlePaymentImageUpload = async (appointmentId, event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Check if file is an image
+    if (!file.type.match('image.*')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    setUploadingImage(true);
+    setUploadError(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('paymentImage', file);
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/upload-payment-image/${appointmentId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        // Update the appointments state with the new payment image
+        setAppointments(prevAppointments =>
+          prevAppointments.map(app =>
+            app._id === appointmentId ? {
+              ...app,
+              paymentImage: response.data.imagePath
+            } : app
+          )
+        );
+        alert('Payment image uploaded successfully');
+      }
+    } catch (error) {
+      console.error('Error uploading payment image:', error);
+      setUploadError('Failed to upload payment image: ' + (error.response?.data?.message || error.message));
+      alert('Failed to upload payment image. Please try again.');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
@@ -517,6 +570,7 @@ function ViewAppointmentByUser() {
               <th>Time</th>
               <th>Type</th>
               <th>Status</th>
+              <th>Payment</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -529,6 +583,38 @@ function ViewAppointmentByUser() {
                   <td>{appointment.appointmentType}</td>
                   <td>{appointment.appointmentStatus}</td>
                   <td>
+                    {appointment.paymentImage ? (
+                      <div className="payment-image-container">
+                        <img 
+                          src={`${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api${appointment.paymentImage}`} 
+                          alt="Payment proof" 
+                          className="payment-image-preview"
+                        />
+                        <label className="upload-payment-btn">
+                          Change
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handlePaymentImageUpload(appointment._id, e)}
+                            style={{ display: 'none' }}
+                            disabled={uploadingImage}
+                          />
+                        </label>
+                      </div>
+                    ) : (
+                      <label className="upload-payment-btn">
+                        {uploadingImage ? 'Uploading...' : 'Upload Payment'}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handlePaymentImageUpload(appointment._id, e)}
+                          style={{ display: 'none' }}
+                          disabled={uploadingImage}
+                        />
+                      </label>
+                    )}
+                  </td>
+                  <td>
                     <button className="ProfileAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
                       {editingAppointment && editingAppointment._id === appointment._id ? 'Close' : 'Edit'}
                     </button>
@@ -536,7 +622,7 @@ function ViewAppointmentByUser() {
                 </tr>
                 {editingAppointment && editingAppointment._id === appointment._id && (
                   <tr>
-                    <td colSpan="5">
+                    <td colSpan="6">
                       <div 
                         ref={editSectionRef}
                         className={`ProfileAppointmentEditSection ${isContainerExpanded ? 'expanded' : ''}`}
