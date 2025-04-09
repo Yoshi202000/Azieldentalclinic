@@ -234,7 +234,7 @@ router.post('/upload-payment-image/:appointmentId', authenticateToken, upload.si
     }
     
     // Get the relative path to the uploaded file
-    const imagePath = `/src/uploads/${req.file.filename}`;
+    const imagePath = `/uploads/${req.file.filename}`;
     
     // Update the appointment with the image path
     const updatedAppointment = await Appointment.findByIdAndUpdate(
