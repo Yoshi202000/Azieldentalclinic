@@ -8,6 +8,16 @@ import '../../pages/Profile/Profile.css'
 import '../../styles/ViewAppointmentByUser.css'
 import doctor1 from '../../assets/doctor1.png';
 
+// Add date formatting function
+const formatDate = (dateString) => {
+  const options = { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  };
+  return new Date(dateString).toLocaleDateString('en-US', options);
+};
 
 function ViewAppointmentByUser() {
   const [user, setUser] = useState(null);
@@ -18,6 +28,8 @@ function ViewAppointmentByUser() {
   const navigate = useNavigate();
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadError, setUploadError] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const [editingAppointment, setEditingAppointment] = useState(null);
   const [showTypeChange, setShowTypeChange] = useState(false);
@@ -277,6 +289,10 @@ function ViewAppointmentByUser() {
   };
 
   const handleEditAppointment = (appointment) => {
+    if (appointment.appointmentStatus === 'Completed') {
+      return;
+    }
+    
     console.log('Starting edit process for appointment:', appointment);
     
     if (editingAppointment && editingAppointment._id === appointment._id) {
@@ -488,10 +504,15 @@ function ViewAppointmentByUser() {
 
   // Handle payment image upload
   const handlePaymentImageUpload = async (appointmentId, event) => {
+    const appointment = appointments.find(app => app._id === appointmentId);
+    if (appointment?.appointmentStatus === 'Completed') {
+      alert('Cannot modify payment image for completed appointments.');
+      return;
+    }
+
     const file = event.target.files[0];
     if (!file) return;
 
-    // Check if file is an image
     if (!file.type.match('image.*')) {
       alert('Please select an image file');
       return;
@@ -517,7 +538,6 @@ function ViewAppointmentByUser() {
       );
 
       if (response.status === 200) {
-        // Update the appointments state with the new payment image
         setAppointments(prevAppointments =>
           prevAppointments.map(app =>
             app._id === appointmentId ? {
@@ -537,12 +557,36 @@ function ViewAppointmentByUser() {
     }
   };
 
+  const handleImageClick = (imagePath) => {
+    setSelectedImage(imagePath);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedImage(null);
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
   return (
     <div className={`ProfileAppointmentContainer ${isContainerExpanded ? 'expanded' : ''}`}>
-      
+      {/* Modal for enlarged image */}
+      {showModal && (
+        <div className="image-modal" onClick={handleCloseModal}>
+          <div className="modal-content">
+            <img 
+              src={selectedImage
+                ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api/uploads/${selectedImage.split('/').pop()}`
+                : doctor1
+              }
+              alt="Enlarged payment proof"
+              className="enlarged-image"
+            />
+          </div>
+        </div>
+      )}
 
       <h1>Your Appointments</h1>
       
@@ -580,7 +624,7 @@ function ViewAppointmentByUser() {
             {filteredAppointments.map((appointment) => (
               <React.Fragment key={appointment._id}>
                 <tr>
-                  <td>{appointment.appointmentDate}</td>
+                  <td>{formatDate(appointment.appointmentDate)}</td>
                   <td>{appointment.appointmentTimeFrom}</td>
                   <td>{appointment.appointmentType}</td>
                   <td>{appointment.appointmentStatus}</td>
@@ -594,9 +638,26 @@ function ViewAppointmentByUser() {
                           }
                           alt="Payment proof" 
                           className="payment-image-preview"
+                          onClick={() => handleImageClick(appointment.paymentImage)}
+                          style={{ cursor: 'pointer' }}
                         />
+                        {appointment.appointmentStatus !== 'Completed' && (
+                          <label className="upload-payment-btn">
+                            Change
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handlePaymentImageUpload(appointment._id, e)}
+                              style={{ display: 'none' }}
+                              disabled={uploadingImage}
+                            />
+                          </label>
+                        )}
+                      </div>
+                    ) : (
+                      appointment.appointmentStatus !== 'Completed' && (
                         <label className="upload-payment-btn">
-                          Change
+                          {uploadingImage ? 'Uploading...' : 'Upload Payment'}
                           <input
                             type="file"
                             accept="image/*"
@@ -605,24 +666,15 @@ function ViewAppointmentByUser() {
                             disabled={uploadingImage}
                           />
                         </label>
-                      </div>
-                    ) : (
-                      <label className="upload-payment-btn">
-                        {uploadingImage ? 'Uploading...' : 'Upload Payment'}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handlePaymentImageUpload(appointment._id, e)}
-                          style={{ display: 'none' }}
-                          disabled={uploadingImage}
-                        />
-                      </label>
+                      )
                     )}
                   </td>
                   <td>
-                    <button className="ProfileAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
-                      {editingAppointment && editingAppointment._id === appointment._id ? 'Close' : 'Edit'}
-                    </button>
+                    {appointment.appointmentStatus !== 'Completed' && (
+                      <button className="ProfileAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
+                        {editingAppointment && editingAppointment._id === appointment._id ? 'Close' : 'Edit'}
+                      </button>
+                    )}
                   </td>
                 </tr>
                 {editingAppointment && editingAppointment._id === appointment._id && (

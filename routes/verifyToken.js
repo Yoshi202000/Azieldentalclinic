@@ -23,7 +23,6 @@ router.get('/verify-token', (req, res) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log('Token verified successfully');
         
         res.status(200).json({ 
             user: { 
@@ -67,7 +66,6 @@ router.put('/api/edit-user', async (req, res) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log('Token verified successfully');
 
         const { firstName, lastName, phoneNumber, greetings, description, services } = req.body;
 
