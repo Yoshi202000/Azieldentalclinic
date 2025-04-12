@@ -54,7 +54,7 @@ function Dashboard() {
     <Chat/>
       <div className='DashContainer'>
         <div className='DashContent'>
-          <h1>Admin Dashboard Content</h1>
+          <h1>Admin Dashboard</h1>
           <div className="button-container">
           <button
             className={activeComponent === 'AccountSettings' ? 'active' : ''}

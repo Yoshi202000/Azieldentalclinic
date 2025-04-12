@@ -55,7 +55,7 @@ function SuperDashboard() {
     <Chat/>
       <div className='DashContainer'>
         <div className='DashContent'>
-          <h1>SuperAdmin Dashboard content</h1>
+          <h1>SuperAdmin Dashboard</h1>
           <div className="button-container">
           <button
             className={activeComponent === 'AccountSettings' ? 'active' : ''}

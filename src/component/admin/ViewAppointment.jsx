@@ -619,6 +619,7 @@ function ViewAppointment() {
                   <th>Type</th>
                   <th>Clinic</th>
                   <th>Status</th>
+                  <th>Payment Image</th>
                   <th>Actions</th>
                   <th>Dental Chart</th>
                 </tr>
@@ -633,6 +634,20 @@ function ViewAppointment() {
                       <td>{appointment.appointmentType}</td>
                       <td>{appointment.bookedClinic}</td>
                       <td>{appointment.appointmentStatus}</td>
+                      <td>
+                        {appointment.paymentImage ? (
+                          <div className="payment-image-container">
+                            <img
+                              src={appointment.paymentImage}
+                              alt="Payment"
+                              className="payment-image-preview"
+                              onClick={() => handleImageClick(appointment.paymentImage)}
+                            />
+                          </div>
+                        ) : (
+                          <span>No payment image</span>
+                        )}
+                      </td>
                       <td>
                         <button className="AdminViewAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}

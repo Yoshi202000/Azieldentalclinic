@@ -261,6 +261,7 @@ const CompletedAppointment = () => {
                     Time <SortIndicator columnKey="time" />
                   </th>
                   <th>Clinic</th>
+                  <th>Payment Image</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -272,6 +273,24 @@ const CompletedAppointment = () => {
                     <td>{new Date(appointment.appointmentDate).toLocaleDateString()}</td>
                     <td>{appointment.appointmentTimeFrom}</td>
                     <td>{appointment.bookedClinic}</td>
+                    <td>
+                        {appointment.paymentImage ? (
+                          <div className="payment-image-container">
+                            <img 
+                          src={appointment.paymentImage
+                            ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api/uploads/${appointment.paymentImage.split('/').pop()}`
+                            : doctor1
+                          }
+                          alt="Payment proof" 
+                          className="payment-image-preview"
+                          onClick={() => handleImageClick(appointment.paymentImage)}
+                          style={{ cursor: 'pointer' }}
+                        />
+                          </div>
+                        ) : (
+                          <span>No payment image</span>
+                        )}
+                      </td>
                     <td>{appointment.appointmentStatus}</td>
                   </tr>
                 ))}

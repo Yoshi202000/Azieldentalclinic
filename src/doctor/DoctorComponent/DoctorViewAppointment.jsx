@@ -602,6 +602,7 @@ function DoctorViewAppointment() {
                   <th>Type</th>
                   <th>Clinic</th>
                   <th>Status</th>
+                  <th>Payment Image</th>
                   <th>Actions</th>
                   <th>Dental Chart</th>
                 </tr>
@@ -616,6 +617,24 @@ function DoctorViewAppointment() {
                       <td>{appointment.appointmentType}</td>
                       <td>{appointment.bookedClinic}</td>
                       <td>{appointment.appointmentStatus}</td>
+                      <td>
+                        {appointment.paymentImage ? (
+                          <div className="payment-image-container">
+                            <img 
+                          src={appointment.paymentImage
+                            ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api/uploads/${appointment.paymentImage.split('/').pop()}`
+                            : doctor1
+                          }
+                          alt="Payment proof" 
+                          className="payment-image-preview"
+                          onClick={() => handleImageClick(appointment.paymentImage)}
+                          style={{ cursor: 'pointer' }}
+                        />
+                          </div>
+                        ) : (
+                          <span>No payment image</span>
+                        )}
+                      </td>
                       <td>
                         <button className="CancelEditButton" onClick={() => handleEditAppointment(appointment)}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}

@@ -647,6 +647,7 @@ const DoctorPatientsInformation = () => {
                           <th>Time</th>
                           <th>Type</th>
                           <th>Status</th>
+                          <th>Payment Image</th>
                           <th>Actions</th>
                         </tr>
                       </thead>
@@ -655,10 +656,41 @@ const DoctorPatientsInformation = () => {
                           <React.Fragment key={appointment._id}>
                             <tr>
                               <td>{new Date(appointment.appointmentDate).toLocaleDateString('en-CA')}</td>
-                              <td>{appointment.appointmentTimeFrom}</td>
-                              <td>{appointment.appointmentType}</td>
+                              <td>
+                                {Array.isArray(appointment.appointmentTimeFrom) 
+                                  ? appointment.appointmentTimeFrom.map((time, index) => (
+                                      <span key={index}>{time}<br /></span>
+                                    )) 
+                                  : appointment.appointmentTimeFrom}
+                              </td>
+
+                              <td>
+                                {Array.isArray(appointment.appointmentType) 
+                                  ? appointment.appointmentType.map((type, index) => (
+                                      <span key={index}>{type}<br /></span>
+                                    )) 
+                                  : appointment.appointmentType}
+                          </td>
                               <td>{appointment.appointmentStatus}</td>
                               <td>
+                        {appointment.paymentImage ? (
+                          <div className="payment-image-container">
+                            <img 
+                          src={appointment.paymentImage
+                            ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api/uploads/${appointment.paymentImage.split('/').pop()}`
+                            : doctor1
+                          }
+                          alt="Payment proof" 
+                          className="payment-image-preview"
+                          onClick={() => handleImageClick(appointment.paymentImage)}
+                          style={{ cursor: 'pointer' }}
+                        />
+                          </div>
+                        ) : (
+                          <span>No payment image</span>
+                        )}
+                      </td>
+                              <td className='tableActionButtons'>
                                 <button className="PIButton" onClick={() => handleEditAppointment(appointment)}>
                                   {editingAppointment && editingAppointment._id === appointment._id ? 'Close' : 'Edit'}
                                 </button>

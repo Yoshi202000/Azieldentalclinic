@@ -176,6 +176,7 @@ const DrawerComponent = () => {
                 {userRole === 'patient' ? 'Profile and Appointments' : ''}
               </a>
             </li>
+            
             {isLoggedIn && (
               <li className="navbar-item">
                 <Notification />
@@ -194,6 +195,15 @@ const DrawerComponent = () => {
                 <button onClick={handleLogout} type="button" class="btn btn-primary btn-primary">Logout</button>
               </li>
             )}
+            <li className="navbar-item">
+              <a 
+                className="navbar-link"
+              >
+                {userRole === 'patient' ? 'Patient' : ''}
+              </a>
+            </li>
+            
+
           </ul>
         </nav>
       </nav>
