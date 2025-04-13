@@ -420,8 +420,27 @@ function DoctorViewAppointment() {
     updateAppointmentStatus(appointmentId, 'Cancelled');
   };
 
-  const handleApprovedAppointment = (appointmentId) => {
-    updateAppointmentStatus(appointmentId, 'Approved');
+  const handleApprovedAppointment = async (appointmentId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/ViewAppointment/updateStatus`, 
+        { appointmentId, newStatus: 'Approved' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.status === 200) {
+        // Update the appointments list with the new status
+        setAppointments(prevAppointments =>
+          prevAppointments.map(app =>
+            app._id === appointmentId ? { ...app, appointmentStatus: 'Approved' } : app
+          )
+        );
+        alert('Appointment approved successfully');
+      }
+    } catch (error) {
+      console.error('Error approving appointment:', error);
+      alert('Failed to approve appointment. Please try again.');
+    }
   };
 
   const filteredAppointments = appointments.filter(appointment => {
@@ -613,9 +632,19 @@ function DoctorViewAppointment() {
                     <tr>
                       <td>{`${appointment.patientFirstName} ${appointment.patientLastName}`}</td>
                       <td>{new Date(appointment.appointmentDate).toLocaleDateString('en-CA')}</td>
-                      <td>{appointment.appointmentTimeFrom}</td>
-                      <td>{appointment.appointmentType}</td>
-                      <td>{appointment.bookedClinic}</td>
+                      <td>
+                                {Array.isArray(appointment.appointmentTimeFrom) 
+                                  ? appointment.appointmentTimeFrom.map((time, index) => (
+                                      <span key={index}>{time}<br /></span>
+                                    )) 
+                                  : appointment.appointmentTimeFrom}
+                              </td>                      <td>
+                                {Array.isArray(appointment.appointmentType) 
+                                  ? appointment.appointmentType.map((type, index) => (
+                                      <span key={index}>{type}<br /></span>
+                                    )) 
+                                  : appointment.appointmentType}
+                          </td>                      <td>{appointment.bookedClinic}</td>
                       <td>{appointment.appointmentStatus}</td>
                       <td>
                         {appointment.paymentImage ? (
@@ -635,14 +664,21 @@ function DoctorViewAppointment() {
                           <span>No payment image</span>
                         )}
                       </td>
-                      <td>
-                        <button className="CancelEditButton" onClick={() => handleEditAppointment(appointment)}>
+                      <td className='tableActionButtons'>
+                        <button className="PIButton" onClick={() => handleEditAppointment(appointment)}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}
                         </button>
-                        
+                        {appointment.appointmentStatus === 'pending' && (
+                          <button 
+                            className="PIButton" 
+                            onClick={() => handleApprovedAppointment(appointment._id)}
+                          >
+                            Approve
+                          </button>
+                        )}
                       </td>
-                      <td>
-                        <button className="CancelEditButton" onClick={() => handleComplete(appointment)}>
+                      <td >
+                        <button className="PIButton" onClick={() => handleShowDentalChart(appointment)}>
                           Create Dental Record
                         </button>
                       </td>

@@ -486,7 +486,7 @@ const PatientsInformation = () => {
       patientLastName: appointment.patientLastName,
       patientEmail: appointment.patientEmail
     });
-    setShowUpdateFee(true);
+    setShowDentalChart(true);
   };
 
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
@@ -662,7 +662,6 @@ const PatientsInformation = () => {
                               <td>{appointment.bookedClinic}</td>
                               <td>{appointment.appointmentStatus}</td>
                               <td>
-                              <td>
                         {appointment.paymentImage ? (
                           <div className="payment-image-container">
                             <img 
@@ -680,6 +679,7 @@ const PatientsInformation = () => {
                           <span>No payment image</span>
                         )}
                       </td>
+                      <td className='tableActionButtons'>
                                 <button className="PIButton" onClick={() => handleEditAppointment(appointment)}>
                                   {editingAppointment && editingAppointment._id === appointment._id ? 'Close' : 'Edit'}
                                 </button>
@@ -690,15 +690,15 @@ const PatientsInformation = () => {
                             </tr>
                             {editingAppointment && editingAppointment._id === appointment._id && (
                               <tr>
-                                <td colSpan="5">
+                                <td colSpan="7">
                                   <div 
                                     ref={editSectionRef}
-                                    className={`AdminAppointmentEditSection ${isContainerExpanded ? 'expanded' : ''}`}
+                                    className={`PIEditSection  ${isContainerExpanded ? 'expanded' : ''}`}
                                   >
                                     <h2>Edit Appointment</h2>
-                                    <div className="AdminAppointmentEditButtons">
+                                    <div className="PIEditButtons">
                                       <button 
-                                        className="AdminAppointmentButton" 
+                                        className="PIButton" 
                                         onClick={() => {
                                           setShowDateTimeChange(true);
                                           setShowStatusButtons(false);
@@ -708,7 +708,7 @@ const PatientsInformation = () => {
                                         Edit Appointment Details
                                       </button>
                                       <button 
-                                        className="AdminAppointmentButton" 
+                                        className="PIButton" 
                                         onClick={() => {
                                           setShowDateTimeChange(false);
                                           setShowStatusButtons(true);
@@ -769,11 +769,11 @@ const PatientsInformation = () => {
                                     )}
 
                                     {showStatusButtons && (
-                                      <div className="AdminAppointmentStatusButtons">
+                                      <div className="PIStatusButtons">
                                         {['Cancelled', 'Completed', 'No Show', 'Approved'].map(status => (
                                           <button
                                             key={status}
-                                            className="AdminAppointmentStatusButton"
+                                            className="PIStatusButton"
                                             onClick={() => updateAppointmentStatus(appointment._id, status)}
                                           >
                                             {status}
@@ -782,9 +782,9 @@ const PatientsInformation = () => {
                                       </div>
                                     )}
 
-                                    <div className="AdminAppointmentActionButtons">
+                                    <div className="PIStatusButton">
                                       <button 
-                                        className="AdminAppointmentButton UpdateButton" 
+                                        className="PIStatusButton" 
                                         onClick={handleUpdateAppointment}
                                       >
                                         Update Appointment

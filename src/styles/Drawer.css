@@ -106,8 +106,8 @@ body, html {
   background: none;
   z-index: 1001; /* Ensure the close button is on top of the drawer */
   position: absolute; /* Position the close button */
-  top: 20px;
-  right: 20px;
+  top: 10px;
+  right: 10px;
   font-size: 28px; /* Increase size */
 }
 .CloseButton {
@@ -154,17 +154,19 @@ body, html {
 
 /* Drawer toggle button styles */
 .MainDrawer-toggle {
-  display: none; 
+  display: none;
   position: fixed;
-  top: 10px;
+  top: 20px;
   right: 20px;
   padding: 10px;
-  font-size: 24px; /* Larger size for the hamburger icon */
-  background-color: #333;
-  color: #fff;
+  font-size: 24px;
+  background-color: transparent;
+  color: #0F1035;
   border: none;
   cursor: pointer;
-  z-index: 3000; /* Ensure the button is on top of everything */
+  z-index: 3000;
+  width: auto;
+  height: auto;
 }
 
 /* Hide the drawer toggle button when the drawer is open */
@@ -175,54 +177,63 @@ body, html {
 /* Responsive styles */
 @media (max-width: 980px) {
   .Aziel-navbar {
-    display: none; /* Hide the navbar on smaller screens */
+    display: none;
   }
+
   .drawer {
     width: 35%;
   }
+
   .close-btn {
     font-size: 90px;
   }
     
-  .drawer-item a{
-    font-size: 40px;
+  .drawer-item a {
+    font-size: 50px;
   }
 
   .MainDrawer-toggle {
-    display: block; /* Show the drawer toggle button on smaller screens */
+    display: block;
     top: 20px;
-    right: 2px;
-    padding-left: 750px;
+    right: 20px;
+    padding: 10px;
     background-color: transparent;
     color: #0F1035;
-    font-size: 110px;
+    font-size: 90px;
+  }
+  .drawer{
+    padding-top: 120px;
   }
 
   body {
-    padding-top: 60px; /* Adjust this value to match the height of your navbar */
+    padding-top: 60px;
   }
 }
 
 @media (max-width: 912px) {
   .navbar {
-    display: none; /* Hide the navbar on smaller screens */
+    display: none;
   }
 
   .MainDrawer-toggle {
-    display: block; /* Show the drawer toggle button on smaller screens */
+    display: block;
     top: 20px;
     right: 20px;
+    padding: 10px;
     background-color: transparent;
     color: #0F1035;
-    font-size: 40px;
+    font-size: 24px;
   }
-  .drawer-item a{
-    font-size: 20px;
+
+  .drawer-item a {
+    font-size: 16px;
   }
+
   .close-btn {
-    font-size: 50px;
+    font-size: 24px;
   }
+
   body {
-    padding-top: 80px; /* Adjust this value to match the height of your navbar */
+    padding-top: 80px;
   }
 }

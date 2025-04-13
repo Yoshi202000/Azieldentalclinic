@@ -480,7 +480,30 @@ const SuperPatientsInformation = () => {
       patientLastName: appointment.patientLastName,
       patientEmail: appointment.patientEmail
     });
-    setShowUpdateFee(true);
+    setShowDentalChart(true);
+  };
+
+  const handleApprovedAppointment = async (appointmentId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/ViewAppointment/updateStatus`, 
+        { appointmentId, newStatus: 'Approved' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.status === 200) {
+        // Update the appointments list with the new status
+        setAppointments(prevAppointments =>
+          prevAppointments.map(app =>
+            app._id === appointmentId ? { ...app, appointmentStatus: 'Approved' } : app
+          )
+        );
+        alert('Appointment approved successfully');
+      }
+    } catch (error) {
+      console.error('Error approving appointment:', error);
+      alert('Failed to approve appointment. Please try again.');
+    }
   };
 
   // Filter users to show only those with the role of "patient"
@@ -678,7 +701,7 @@ const SuperPatientsInformation = () => {
                           <span>No payment image</span>
                         )}
                       </td>
-                              <td>
+                              <td className='tableActionButtons'>
                                 <button className="PIButton" onClick={() => handleEditAppointment(appointment)}>
                                   {editingAppointment && editingAppointment._id === appointment._id ? 'Close' : 'Edit'}
                                 </button>
@@ -689,7 +712,7 @@ const SuperPatientsInformation = () => {
                             </tr>
                             {editingAppointment && editingAppointment._id === appointment._id && (
                               <tr>
-                                <td colSpan="5">
+                                <td colSpan="6">
                                   <div 
                                     ref={editSectionRef}
                                     className={`PIEditSection ${isContainerExpanded ? 'expanded' : ''}`}
@@ -769,11 +792,11 @@ const SuperPatientsInformation = () => {
                                     )}
 
                                     {showStatusButtons && (
-                                      <div className="AdminAppointmentStatusButtons">
+                                      <div className="PIStatusButtons">
                                         {['Cancelled', 'Completed', 'No Show', 'Approved'].map(status => (
                                           <button
                                             key={status}
-                                            className="AdminAppointmentStatusButton"
+                                            className="PIStatusButton"
                                             onClick={() => updateAppointmentStatus(appointment._id, status)}
                                           >
                                             {status}

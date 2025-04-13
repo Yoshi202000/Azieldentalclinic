@@ -472,12 +472,6 @@ const DoctorPatientsInformation = () => {
     }
   };
 
-  // Filter users to show only those with the role of "patient"
-  const filteredPatients = users.filter(user => user.role === 'patient' && 
-    (user.emailVerified === true) &&
-    `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const handleComplete = (appointment) => {
     setSelectedAppointment({
       ...appointment,
@@ -486,7 +480,30 @@ const DoctorPatientsInformation = () => {
       patientLastName: appointment.patientLastName,
       patientEmail: appointment.patientEmail
     });
-    setShowUpdateFee(true);
+    setShowDentalChart(true);
+  };
+
+  const handleApprovedAppointment = async (appointmentId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/ViewAppointment/updateStatus`, 
+        { appointmentId, newStatus: 'Approved' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.status === 200) {
+        // Update the appointments list with the new status
+        setAppointments(prevAppointments =>
+          prevAppointments.map(app =>
+            app._id === appointmentId ? { ...app, appointmentStatus: 'Approved' } : app
+          )
+        );
+        alert('Appointment approved successfully');
+      }
+    } catch (error) {
+      console.error('Error approving appointment:', error);
+      alert('Failed to approve appointment. Please try again.');
+    }
   };
 
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
@@ -525,6 +542,12 @@ const DoctorPatientsInformation = () => {
       setError('Failed to update appointment status');
     }
   };
+
+  // Filter users to show only those with the role of "patient"
+  const filteredPatients = users.filter(user => user.role === 'patient' && 
+    (user.emailVerified === true) &&
+    `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="PIContainer">
@@ -701,7 +724,7 @@ const DoctorPatientsInformation = () => {
                             </tr>
                             {editingAppointment && editingAppointment._id === appointment._id && (
                               <tr>
-                                <td colSpan="5">
+                                <td colSpan="6">
                                   <div 
                                     ref={editSectionRef}
                                     className={`PIEditSection ${isContainerExpanded ? 'expanded' : ''}`}
@@ -791,7 +814,7 @@ const DoctorPatientsInformation = () => {
 
                                     {showStatusButtons && (
                                       <div className="PIStatusButtons">
-                                        {['Cancelled', 'Completed', 'No Show'].map(status => (
+                                        {['Cancelled', 'Completed', 'No Show', 'Approved'].map(status => (
                                           <button
                                             key={status}
                                             className="PIStatusButton"

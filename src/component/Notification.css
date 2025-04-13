@@ -97,6 +97,7 @@
 .notifications-dropdown {
   position: relative;
   display: inline-block;
+  z-index: 1000;
 }
 
 .notifications-icon-btn {
@@ -131,6 +132,7 @@
 
 .notifications-content {
   position: absolute;
+  z-index: 1001;
   right: 0;
   top: 100%;
   background-color: #fff;
@@ -139,6 +141,7 @@
   border-radius: 4px;
   max-height: 400px;
   overflow-y: auto;
+  margin-top: 10px;
 }
 
 .notifications-list {
@@ -244,49 +247,69 @@
   background-color: #0056b3;
 }
 
-@media (max-width: 980px) {
-  .notifications-content{
-    max-width: none;
-    max-height: none;
-    height: 900px;
-    width: 600px;
-
+@media (max-width:  980px) {
+  .notifications-content {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    max-width: 100%;
+    width: 500px;
+    max-height: 900px;
+    z-index: 1001;
   }
+  .notifications-content p{
+    font-size: 2.5em;
+  }
+
+
   .notification-header,
   .notification-date,
-  .notification-type{
-    font-size: 1.5em;
+  .notification-type {
+    font-size: 1.2em;
   }
 
-  .notification-message{
-    font-size: 1.5em;
+  .notification-message {
+    font-size: 1.2em;
   }
-  .notification-modal-content{
-    max-width: 900px;
 
+  .notification-modal-content {
+    max-width: 100%;
+    z-index: 1002;
   }
-  .notification-modal-content h2{
-    font-size: 3em;
+
+  .notification-modal-content h2 {
+    font-size: 2em;
   }
-  .notification-modal-content p{
-    font-size: 1.5em;
+
+  .notification-modal-content p {
+    font-size: 1.2em;
   }
+  .delete-notification-btn{
+    font-size: 2.2em;
+  }
+
   .svg-icon {
-    width: 54px;      /* Set the width of the SVG */
-    height: 54px;     /* Set the height of the SVG */
-    fill: currentColor; /* Use the current text color to fill the SVG */
-    transition: fill 0.3s ease; /* Smooth transition when changing color */
-  }  
+    width: 44px;
+    height: 44px;
+  }
+
   .notification-count {
-    font-size: 32px;
-    height: 42px;
-    min-width: 42px;
+    font-size: 26px;
+    height: 34px;
+    min-width: 34px;
+  }
+
+  .notification-icon-btn{
+    width: 44px;
+    height: 44px;
   }
 }
 
 .svg-icon {
+  z-index: 1005;
   width: 24px;      /* Set the width of the SVG */
   height: 24px;     /* Set the height of the SVG */
   fill: currentColor; /* Use the current text color to fill the SVG */
+  color: #ffffff;
   transition: fill 0.3s ease; /* Smooth transition when changing color */
 }

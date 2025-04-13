@@ -648,13 +648,13 @@ function ViewAppointment() {
                           <span>No payment image</span>
                         )}
                       </td>
-                      <td>
-                        <button className="AdminViewAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
+                      <td className='tableActionButtons'>
+                        <button className="PIButton" onClick={() => handleEditAppointment(appointment)}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}
                         </button>
                         {appointment.appointmentStatus === 'pending' && (
                           <button 
-                            className="AdminViewAppointmentButton approve-button" 
+                            className="PIButton" 
                             onClick={() => handleApprovedAppointment(appointment._id)}
                           >
                             Approve
@@ -662,7 +662,7 @@ function ViewAppointment() {
                         )}
                       </td>
                       <td>
-                        <button className="AdminViewAppointmentButton" onClick={() => handleShowDentalChart(appointment)}>
+                        <button className="PIButton" onClick={() => handleShowDentalChart(appointment)}>
                           Create Dental Record
                         </button>
                       </td>

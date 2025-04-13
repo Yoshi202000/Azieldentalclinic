@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import '../styles/Drawer.css'; // Import the CSS file for styling
 import Notification from './notification'; // Import the Notification component
@@ -8,6 +8,7 @@ const DrawerComponent = () => {
   const [open, setOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState(null);
+  const drawerRef = useRef(null);
 
   useEffect(() => {
     const verifyAuth = async () => {
@@ -46,6 +47,19 @@ const DrawerComponent = () => {
 
     verifyAuth();
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (drawerRef.current && !drawerRef.current.contains(event.target) && open) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [open]);
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
@@ -94,8 +108,9 @@ const DrawerComponent = () => {
       <button 
         className={`MainDrawer-toggle ${open ? 'hidden' : ''}`} 
         onClick={toggleDrawer(true)}
+        aria-label="Open menu"
       >
-        &#9776; {/* Unicode for hamburger icon */}
+        <span className="hamburger-icon">&#9776;</span>
       </button>
 
       {/* Navigation bar for larger screens */}
@@ -207,61 +222,68 @@ const DrawerComponent = () => {
           </ul>
         </nav>
       </nav>
-{/* Drawer for smaller screens */}
-<div className={`drawer ${open ? 'open' : ''}`}>
-        <button className="CloseButton close-btn" onClick={toggleDrawer(false)}>
-          &times; {/* Unicode for close icon */}
-        </button>
-  <div className="MainDrawer-content">
-    <ul>
-      {isLoggedIn ? (
-        <>
-          {userRole === 'superAdmin' && (
-            <li className="drawer-item">
-              <a href="/superDashboard" className="drawer-link">Dashboard (Super)</a>
-            </li>
-          )}
-          {userRole === 'admin' && (
-            <li className="drawer-item">
-              <a href="/dashboard" className="drawer-link">Dashboard</a>
-            </li>
-          )}
-          {userRole === 'doctor' && (
-            <li className="drawer-item">
-              <a href="/doctorDashboard" className="drawer-link">Dashboard</a>
-            </li>
-          )}
-          {userRole === 'patient' && (
-            <>
-              <li className="drawer-item"><a href="/" className="drawer-link">Home</a></li>
-              <li className="drawer-item"><a href="/appointment" className="drawer-link">Appointment</a></li>
-              <li className="drawer-item"><a href="/feedback" className="drawer-link">Feedback</a></li>
-              <li className="drawer-item"><a href="/services" className="drawer-link">Services</a></li>
-              <li className="drawer-item"><a href="/profile" className="drawer-link">Profile and Appointments</a></li>
-            </>
-          )}
-          <li className="drawer-item">
-            <Notification />
-          </li>
-          <li className="drawer-item">
-            <button onClick={handleLogout} type="button" class="btn btn-primary btn-sm"
-            >
-              Logout
-            </button>
-          </li>
-        </>
-      ) : (
-        <>
-          <li className="drawer-item"><a href="/" className="drawer-link">Home</a></li>
-          <li className="drawer-item"><a href="/services" className="drawer-link">Services</a></li>
-          <li className="drawer-item"><a href="/feedback" className="drawer-link">Feedback</a></li>
-          <li className="drawer-item"><a href="/login" className="drawer-link">Login</a></li>
-        </>
-      )}
-    </ul>
-  </div>
-</div>
 
+      <div className={`drawer-overlay ${open ? 'open' : ''}`} />
+      <div className={`drawer ${open ? 'open' : ''}`} ref={drawerRef}>
+        <button className="close-btn" onClick={toggleDrawer(false)}>
+          &times;
+        </button>
+        <div className="MainDrawer-content">
+          <ul>
+            {isLoggedIn ? (
+              <>
+                {userRole === 'superAdmin' && (
+                  <li className="drawer-item">
+                    <a href="/superDashboard" className="drawer-link">Dashboard (Super)</a>
+                  </li>
+                )}
+                {userRole === 'admin' && (
+                  <li className="drawer-item">
+                    <a href="/dashboard" className="drawer-link">Dashboard</a>
+                  </li>
+                )}
+                {userRole === 'doctor' && (
+                  <li className="drawer-item">
+                    <a href="/doctorDashboard" className="drawer-link">Dashboard</a>
+                  </li>
+                )}
+                {userRole === 'patient' && (
+                  <>
+                    <li className="drawer-item"><a href="/" className="drawer-link">Home</a></li>
+                    <li className="drawer-item"><a href="/appointment" className="drawer-link">Appointment</a></li>
+                    <li className="drawer-item"><a href="/feedback" className="drawer-link">Feedback</a></li>
+                    <li className="drawer-item"><a href="/services" className="drawer-link">Services</a></li>
+                    <li className="drawer-item"><a href="/profile" className="drawer-link">Profile and Appointments</a></li>
+                  </>
+                )}
+                <li className="drawer-item">
+                  <Notification />
+                </li>
+                <li className="drawer-item">
+                  <button onClick={handleLogout} className="drawer-link" style={{ width: '100%', textAlign: 'left' }}>
+                    Logout
+                  </button>
+                  
+                </li>
+                <li className="drawer-item">
+              <a 
+                className="drawer-link"
+              >
+                {userRole === 'patient' ? 'Patient' : ''}
+              </a>
+            </li>
+              </>
+            ) : (
+              <>
+                <li className="drawer-item"><a href="/" className="drawer-link">Home</a></li>
+                <li className="drawer-item"><a href="/services" className="drawer-link">Services</a></li>
+                <li className="drawer-item"><a href="/feedback" className="drawer-link">Feedback</a></li>
+                <li className="drawer-item"><a href="/login" className="drawer-link">Login</a></li>
+              </>
+            )}
+          </ul>
+        </div>
+      </div>
     </>
   );
 };
