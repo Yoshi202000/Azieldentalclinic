@@ -6,7 +6,16 @@ const userSchema = new mongoose.Schema({
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     phoneNumber: { type: String, required: true },
-    dob: { type: Date },
+    dob: { 
+        type: String, 
+        required: true,
+        validate: {
+            validator: function(v) {
+                return /^\d{4}-\d{2}-\d{2}$/.test(v);
+            },
+            message: props => `${props.value} is not a valid date of birth! Use YYYY-MM-DD format.`
+        }
+    },
     password: { type: String, required: true },
     emailVerified: { type: Boolean, default: false },
     role: { type: String, default: 'patient' },

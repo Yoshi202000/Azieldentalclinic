@@ -63,8 +63,8 @@ function ViewAppointment() {
     appointmentTimeFrom: '',
   });
 
-  const [nameOne, setNameOne] = useState('Default Clinic 1'); // ✅ Add a fallback name
-  const [nameTwo, setNameTwo] = useState('Default Clinic 2'); // ✅ Add a fallback name
+  const [nameOne, setNameOne] = useState('Default Clinic 1'); 
+  const [nameTwo, setNameTwo] = useState('Default Clinic 2'); 
   
   const [selectedDoctor, setSelectedDoctor] = useState(''); // State to hold the selected doctor
 
@@ -456,10 +456,26 @@ function ViewAppointment() {
     const typeMatch = !typeFilter || appointment.appointmentType.toLowerCase() === typeFilter.toLowerCase();
     return nameMatch && typeMatch && appointment.bookedClinic === user.clinic;
   }).sort((a, b) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const dateA = new Date(a.appointmentDate);
+    const dateB = new Date(b.appointmentDate);
+    
+    // If both dates are today, sort by time
+    if (dateA.toDateString() === today.toDateString() && dateB.toDateString() === today.toDateString()) {
+      return a.appointmentTimeFrom.localeCompare(b.appointmentTimeFrom);
+    }
+    
+    // If only one date is today, put it first
+    if (dateA.toDateString() === today.toDateString()) return -1;
+    if (dateB.toDateString() === today.toDateString()) return 1;
+    
+    // For other dates, sort by date
     if (dateSortOrder === 'asc') {
-      return new Date(a.appointmentDate) - new Date(b.appointmentDate);
+      return dateA - dateB;
     } else if (dateSortOrder === 'desc') {
-      return new Date(b.appointmentDate) - new Date(a.appointmentDate);
+      return dateB - dateA;
     }
     return 0;
   });

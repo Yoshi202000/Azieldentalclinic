@@ -20,10 +20,10 @@ const transporter = nodemailer.createTransport({
 });
 
 router.post('/signup', async (req, res) => {
-    const { firstName, lastName, email, phoneNumber, password, clinic = 'both', role = 'patient', services = [], termsCondition } = req.body;
+    const { firstName, lastName, email, phoneNumber, password, dob, clinic = 'both', role = 'patient', services = [], termsCondition } = req.body;
 
     // Basic validation
-    if (!firstName || !lastName || !email || !phoneNumber || !password) {
+    if (!firstName || !lastName || !email || !phoneNumber || !password || !dob) {
         console.error('Validation error: Missing required fields');
         return res.status(400).json({ message: 'All fields are required' });
     }
@@ -73,6 +73,7 @@ router.post('/signup', async (req, res) => {
             emailVerified: false,
             role,
             clinic,
+            dob,
             services,
             termscondition: true,
         });
@@ -190,11 +191,11 @@ const generateRandomPassword = () => {
 
 // Admin signup route
 router.post('/admin-signup', async (req, res) => {
-    const { firstName, lastName, email, phoneNumber, clinic, role } = req.body;
+    const { firstName, lastName, email, phoneNumber, clinic, role, dob } = req.body;
 
     try {
         // Basic validation
-        if (!firstName || !lastName || !email || !phoneNumber || !clinic || !role) {
+        if (!firstName || !lastName || !email || !phoneNumber || !clinic || !role || !dob) {
             return res.status(400).json({ message: 'All fields are required' });
         }
 
@@ -221,6 +222,7 @@ router.post('/admin-signup', async (req, res) => {
             clinic,
             role,
             emailVerified: true, // Set email as verified
+            dob,
             termscondition: true,
         });
 

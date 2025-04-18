@@ -21,6 +21,7 @@ const generateToken = (user) => {
         lastName: user.lastName,
         phoneNumber: user.phoneNumber,
         role: user.role,
+        dob: user.dob,
         clinic: user.clinic,
         doctorGreeting: user.doctorGreeting, // Updated here
         doctorDescription: user.doctorDescription, // Updated here

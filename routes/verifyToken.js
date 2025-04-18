@@ -24,6 +24,9 @@ router.get('/verify-token', (req, res) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
+        // Format the DOB if it exists
+        const formattedDOB = decoded.dob ? new Date(decoded.dob).toISOString().split('T')[0] : null;
+        
         res.status(200).json({ 
             user: { 
                 userId: decoded.userId,
@@ -36,6 +39,7 @@ router.get('/verify-token', (req, res) => {
                 greetings: decoded.doctorGreeting,
                 description: decoded.doctorDescription,
                 services: decoded.services,
+                dob: formattedDOB,
                 doctorImage: decoded.doctorImage
             },
             token
@@ -67,7 +71,7 @@ router.put('/api/edit-user', async (req, res) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        const { firstName, lastName, phoneNumber, greetings, description, services } = req.body;
+        const { firstName, lastName, phoneNumber, greetings, description, services, dob } = req.body;
 
         // Find and update the user
         const updatedUser = await User.findByIdAndUpdate(
@@ -80,6 +84,7 @@ router.put('/api/edit-user', async (req, res) => {
                 doctorGreeting: greetings,
                 doctorDescription: description,
                 services: services.map(service => ({ name: service })), // Ensure services format matches schema
+                dob,
             },
             { new: true } // Return the updated user
         );
@@ -101,6 +106,7 @@ router.put('/api/edit-user', async (req, res) => {
                 doctorGreeting: updatedUser.doctorGreeting,
                 doctorDescription: updatedUser.doctorDescription,
                 services: updatedUser.services,
+                dob: updatedUser.dob,
             },
             process.env.JWT_SECRET,
             { expiresIn: '1d' }
@@ -124,6 +130,7 @@ router.put('/api/edit-user', async (req, res) => {
                 greetings: updatedUser.doctorGreeting,
                 description: updatedUser.doctorDescription,
                 services: updatedUser.services,
+                dob: updatedUser.dob,
             },
             token: newToken,
         });

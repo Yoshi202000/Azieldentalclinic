@@ -26,9 +26,9 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
         withCredentials: true,
       })
       .then((response) => {
-        const { firstName, lastName, email, phoneNumber } = response.data.user;
+        const { firstName, lastName, email, phoneNumber, dob } = response.data.user;
 
-        console.log('Fetched Data:', { firstName, lastName, email, phoneNumber });
+        console.log('Fetched Data:', { firstName, lastName, email, phoneNumber, dob });
 
         // Store fetched data in userData state for future reference
         const userData = {
@@ -36,6 +36,7 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
           lastName: lastName || '',
           email: email || '',
           phoneNumber: phoneNumber || '',
+          dob: dob || '',
         };
         setUserData(userData);
 
@@ -45,7 +46,8 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
           handleInputChange({ target: { name: 'lastName', value: userData.lastName } });
           handleInputChange({ target: { name: 'email', value: userData.email } });
           handleInputChange({ target: { name: 'phoneNumber', value: userData.phoneNumber } });
-        }
+          handleInputChange({ target: { name: 'dob', value: userData.dob } });
+        }   
 
         setLoading(false);
       })
@@ -70,6 +72,7 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
       // If "for other" is unchecked, restore original user data
       handleInputChange({ target: { name: 'firstName', value: userData.firstName } });
       handleInputChange({ target: { name: 'lastName', value: userData.lastName } });
+      handleInputChange({ target: { name: 'dob', value: userData.dob } });
     }
   };
 
@@ -126,12 +129,13 @@ const AppointmentStepThree = ({ formData, handleInputChange }) => {
 
       <div className="stepthree">
         <label>Date of Birth</label>
-        <input
+        <input  
           type="date"
           name="dob" 
-          value={formData.dob}
+          value={formData.dob || ''}
           onChange={handleInputChange}
           required
+          max={new Date().toISOString().split('T')[0]} // Prevent future dates
         />
 
         <label>First Name</label>

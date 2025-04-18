@@ -136,6 +136,16 @@ router.post('/appointments', authenticateToken, async (req, res) => {
   } = req.body;
   
   try {
+    // Validate required fields
+    if (!patientFirstName || !patientLastName || !patientEmail || !patientPhone || !patientDOB || !appointmentDate || !appointmentTimeFrom || !appointmentType || !bookedClinic || !doctor) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Validate DOB format
+    if (!patientDOB.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return res.status(400).json({ message: 'Invalid date of birth format' });
+    }
+
     // Convert appointmentTimeFrom and appointmentType to arrays if they're not already
     const timeFromArray = Array.isArray(appointmentTimeFrom) ? appointmentTimeFrom : [appointmentTimeFrom];
     const typeArray = Array.isArray(appointmentType) ? appointmentType : [appointmentType];

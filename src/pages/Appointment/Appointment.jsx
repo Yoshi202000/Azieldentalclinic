@@ -171,8 +171,15 @@ const Appointment = () => {
   };
 
   const handleAppointmentSubmit = async () => {
+    // Validate all required fields
     if (!formData.appointmentType || !formData.dob || !formData.lastName || !formData.firstName || !selectedDate || !selectedTimeFrom || !formData.bookedClinic) {
       alert('Please fill in all required fields.');
+      return;
+    }
+
+    // Validate DOB format
+    if (!formData.dob.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      alert('Please enter a valid date of birth.');
       return;
     }
 
@@ -230,8 +237,8 @@ const Appointment = () => {
       patientDOB: formData.dob,
       bookedClinic: formData.bookedClinic,
       appointmentDate: selectedDate,
-      appointmentTimeFrom: formData.appointmentTimeFrom, // This is now an array
-      appointmentType: formData.appointmentType, // This is now an array
+      appointmentTimeFrom: formData.appointmentTimeFrom,
+      appointmentType: formData.appointmentType,
       fee: null, 
       doctor: formData.doctorEmail,
       slotCount: formData.slotCount,

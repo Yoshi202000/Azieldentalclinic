@@ -22,6 +22,7 @@ function Signup() {
         password: '',
         confirmPassword: '',
         termscondition: false,
+        dob: '',
     });
         
     useEffect(() => {
@@ -71,7 +72,7 @@ function Signup() {
     
         console.log('Submitting data:', formData); // Debugging log
     
-        const { firstName, lastName, email, phoneNumber, password, termscondition } = formData;
+        const { firstName, lastName, email, phoneNumber, password, termscondition, dob } = formData;
     
         try {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/signup`, {
@@ -85,6 +86,7 @@ function Signup() {
                     email,
                     phoneNumber,
                     password,
+                    dob,
                     role: 'patient',
                     clinic: 'both',
                     termscondition,
@@ -191,6 +193,15 @@ function Signup() {
                                 id="phoneNumber"
                                 placeholder="Enter your phone number"
                                 value={formData.phoneNumber}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="dob">Date of Birth</label>
+                            <input
+                                type="date"
+                                id="dob"
+                                value={formData.dob}
                                 onChange={handleChange}
                             />
                         </div>
