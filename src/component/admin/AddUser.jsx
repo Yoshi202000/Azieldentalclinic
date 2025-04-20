@@ -11,6 +11,7 @@ function AddUser() {
         phoneNumber: '',
         clinic: '', // Remove default value
         role: 'doctor',
+        dob: '',
     });
 
     const [user, setUser] = useState(null);
@@ -69,7 +70,7 @@ function AddUser() {
         setError('');
         setSuccessMessage('');
 
-        const { firstName, lastName, email, phoneNumber, clinic, role } = formData;
+        const { firstName, lastName, email, phoneNumber, clinic, role, dob } = formData;
 
         try {
             const response = await axios.post(
@@ -81,6 +82,7 @@ function AddUser() {
                     phoneNumber,
                     role,
                     clinic,
+                    dob,
                 }
             );
 
@@ -95,6 +97,7 @@ function AddUser() {
                 phoneNumber: '',
                 clinic: user?.clinic || '', // Maintain the clinic value
                 role: 'doctor',
+                dob: '',
             });
 
         } catch (error) {
@@ -132,6 +135,17 @@ function AddUser() {
                                 id="lastName"
                                 placeholder="Enter last name"
                                 value={formData.lastName}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>  
+                        <div className="adduserFormGroup">
+                            <label htmlFor="dob">Date of Birth</label>
+                            <input
+                                type="date"
+                                id="dob"
+                                name="dob"
+                                value={formData.dob}
                                 onChange={handleChange}
                                 required
                             />

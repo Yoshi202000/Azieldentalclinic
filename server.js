@@ -112,8 +112,7 @@ app.use('/api', appointmentFee);
 app.use('/api', clinicRoutes);
 app.use('/api', DentalChartForm);
 
-// test route for monthly reminder
-app.use('/', MonthlyReminder);
+app.use('/api', MonthlyReminder);
 
 
 // Load SSL certificates for HTTPS

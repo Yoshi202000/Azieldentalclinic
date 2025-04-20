@@ -10,6 +10,7 @@ function SuperDoctorSignup() {
         email: '',
         phoneNumber: '',
         clinic: '',
+        dob: '',
         role: 'doctor',
     });
 
@@ -59,7 +60,7 @@ function SuperDoctorSignup() {
         setError('');
         setSuccessMessage('');
 
-        const { firstName, lastName, email, phoneNumber, clinic, role } = formData;
+        const { firstName, lastName, email, phoneNumber, clinic, role, dob } = formData;
 
         try {
             const response = await axios.post(
@@ -71,6 +72,7 @@ function SuperDoctorSignup() {
                     phoneNumber,
                     role,
                     clinic,
+                    dob,
                 }
             );
 
@@ -85,6 +87,7 @@ function SuperDoctorSignup() {
                 phoneNumber: '',
                 clinic: nameOne, // Reset to default clinic
                 role: 'doctor',
+                dob: '',
             });
 
         } catch (error) {
@@ -126,6 +129,17 @@ function SuperDoctorSignup() {
                                 required
                             />
                         </div>
+                        <div className="adduserFormGroup">
+                            <label htmlFor="dob">Date of Birth</label>
+                            <input
+                                type="date"
+                                id="dob"
+                                name="dob"
+                                value={formData.dob}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div> 
                         <div className="adduserFormGroup">
                             <label htmlFor="email">Email</label>
                             <input

@@ -8,6 +8,26 @@ import UpdateFee from '../../test/UpdateFee.jsx';
 import '../../component/admin/ViewAppointment.css';
 import DentalChartForm from '../../component/DentalChart.jsx';
 
+const calculateAge = (birthdate) => {
+  if (!birthdate) return 'N/A';
+  
+  const dob = new Date(birthdate);
+  const today = new Date();
+  
+  // Check if birthdate is valid
+  if (isNaN(dob.getTime())) return 'Invalid date';
+  
+  let age = today.getFullYear() - dob.getFullYear();
+  const monthDiff = today.getMonth() - dob.getMonth();
+  
+  // Adjust age if birthday hasn't occurred yet this year
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
+  
+  return age;
+};
+
 function SuperViewAppointment() {
   const [user, setUser] = useState(null);
   const [appointments, setAppointments] = useState([]);
@@ -29,7 +49,7 @@ function SuperViewAppointment() {
   const [doctors, setDoctors] = useState([]);
   const [doctorEmailFilter, setDoctorEmailFilter] = useState('');
   const [selectedTimeTo, setSelectedTimeTo] = useState(null);
-
+  const [expandedImage, setExpandedImage] = useState(null);
 
   const editSectionRef = useRef(null);
   const navigate = useNavigate();
@@ -37,8 +57,7 @@ function SuperViewAppointment() {
   const [currentPage, setCurrentPage] = useState(1);
   const appointmentsPerPage = 5;
 
-  const [services, setServices] = useState([]); // State to hold services data
-
+  const [services, setServices] = useState([]);
 
   const [editingAppointmentId, setEditingAppointmentId] = useState(null);
   const [showUpdateFee, setShowUpdateFee] = useState(false);
@@ -61,15 +80,15 @@ function SuperViewAppointment() {
     doctorFirstName: '',
     doctorLastName: '',
     appointmentTimeFrom: '',
-    requiredSlots: 1, // Add default required slots
+    requiredSlots: 1,
   });
 
   const [nameOne, setNameOne] = useState('Default Clinic 1'); 
   const [nameTwo, setNameTwo] = useState('Default Clinic 2'); 
   
-  const [selectedDoctor, setSelectedDoctor] = useState(''); // State to hold the selected doctor
+  const [selectedDoctor, setSelectedDoctor] = useState('');
 
-  const [currentStep, setCurrentStep] = useState(1); // State to track the current step
+  const [currentStep, setCurrentStep] = useState(1);
 
   const [showStatusButtons, setShowStatusButtons] = useState(true);
   const [showNavigationButtons, setShowNavigationButtons] = useState(true);
@@ -95,7 +114,7 @@ function SuperViewAppointment() {
     setFormData((prevData) => ({
       ...prevData,
       bookedClinic: selectedClinic,
-      selectedDoctor: '', // Reset doctor when clinic changes
+      selectedDoctor: '',
     }));
   };
   
@@ -106,7 +125,6 @@ function SuperViewAppointment() {
         if (response.data && response.data.services) {
             setServices(response.data.services);
 
-            // Ensure nameOne and nameTwo are correctly extracted from the response
             if (response.data.nameOne && response.data.nameTwo) {
                 setNameOne(response.data.nameOne);
                 setNameTwo(response.data.nameTwo);
@@ -134,10 +152,9 @@ function SuperViewAppointment() {
       const { firstName, lastName, email, phoneNumber, dob, clinic } = response.data.user;
       setUser({ firstName, lastName, email, phoneNumber, dob, clinic });
 
-      // Set the selectedDoctor to the logged-in user's email
-      setSelectedDoctor(email); // Assuming email is used to identify the doctor
+      setSelectedDoctor(email);
 
-      fetchAppointments(token, clinic);
+      fetchAppointments(clinic);
 
     } catch (error) {
       console.error('Error fetching user info:', error);
@@ -175,8 +192,7 @@ function SuperViewAppointment() {
   const handleComplete = (appointment) => {
     setSelectedAppointment({
       ...appointment,
-      // Include patient information from the appointment
-      userId: appointment.userId, // Patient's user ID
+      userId: appointment.userId,
       patientFirstName: appointment.patientFirstName,
       patientLastName: appointment.patientLastName,
       patientEmail: appointment.patientEmail
@@ -207,13 +223,10 @@ function SuperViewAppointment() {
   };
   
 
-  // Function to check slot status before updating
   const checkSlotStatus = async (mainID, slotIDs) => {
     try {
-      // Split the slotIDs string into an array
       const slotIDArray = slotIDs.split(',');
       
-      // Check each slot individually
       for (const slotID of slotIDArray) {
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/schedule/check-slot-status/${mainID}/${slotID}`);
         const result = await response.json();
@@ -237,10 +250,8 @@ function SuperViewAppointment() {
 
   const updateSlotsToUnavailable = async (mainID, slotIDs) => {
     try {
-      // Split the slotIDs string into an array
       const slotIDArray = slotIDs.split(',');
       
-      // Update each slot individually
       for (const slotID of slotIDArray) {
         const response = await axios.put(
           `${import.meta.env.VITE_BACKEND_URL}/api/schedule/update-slot-status/${mainID}/${slotID}`,
@@ -264,14 +275,13 @@ function SuperViewAppointment() {
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
     try {
       const token = localStorage.getItem('token');
-      const appointment = appointments.find(app => app._id === appointmentId); // Find the appointment to get its details
+      const appointment = appointments.find(app => app._id === appointmentId);
 
-      // Check the slot status before updating
-      const slotStatus = await checkSlotStatus(appointment.mainID, appointment.slotID); // Assuming mainID and slotID are available in appointment
+      const slotStatus = await checkSlotStatus(appointment.mainID, appointment.slotID);
 
       if (slotStatus === "Unavailable") {
         alert("The selected slot is unavailable. Cannot update appointment status.");
-        return; // Stop execution if the slot is unavailable
+        return;
       }
 
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/ViewAppointment/updateStatus`, 
@@ -318,7 +328,6 @@ function SuperViewAppointment() {
       setShowTypeChange(false);
       setShowDateTimeChange(false);
       
-      // Set the selected card to the first appointment type if it's an array
       setSelectedCard(Array.isArray(appointment.appointmentType) 
         ? appointment.appointmentType[0] 
         : appointment.appointmentType);
@@ -326,7 +335,6 @@ function SuperViewAppointment() {
       setSelectedDate(appointment.appointmentDate);
       setSelectedTimeFrom(appointment.appointmentTimeFrom);
       
-      // Set form data with existing appointment details
       setFormData(prev => ({
         ...prev,
         doctorEmail: appointment.doctor,
@@ -358,7 +366,6 @@ function SuperViewAppointment() {
     try {
       const token = localStorage.getItem('token');
       
-      // Check slot status before updating
       const slotStatus = await checkSlotStatus(formData.mainID, formData.slotID);
 
       if (slotStatus === "Unavailable") {
@@ -366,7 +373,6 @@ function SuperViewAppointment() {
         return;
       }
 
-      // Prepare appointment details
       const updatedAppointment = {
         patientFirstName: editingAppointment.patientFirstName,
         patientLastName: editingAppointment.patientLastName,
@@ -376,7 +382,7 @@ function SuperViewAppointment() {
         bookedClinic: formData.bookedClinic,
         appointmentDate: selectedDate,
         appointmentTimeFrom: formData.appointmentTimeFrom,
-        appointmentType: formData.selectedServices || [selectedCard], // Ensure it's an array
+        appointmentType: formData.selectedServices || [selectedCard],
         fee: editingAppointment.fee,
         doctor: formData.doctorEmail,
         slotCount: formData.requiredSlots || 1,
@@ -385,9 +391,8 @@ function SuperViewAppointment() {
         slotID: formData.slotID
       };
 
-      // Update status to Rebooked if date changed
       if (selectedDate !== editingAppointment.appointmentDate) {
-        updatedAppointment.appointmentStatus = 'Rebooked';
+        updatedAppointment.appointmentStatus = 'Approved';
       }
 
       console.log('Updating Appointment:', updatedAppointment);
@@ -399,17 +404,15 @@ function SuperViewAppointment() {
       );
 
       if (response.status === 200) {
-        // Update slots to unavailable after successful update
         const slotsUpdated = await updateSlotsToUnavailable(formData.mainID, formData.slotID);
         
         if (slotsUpdated) {
-          // Update the appointments list with the new data
           setAppointments(prevAppointments =>
             prevAppointments.map(app =>
               app._id === response.data._id ? {
                 ...app,
                 ...response.data,
-                appointmentType: response.data.appointmentType || [response.data.appointmentType] // Ensure it's an array
+                appointmentType: response.data.appointmentType || [response.data.appointmentType]
               } : app
             )
           );
@@ -436,8 +439,33 @@ function SuperViewAppointment() {
     updateAppointmentStatus(appointmentId, 'Cancelled');
   };
 
-  const handleApprovedAppointment = (appointmentId) => {
-    updateAppointmentStatus(appointmentId, 'Approved');
+  const handleApprovedAppointment = async (appointmentId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/ViewAppointment/updateStatus`, 
+        { appointmentId, newStatus: 'Approved' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.status === 200) {
+        setAppointments(prevAppointments =>
+          prevAppointments.map(app =>
+            app._id === appointmentId ? { ...app, appointmentStatus: 'Approved' } : app
+          )
+        );
+        alert('Appointment approved successfully');
+      }
+    } catch (error) {
+      console.error('Error approving appointment:', error);
+      alert('Failed to approve appointment. Please try again.');
+    }
+  };
+
+  const handleImageClick = (imagePath) => {
+    if (imagePath) {
+      const fullImageUrl = `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api/uploads/${imagePath.split('/').pop()}`;
+      setExpandedImage(fullImageUrl);
+    }
   };
 
   const filteredAppointments = appointments.filter(appointment => {
@@ -530,14 +558,12 @@ function SuperViewAppointment() {
     }
   };
 
-  // teststep two constsssss
   const handleScheduleSelect = (scheduleInfo) => {
     setSelectedSchedule(scheduleInfo);
     setSelectedTimeFrom(scheduleInfo.timeFrom);
     setSelectedTimeTo(scheduleInfo.timeTo);
     setSelectedDate(scheduleInfo.date);
     
-    // Check if the selected slot is available
     if (scheduleInfo.slotStatus === 'unavailable') {
       alert('The selected slot is already taken. Please select a different time.');
       return;
@@ -611,7 +637,9 @@ function SuperViewAppointment() {
                   <th>Time</th>
                   <th>Type</th>
                   <th>Clinic</th>
+                  <th>Patient DOB</th>  
                   <th>Status</th>
+                  <th>Payment Image</th>
                   <th>Actions</th>
                   <th>Dental Chart</th>
                 </tr>
@@ -633,15 +661,41 @@ function SuperViewAppointment() {
                           : appointment.appointmentType || 'N/A'}
                       </td>
                       <td>{appointment.bookedClinic}</td>
+                      <td>{calculateAge(appointment.patientDOB)} years old</td>
                       <td>{appointment.appointmentStatus}</td>
-                      <td>  
-                        <button type="button" className="AdminViewAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
+                      <td>
+                        {appointment.paymentImage ? (
+                          <div className="payment-image-container">
+                            <img 
+                              src={appointment.paymentImage
+                                ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api/uploads/${appointment.paymentImage.split('/').pop()}`
+                                : ''
+                              }
+                              alt="Payment proof" 
+                              className="payment-image-preview"
+                              onClick={() => handleImageClick(appointment.paymentImage)}
+                              style={{ cursor: 'pointer', maxWidth: '100px', maxHeight: '100px' }}
+                            />
+                          </div>
+                        ) : (
+                          <span>No payment image</span>
+                        )}
+                      </td>
+                      <td className='tableActionButtons'>  
+                        <button type="button" className="PIButton" onClick={() => handleEditAppointment(appointment)}>
                           {editingAppointmentId === appointment._id ? 'Close' : 'Edit'}
                         </button>
-                        
+                        {appointment.appointmentStatus === 'pending' && (
+                          <button 
+                            className="PIButton" 
+                            onClick={() => handleApprovedAppointment(appointment._id)}
+                          >
+                            Approve
+                          </button>
+                        )}
                       </td>
                       <td>
-                      <button className="AdminViewAppointmentButton" onClick={() => handleShowDentalChart(appointment)}>
+                        <button className="PIButton" onClick={() => handleShowDentalChart(appointment)}>
                           Create Dental Record
                         </button>
                       </td>
@@ -773,6 +827,36 @@ function SuperViewAppointment() {
           initialEmail={selectedAppointment.patientEmail}
           onClose={() => setShowDentalChart(false)}
         />
+      )}
+
+      {expandedImage && (
+        <div 
+          className="expanded-image-modal" 
+          onClick={() => setExpandedImage(null)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+            cursor: 'pointer'
+          }}
+        >
+          <img 
+            src={expandedImage} 
+            alt="Expanded payment proof" 
+            style={{
+              maxWidth: '90%',
+              maxHeight: '90%',
+              objectFit: 'contain'
+            }} 
+          />
+        </div>
       )}
     </div>
   );

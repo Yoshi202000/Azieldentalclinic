@@ -8,6 +8,26 @@ import UpdateFee from '../../test/UpdateFee.jsx';
 import './ViewAppointment.css';
 import DentalChartForm from '../../component/DentalChart.jsx';
 
+const calculateAge = (birthdate) => {
+  if (!birthdate) return 'N/A';
+  
+  const dob = new Date(birthdate);
+  const today = new Date();
+  
+  // Check if birthdate is valid
+  if (isNaN(dob.getTime())) return 'Invalid date';
+  
+  let age = today.getFullYear() - dob.getFullYear();
+  const monthDiff = today.getMonth() - dob.getMonth();
+  
+  // Adjust age if birthday hasn't occurred yet this year
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
+  
+  return age;
+};
+
 function ViewAppointment() {
   const [user, setUser] = useState(null);
   const [appointments, setAppointments] = useState([]);
@@ -379,7 +399,7 @@ function ViewAppointment() {
 
       // Update status to Rebooked if date changed
       if (selectedDate !== editingAppointment.appointmentDate) {
-        updatedAppointment.appointmentStatus = 'Rebooked';
+        updatedAppointment.appointmentStatus = 'Approved';
       }
 
       console.log('Updating Appointment:', updatedAppointment);
@@ -634,6 +654,7 @@ function ViewAppointment() {
                   <th>Time</th>
                   <th>Type</th>
                   <th>Clinic</th>
+                  <th>Age</th>
                   <th>Status</th>
                   <th>Payment Image</th>
                   <th>Actions</th>
@@ -649,16 +670,21 @@ function ViewAppointment() {
                       <td>{appointment.appointmentTimeFrom}</td>
                       <td>{appointment.appointmentType}</td>
                       <td>{appointment.bookedClinic}</td>
+                      <td>{calculateAge(appointment.patientDOB)} years old</td>
                       <td>{appointment.appointmentStatus}</td>
                       <td>
                         {appointment.paymentImage ? (
                           <div className="payment-image-container">
-                            <img
-                              src={appointment.paymentImage}
-                              alt="Payment"
-                              className="payment-image-preview"
-                              onClick={() => handleImageClick(appointment.paymentImage)}
-                            />
+                            <img 
+                          src={appointment.paymentImage
+                            ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api/uploads/${appointment.paymentImage.split('/').pop()}`
+                            : doctor1
+                          }
+                          alt="Payment proof" 
+                          className="payment-image-preview"
+                          onClick={() => handleImageClick(appointment.paymentImage)}
+                          style={{ cursor: 'pointer' }}
+                        />
                           </div>
                         ) : (
                           <span>No payment image</span>

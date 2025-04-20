@@ -153,8 +153,7 @@ function Signup() {
                 </div>
                 <div className="signup-container">
                     <h2 className="signup-title">Create an Account</h2>
-                    {error && <div className="error-message">{error}</div>} {/* Display error message */}
-                    {successMessage && <div className="success-message">{successMessage}</div>} {/* Display success message */}
+                   
                     <form className="signup-form" onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label htmlFor="firstName">First Name</label>
@@ -252,6 +251,8 @@ function Signup() {
                         onClose={() => setIsModalOpen(false)} 
                         terms={terms} 
                     />
+                     {error && <div className="error-message">{error}</div>} 
+                     {successMessage && <div className="success-message">{successMessage}</div>} 
                         <button type="submit" className="signup-button">
                             Sign Up
                         </button>

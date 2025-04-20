@@ -319,6 +319,7 @@
   }
 }
 
+
 @media (max-width: 980px) {
   .PIContainer {
     margin: 0.5rem;
@@ -638,10 +639,15 @@
   min-width: 150px;
 }
 
+
 .tableActionButtons{
-  display: flex;
   gap: 8px;
   flex-wrap: wrap;
+}
+.PIButton{
+  white-space: normal;
+  word-wrap: break-word;
+  margin: 5px;
 }
 
 .appointment-details {

@@ -498,6 +498,30 @@ function ViewAppointmentByUser() {
     statusFilter === 'All' || appointment.appointmentStatus === statusFilter
   );
 
+  // Add custom sorting function for appointments
+  const sortedAppointments = [...filteredAppointments].sort((a, b) => {
+    // Define the priority order of statuses
+    const statusPriority = {
+      'pending': 1,
+      'Rebooked': 2,
+      'Approved': 3,
+      'Completed': 4,
+      'No Show': 5,
+      'no show': 6,
+      'Cancelled': 7,      
+    };
+    
+    // Sort by status priority first
+    const statusComparison = statusPriority[a.appointmentStatus] - statusPriority[b.appointmentStatus];
+    
+    // If statuses are the same, sort by date (most recent first)
+    if (statusComparison === 0) {
+      return new Date(b.appointmentDate) - new Date(a.appointmentDate);
+    }
+    
+    return statusComparison;
+  });
+
   const handleStatusFilterChange = (event) => {
     setStatusFilter(event.target.value);
   };
@@ -505,8 +529,10 @@ function ViewAppointmentByUser() {
   // Handle payment image upload
   const handlePaymentImageUpload = async (appointmentId, event) => {
     const appointment = appointments.find(app => app._id === appointmentId);
-    if (appointment?.appointmentStatus === 'Completed') {
-      alert('Cannot modify payment image for completed appointments.');
+    
+    // Only allow uploads for pending appointments
+    if (appointment?.appointmentStatus !== 'pending') {
+      alert('Payment images can only be uploaded for pending appointments.');
       return;
     }
 
@@ -600,13 +626,15 @@ function ViewAppointmentByUser() {
         >
           <option value="All">All</option>
           <option value="pending">Pending</option>
+          <option value="Approved">Approved</option>
           <option value="Completed">Completed</option>
+          <option value="No Show">No Show</option>
           <option value="Cancelled">Cancelled</option>
           <option value="Rebooked">Rebooked</option>
         </select>
       </div>
 
-      {filteredAppointments.length === 0 ? (
+      {sortedAppointments.length === 0 ? (
         <p>No appointments found.</p>
       ) : (
         <table className="ProfileAppointmentTable">
@@ -621,7 +649,7 @@ function ViewAppointmentByUser() {
             </tr>
           </thead>
           <tbody>
-            {filteredAppointments.map((appointment) => (
+            {sortedAppointments.map((appointment) => (
               <React.Fragment key={appointment._id}>
                 <tr>
                   <td>{formatDate(appointment.appointmentDate)}</td>
@@ -641,7 +669,7 @@ function ViewAppointmentByUser() {
                           onClick={() => handleImageClick(appointment.paymentImage)}
                           style={{ cursor: 'pointer' }}
                         />
-                        {appointment.appointmentStatus !== 'Completed' && (
+                        {appointment.appointmentStatus === 'pending' && (
                           <label className="upload-payment-btn">
                             Change
                             <input
@@ -655,7 +683,7 @@ function ViewAppointmentByUser() {
                         )}
                       </div>
                     ) : (
-                      appointment.appointmentStatus !== 'Completed' && (
+                      appointment.appointmentStatus === 'pending' && (
                         <label className="upload-payment-btn">
                           {uploadingImage ? 'Uploading...' : 'Upload Payment'}
                           <input
@@ -670,7 +698,7 @@ function ViewAppointmentByUser() {
                     )}
                   </td>
                   <td>
-                    {appointment.appointmentStatus !== 'Completed' && (
+                    {!['no show','No Show', 'Cancelled', 'Completed'].includes(appointment.appointmentStatus) && (
                       <button className="ProfileAppointmentButton" onClick={() => handleEditAppointment(appointment)}>
                         {editingAppointment && editingAppointment._id === appointment._id ? 'Close' : 'Edit'}
                       </button>
@@ -779,7 +807,7 @@ function ViewAppointmentByUser() {
                             Update Appointment
                           </button>
                           <button 
-                            className="ProfileAppointmentButton" 
+                            className="ProfileAppointmentCancelButton" 
                             onClick={() => handleCancelAppointment(editingAppointment._id)}
                           >
                             Cancel Appointment

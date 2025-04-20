@@ -7,6 +7,25 @@ import { generateAvailableDates } from '../../utils/appDate';
 import UpdateFee from '../../test/UpdateFee.jsx';
 import '../../component/admin/ViewAppointment.css';
 import DentalChartForm from '../../component/DentalChart.jsx';
+const calculateAge = (birthdate) => {
+  if (!birthdate) return 'N/A';
+  
+  const dob = new Date(birthdate);
+  const today = new Date();
+  
+  // Check if birthdate is valid
+  if (isNaN(dob.getTime())) return 'Invalid date';
+  
+  let age = today.getFullYear() - dob.getFullYear();
+  const monthDiff = today.getMonth() - dob.getMonth();
+  
+  // Adjust age if birthday hasn't occurred yet this year
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
+  
+  return age;
+};
 
 function DoctorViewAppointment() {
   const [user, setUser] = useState(null);
@@ -358,6 +377,7 @@ function DoctorViewAppointment() {
         patientPhone: editingAppointment.patientPhone,
         patientDOB: editingAppointment.patientDOB,
         bookedClinic: formData.bookedClinic,
+        patientDOB: formData.dob,
         appointmentDate: selectedDate,
         appointmentTimeFrom: formData.appointmentTimeFrom,
         appointmentType: formData.selectedServices || [selectedCard], // Ensure it's an array
@@ -371,7 +391,7 @@ function DoctorViewAppointment() {
 
       // Update status to Rebooked if date changed
       if (selectedDate !== editingAppointment.appointmentDate) {
-        updatedAppointment.appointmentStatus = 'Rebooked';
+        updatedAppointment.appointmentStatus = 'Approved';
       }
 
       console.log('Updating Appointment:', updatedAppointment);
@@ -620,6 +640,7 @@ function DoctorViewAppointment() {
                   <th>Time</th>
                   <th>Type</th>
                   <th>Clinic</th>
+                  <th>Patient DOB</th>
                   <th>Status</th>
                   <th>Payment Image</th>
                   <th>Actions</th>
@@ -644,7 +665,9 @@ function DoctorViewAppointment() {
                                       <span key={index}>{type}<br /></span>
                                     )) 
                                   : appointment.appointmentType}
-                          </td>                      <td>{appointment.bookedClinic}</td>
+                            </td>                     
+                             <td>{appointment.bookedClinic}</td>
+                            <td>{calculateAge(appointment.patientDOB)} years old</td>
                       <td>{appointment.appointmentStatus}</td>
                       <td>
                         {appointment.paymentImage ? (

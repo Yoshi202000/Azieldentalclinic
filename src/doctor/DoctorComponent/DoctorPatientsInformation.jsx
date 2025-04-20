@@ -7,7 +7,30 @@ import { generateAvailableDates } from '../../utils/appDate';
 import '../../component/admin/ViewAppointment.css'
 import axios from 'axios';
 import UpdateFee from '../../test/UpdateFee.jsx';
+import doctor1 from '../../assets/doctor1.png';
 
+const calculateAge = (birthdate) => {
+  console.log('Calculating age from birthdate:', birthdate);
+  
+  if (!birthdate) return 'N/A';
+  
+  const dob = new Date(birthdate);
+  const today = new Date();
+  
+  // Check if birthdate is valid
+  if (isNaN(dob.getTime())) return 'Invalid date';
+  
+  let age = today.getFullYear() - dob.getFullYear();
+  const monthDiff = today.getMonth() - dob.getMonth();
+  
+  // Adjust age if birthday hasn't occurred yet this year
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
+  
+  console.log('Calculated age:', age);
+  return age;
+};
 
 const DoctorPatientsInformation = () => {
   const [users, setUsers] = useState([]);
@@ -406,7 +429,7 @@ const DoctorPatientsInformation = () => {
 
       // Update status to Rebooked if date changed
       if (selectedDate !== editingAppointment.appointmentDate) {
-        updatedAppointment.appointmentStatus = 'Rebooked';
+        updatedAppointment.appointmentStatus = 'Approved';
       }
 
       console.log('Updating Appointment:', updatedAppointment);
@@ -568,6 +591,7 @@ const DoctorPatientsInformation = () => {
               <tr>
                 <th>First Name</th>
                 <th>Last Name</th>
+                <th>Age</th>
                 <th>Email</th>
                 <th>Phone Number</th>
                 <th>Actions</th>
@@ -578,6 +602,7 @@ const DoctorPatientsInformation = () => {
                 <tr key={user._id} onClick={() => handleUserClick(user)}>
                   <td>{user.firstName}</td>
                   <td>{user.lastName}</td>
+                  <td>{calculateAge(user.dob)} years old</td>
                   <td>{user.email}</td>
                   <td>{user.phoneNumber}</td>
                   <td>
