@@ -1,6 +1,5 @@
 /* Main Container */
 .PIContainer {
-  max-width: 1200px;
   margin: 2rem auto;
   padding: 1.5rem;
   background: white;
@@ -396,7 +395,6 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 1200px;
   margin: 50px auto;
   padding: 20px;
   background-color: #ffffff;

@@ -15,6 +15,7 @@ import SuperViewAdminDoctor from '../superComponent/SuperViewAdminDoctor';
 import EditContent from '../../component/admin/EditContent.jsx'
 import SuperDoctorServices from '../superComponent/SuperDoctorServices';
 import SuperTestSchedule from '../superComponent/SuperEditSchedule';
+import EditPatientsInformation from '../superComponent/EditPatientsInformation';
 
 function SuperDashboard() {
   const [activeComponent, setActiveComponent] = useState('AccountSettings');
@@ -45,6 +46,8 @@ function SuperDashboard() {
         return <SuperDoctorServices/>
       case 'SuperTestSchedule':
         return <SuperTestSchedule/>
+      case 'EditPatientsInformation':
+        return <EditPatientsInformation/>
       default:
         return <h2>Select an option</h2>;
     }
@@ -128,6 +131,12 @@ function SuperDashboard() {
             onClick={() => setActiveComponent('SuperTestSchedule')}
           >
             Test Schedule
+          </button>
+          <button
+            className={activeComponent === 'EditPatientsInformation' ? 'active' : ''}
+            onClick={() => setActiveComponent('EditPatientsInformation')}
+          >
+            Edit Patients Information
           </button>
           </div>
         </div>

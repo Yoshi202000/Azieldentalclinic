@@ -8,6 +8,19 @@ import UpdateFee from '../../test/UpdateFee.jsx';
 import '../../component/admin/ViewAppointment.css';
 import DentalChartForm from '../../component/DentalChart.jsx';
 
+// Animation styles
+const animationStyles = `
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes zoomIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+`;
+
 const calculateAge = (birthdate) => {
   if (!birthdate) return 'N/A';
   
@@ -465,6 +478,9 @@ function SuperViewAppointment() {
     if (imagePath) {
       const fullImageUrl = `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api/uploads/${imagePath.split('/').pop()}`;
       setExpandedImage(fullImageUrl);
+      
+      // Add fullscreen capability
+      document.body.style.overflow = 'hidden'; // Prevent scrolling while modal is open
     }
   };
 
@@ -596,6 +612,8 @@ function SuperViewAppointment() {
 
   return (
     <div className={`AdminAppointmentContainer ${isContainerExpanded ? 'expanded' : ''}`}>
+      <style dangerouslySetInnerHTML={{ __html: animationStyles }} />
+      
       <h1>Pending and Rebooked Appointments</h1>
       <div className="FilterSortSection">
         <input
@@ -674,8 +692,32 @@ function SuperViewAppointment() {
                               alt="Payment proof" 
                               className="payment-image-preview"
                               onClick={() => handleImageClick(appointment.paymentImage)}
-                              style={{ cursor: 'pointer', maxWidth: '100px', maxHeight: '100px' }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'scale(1.05)';
+                                e.currentTarget.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'scale(1)';
+                                e.currentTarget.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+                              }}
+                              style={{ 
+                                cursor: 'pointer', 
+                                maxWidth: '80px', 
+                                maxHeight: '80px',
+                                border: '2px solid #ddd',
+                                borderRadius: '4px',
+                                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                              }}
                             />
+                            <div style={{ 
+                              fontSize: '12px', 
+                              marginTop: '4px', 
+                              color: '#007bff', 
+                              textAlign: 'center' 
+                            }}>
+                              Click to view
+                            </div>
                           </div>
                         ) : (
                           <span>No payment image</span>
@@ -832,30 +874,70 @@ function SuperViewAppointment() {
       {expandedImage && (
         <div 
           className="expanded-image-modal" 
-          onClick={() => setExpandedImage(null)}
+          onClick={() => {
+            setExpandedImage(null);
+            document.body.style.overflow = 'auto'; // Restore scrolling when modal closes
+          }}
           style={{
             position: 'fixed',
             top: 0,
             left: 0,
             width: '100%',
             height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backgroundColor: 'rgba(0, 0, 0, 0.9)',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             zIndex: 1000,
-            cursor: 'pointer'
+            cursor: 'pointer',
+            animation: 'fadeIn 0.3s ease-in-out',
           }}
         >
-          <img 
-            src={expandedImage} 
-            alt="Expanded payment proof" 
-            style={{
-              maxWidth: '90%',
-              maxHeight: '90%',
-              objectFit: 'contain'
-            }} 
-          />
+          <div style={{
+            position: 'relative',
+            width: '95%',
+            height: '95%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+            <img 
+              src={expandedImage} 
+              alt="Expanded payment proof" 
+              onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the image itself
+              style={{
+                maxWidth: '100%',
+                maxHeight: '100%',
+                objectFit: 'contain',
+                boxShadow: '0 5px 15px rgba(0,0,0,0.5)',
+                animation: 'zoomIn 0.3s ease-in-out',
+              }} 
+            />
+            <button 
+              onClick={() => {
+                setExpandedImage(null);
+                document.body.style.overflow = 'auto';
+              }}
+              style={{
+                position: 'absolute',
+                top: '15px',
+                right: '15px',
+                backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                border: 'none',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                fontSize: '24px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                cursor: 'pointer',
+                zIndex: 1001,
+              }}
+            >
+              ×
+            </button>
+          </div>
         </div>
       )}
     </div>

@@ -38,6 +38,7 @@ import doctorsDescriptionRoutes from './routes/doctorsDescription.js';
 
 // test routes
 import MonthlyReminder from './routes/monthlyReminder.js';
+import editInformation from './routes/editInformation.js';
 
 import { fileURLToPath } from 'url';
 
@@ -113,7 +114,7 @@ app.use('/api', clinicRoutes);
 app.use('/api', DentalChartForm);
 
 app.use('/api', MonthlyReminder);
-
+app.use('/api', editInformation);
 
 // Load SSL certificates for HTTPS
 // const server = https.createServer({
