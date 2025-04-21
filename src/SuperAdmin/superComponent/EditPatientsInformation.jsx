@@ -21,6 +21,21 @@ const EditPatientsInformation = () => {
 
   // Fetch user data on component mount
   useEffect(() => {
+
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/UserInformation`); // Ensure the correct URL
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setUsers(data);
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        setError(err.message);
+      }
+    };
+    
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem('token');
