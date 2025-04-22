@@ -29,7 +29,6 @@ import ChangePass from './pages/ChangePass/ChangePass.jsx';
 import AppointmentsList from './test/TestTable.jsx';
 
 
-
 const ProtectedVerificationRoute = ({ children }) => {
   const location = useLocation(); // Use useLocation to get the current URL
   const queryParams = new URLSearchParams(location.search);
@@ -58,7 +57,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/forgot" element={<Forgot />} />
         <Route path="/changePassword" element={<ChangePass />} />
         <Route path="/test" element={<AppointmentsList />} />
-        
+
         {/* protected route for verify email */}
         <Route
           path="/verify-email"

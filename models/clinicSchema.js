@@ -46,6 +46,22 @@ const medicineSchema = new mongoose.Schema({
   },
 });
 
+// Define FAQ schema for common questions and answers
+const faqSchema = new mongoose.Schema({
+  question: {
+    type: String,
+    required: true
+  },
+  answer: {
+    type: String,
+    required: true
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  }
+});
+
 // Define the service schema with fees array
 const serviceSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -104,7 +120,12 @@ const clinicSchema = new mongoose.Schema({
   questionEight: { type: String, required: false, default: null },
   questionNine: { type: String, required: false, default: null },
   questionTen: { type: String, required: false, default: null },
-
+  
+  // FAQ section
+  faqs: {
+    type: [faqSchema],
+    default: []
+  }
 });
 
 export default mongoose.model('Clinic', clinicSchema);

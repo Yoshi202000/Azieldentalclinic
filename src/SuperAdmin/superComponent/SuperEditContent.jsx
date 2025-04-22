@@ -21,6 +21,7 @@ const SuperEditContent = () => {
     const [responsiveBgPreview, setResponsiveBgPreview] = useState(''); // For previewing the image
     const [clinicLogo, setClinicLogo] = useState (null);
     const [clinicLogoPreview, setClinicLogoPreview] = useState ('');
+    const [faqs, setFaqs] = useState([]); // For storing FAQ items
     
 
   // Fetches existing clinic data from the backend when the component mounts
@@ -45,6 +46,7 @@ const SuperEditContent = () => {
             welcomeMessage,
             signupMessage,
             signupDescription,
+            faqs: fetchedFaqs,
           } = response.data;
   
           console.log('Fetched Clinic Data:', response.data);
@@ -69,7 +71,10 @@ const SuperEditContent = () => {
               imageUpdated: false, // Track whether the image has been updated
               clinic: service.clinic || 'both',
             }))
-          );          
+          );
+          
+          // Set FAQs
+          setFaqs(fetchedFaqs || []);          
         }
       })
       .catch(error => {
@@ -167,6 +172,25 @@ const SuperEditContent = () => {
     }
   }
 
+  // Function to add a new FAQ
+  const addFaq = () => {
+    setFaqs([...faqs, { question: '', answer: '', isActive: true }]);
+  };
+  
+  // Function to remove a FAQ
+  const removeFaq = (index) => {
+    const updatedFaqs = [...faqs];
+    updatedFaqs.splice(index, 1);
+    setFaqs(updatedFaqs);
+  };
+  
+  // Function to handle FAQ changes
+  const handleFaqChange = (index, field, value) => {
+    const updatedFaqs = [...faqs];
+    updatedFaqs[index][field] = value;
+    setFaqs(updatedFaqs);
+  };
+
   // Handles form submission by sending clinic data to the backend.
   // Prepares and sends a FormData object containing clinic and service information.
   const handleSubmit = (e) => {
@@ -191,6 +215,7 @@ const SuperEditContent = () => {
     formData.append('signupDescription', signupDescription || '');
   
     // Append services to form data
+    formData.append('servicesCount', services.length);
     services.forEach((service, index) => {
       console.log(`Adding service to form data: Index ${index}`, service);
   
@@ -208,6 +233,14 @@ const SuperEditContent = () => {
       } else {
         console.log(`No image provided for service at index ${index}`);
       }
+    });
+    
+    // Append FAQs to form data
+    formData.append('faqsCount', faqs.length);
+    faqs.forEach((faq, index) => {
+      formData.append(`faq_question_${index}`, faq.question || '');
+      formData.append(`faq_answer_${index}`, faq.answer || '');
+      formData.append(`faq_isActive_${index}`, faq.isActive ? 'true' : 'false');
     });
   
     // Append responsiveBg to form data
@@ -440,6 +473,50 @@ const SuperEditContent = () => {
           ))}
           <button type="button" onClick={addService}>
             Add Service
+          </button>
+        </div>
+
+        <div className="faqsSection">
+          <h3>Frequently Asked Questions</h3>
+          {faqs.map((faq, index) => (
+            <div key={index} className="faqInput">
+              <label>
+                Question {index + 1}:
+                <input
+                  type="text"
+                  value={faq.question}
+                  onChange={(e) => handleFaqChange(index, 'question', e.target.value)}
+                  placeholder="Enter question"
+                />
+              </label>
+              <label>
+                Answer:
+                <textarea
+                  value={faq.answer}
+                  onChange={(e) => handleFaqChange(index, 'answer', e.target.value)}
+                  placeholder="Enter answer"
+                  rows="4"
+                ></textarea>
+              </label>
+              <label>
+                Active:
+                <input
+                  type="checkbox"
+                  checked={faq.isActive}
+                  onChange={(e) => handleFaqChange(index, 'isActive', e.target.checked)}
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => removeFaq(index)}
+                className="removeButton"
+              >
+                Remove FAQ
+              </button>
+            </div>
+          ))}
+          <button type="button" onClick={addFaq} className="addButton">
+            Add FAQ
           </button>
         </div>
 

@@ -8,6 +8,7 @@ import './App.css';
 import Doctors from '../../component/Doctors';
 import Chat from '../../component/chat';
 import HomeFeedback from '../../component/homeFeedback';
+import Faq from '../../component/Faq';
 
 function App() {
   const [services, setServices] = useState([]);
@@ -86,6 +87,9 @@ function App() {
 
         {/* HomeFeedback component */}
         <HomeFeedback />
+
+        {/* Faq component */}
+        <Faq />
       </div>
 
       {/* Footer */}

@@ -1,7 +1,7 @@
 /* Main Container - Fixed Size & Scrollable */
 .edit-content-container {
-    width: 900px; /* Set a fixed width */
-    height: 600px; /* Set a fixed height */
+    width: 100%; /* Set a fixed width */
+    height: auto; /* Set a fixed height */
     overflow-y: auto; /* Enable vertical scrolling when content exceeds */
     overflow-x: hidden; /* Prevent horizontal scrolling */
     padding: 20px;

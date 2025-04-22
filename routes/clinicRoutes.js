@@ -123,6 +123,7 @@ router.get('/clinic', async (req, res) => {
       signupDescription: clinic?.signupDescription || null,
       services: clinic?.services || [],
       medicines: clinic?.medicines || [],
+      faqs: clinic?.faqs || [],
       questionOne: clinic?.questionOne || null,
       questionTwo: clinic?.questionTwo || null,
       questionThree: clinic?.questionThree || null,
@@ -362,6 +363,29 @@ router.put('/clinic', upload.fields([
     // Update medicines array if medicines were provided
     if (medicinesCount > 0) {
       clinic.medicines = updatedMedicines;
+    }
+    
+    // Process FAQs
+    const faqsCount = parseInt(req.body.faqsCount) || 0;
+    const updatedFaqs = [];
+    
+    for (let i = 0; i < faqsCount; i++) {
+      const question = req.body[`faq_question_${i}`];
+      const answer = req.body[`faq_answer_${i}`];
+      const isActive = req.body[`faq_isActive_${i}`] === 'true';
+      
+      if (question && answer) {
+        updatedFaqs.push({
+          question,
+          answer,
+          isActive
+        });
+      }
+    }
+    
+    // Update FAQs array if FAQs were provided
+    if (faqsCount > 0) {
+      clinic.faqs = updatedFaqs;
     }
     
     // Save updated clinic

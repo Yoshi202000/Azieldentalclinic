@@ -38,6 +38,7 @@ const EditContent = () => {
     const[questionNine, setQuestionNine] = useState(null);
     const[questionTen, setQuestionTen] = useState(null);
     const [medicines, setMedicines] = useState([]);
+    const [faqs, setFaqs] = useState([]); // For storing FAQ items
     const [editedService, setEditedService] = useState({
       name: '',
       description: '',
@@ -97,6 +98,7 @@ const EditContent = () => {
             questionNine,
             questionTen,
             medicines: fetchedMedicines,
+            faqs: fetchedFaqs,
           } = response.data;
   
           console.log('Fetched Clinic Data:', response.data);
@@ -146,6 +148,9 @@ const EditContent = () => {
               fees: medicine.fees || [{ ...defaultMedicine.fees[0] }]
             }))
           );
+          
+          // Set FAQs
+          setFaqs(fetchedFaqs || []);
         }
       })
       .catch(error => {
@@ -459,6 +464,14 @@ const EditContent = () => {
       });
     });
 
+    // Append FAQs to form data
+    formData.append('faqsCount', faqs.length);
+    faqs.forEach((faq, index) => {
+      formData.append(`faq_question_${index}`, faq.question || '');
+      formData.append(`faq_answer_${index}`, faq.answer || '');
+      formData.append(`faq_isActive_${index}`, faq.isActive ? 'true' : 'false');
+    });
+
     // Log the form data for debugging
     for (let [key, value] of formData.entries()) {
       console.log(`${key}: ${value}`);
@@ -613,6 +626,25 @@ const EditContent = () => {
     } catch (error) {
       console.error('Error fetching services:', error);
     }
+  };
+
+  // Function to add a new FAQ
+  const addFaq = () => {
+    setFaqs([...faqs, { question: '', answer: '', isActive: true }]);
+  };
+  
+  // Function to remove a FAQ
+  const removeFaq = (index) => {
+    const updatedFaqs = [...faqs];
+    updatedFaqs.splice(index, 1);
+    setFaqs(updatedFaqs);
+  };
+  
+  // Function to handle FAQ changes
+  const handleFaqChange = (index, field, value) => {
+    const updatedFaqs = [...faqs];
+    updatedFaqs[index][field] = value;
+    setFaqs(updatedFaqs);
   };
 
   return (
@@ -1161,6 +1193,60 @@ const EditContent = () => {
             onClick={addMedicine}
           >
             Add Medicine
+          </button>
+        </div>
+
+        <div className="faqsSection">
+          <h3>Frequently Asked Questions</h3>
+          {faqs.map((faq, index) => (
+            <div key={index} className="faqInput p-3 border rounded mb-3">
+              <label>
+                Question {index + 1}:
+                <input
+                  type="text"
+                  className="form-control"
+                  value={faq.question}
+                  onChange={(e) => handleFaqChange(index, 'question', e.target.value)}
+                  placeholder="Enter question"
+                />
+              </label>
+              <label>
+                Answer:
+                <textarea
+                  className="form-control"
+                  value={faq.answer}
+                  onChange={(e) => handleFaqChange(index, 'answer', e.target.value)}
+                  placeholder="Enter answer"
+                  rows="4"
+                ></textarea>
+              </label>
+              <div className="form-check mt-2">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id={`faq-active-${index}`}
+                  checked={faq.isActive}
+                  onChange={(e) => handleFaqChange(index, 'isActive', e.target.checked)}
+                />
+                <label className="form-check-label" htmlFor={`faq-active-${index}`}>
+                  Active
+                </label>
+              </div>
+              <button
+                type="button"
+                className="btn btn-danger mt-2"
+                onClick={() => removeFaq(index)}
+              >
+                Remove FAQ
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className="btn btn-secondary mb-3"
+            onClick={addFaq}
+          >
+            Add FAQ
           </button>
         </div>
 

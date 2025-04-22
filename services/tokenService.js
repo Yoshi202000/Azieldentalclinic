@@ -9,7 +9,7 @@ export const generateToken = (user) => {
       lastName: user.lastName,
       phoneNumber: user.phoneNumber,
       role: user.role,
-      dob: user.dob ? new Date(user.dob).toISOString().split('T')[0] : null, // Format DOB as YYYY-MM-DD
+      dob: user.dob ? new Date(user.dob).toISOString().split('T')[0] : null, 
       clinic: user.clinic,
       doctorGreeting: user.doctorGreeting,
       doctorDescription: user.doctorDescription,
