@@ -23,6 +23,7 @@
 .form-group {
   display: flex;
   flex-direction: column;
+  margin-bottom: 15px;
 }
 
 .form-group label {
@@ -147,6 +148,7 @@
   color: #2c3e50;
   margin-bottom: 20px;
   text-align: center;
+  font-size: 24px;
 }
 
 .search-bar {
@@ -208,6 +210,18 @@
   font-size: 16px;
 }
 
+/* Patient Info Card Styling - similar to doctor-info-card */
+.patient-info-card {
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive styles */
 @media (max-width: 768px) {
   .edit-patient-container,
   .patient-list-container {
@@ -233,5 +247,9 @@
   .patients-table {
     display: block;
     overflow-x: auto;
+  }
+  
+  .patient-info-card {
+    padding: 15px;
   }
 } 

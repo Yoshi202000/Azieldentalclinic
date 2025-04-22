@@ -7,9 +7,23 @@ const router = express.Router();
 // Get all user information (for admin use)
 router.get('/UserInformation', async (req, res) => {
   try {
-    // Fetch all users
+    // Fetch all users with complete information
     const users = await User.find().select('-password -emailVerified -services'); // Exclude sensitive information
-    res.status(200).json(users);
+    
+    // Return complete user information including email, phone, and dob
+    const enhancedUsers = users.map(user => ({
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      dob: user.dob,
+      role: user.role,
+      clinic: user.clinic,
+      discountId: user.discountId
+    }));
+    
+    res.status(200).json(enhancedUsers);
   } catch (err) {
     console.error('Error fetching users:', err);
     res.status(500).json({ error: 'Failed to fetch users' });
@@ -55,20 +69,29 @@ router.get('/clinic/:clinicId/services', async (req, res) => {
   }
 });
 
-// Get user information by userId
+// Get user information by userId - with complete details
 router.get('/UserInformation/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
+    console.log('Fetching basic user information for ID:', userId);
+    
     const user = await User.findById(userId);
     
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
     
+    // Return complete user information
     res.status(200).json({
+      _id: user._id,
       discountId: user.discountId,
       firstName: user.firstName,
-      lastName: user.lastName
+      lastName: user.lastName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      dob: user.dob,
+      role: user.role,
+      clinic: user.clinic
     });
   } catch (err) {
     console.error('Error fetching user information:', err);
@@ -93,17 +116,12 @@ router.get('/userInformation/:userId', async (req, res) => {
       return res.status(401).json({ message: 'Invalid or expired token' });
     }
 
-    // Check if the user has permission (admin/superadmin or requesting their own info)
-    const requestedUserId = req.params.userId;
-    const requestingUserId = decoded.id || decoded.userId;
-    const userRole = decoded.role;
-
-    if (requestingUserId !== requestedUserId && userRole !== 'admin' && userRole !== 'superadmin' && userRole !== 'doctor') {
-      return res.status(403).json({ message: 'You do not have permission to access this information.' });
-    }
+    // Remove permission check to allow any authenticated user to view any user's info
+    console.log('User requesting info:', decoded.id || decoded.userId);
+    console.log('Info requested for user:', req.params.userId);
 
     // Fetch user information
-    const user = await User.findById(requestedUserId).select('-password');
+    const user = await User.findById(req.params.userId).select('-password');
     
     if (!user) {
       return res.status(404).json({ error: 'User not found' });

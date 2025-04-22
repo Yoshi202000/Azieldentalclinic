@@ -40,7 +40,7 @@ router.put('/updateAccount', async (req, res) => {
   }
 });
 
-// Route for admin/superadmin to update a specific user by ID
+// Route for any authenticated user to update a specific user by ID
 router.put('/updateAccount/:userId', async (req, res) => {
   console.log('Update user account by ID route accessed');
   try {
@@ -57,10 +57,9 @@ router.put('/updateAccount/:userId', async (req, res) => {
       return res.status(401).json({ message: 'Invalid or expired token' });
     }
 
-    // Check if the user has admin or superadmin permissions
-    if (decoded.role !== 'admin' && decoded.role !== 'superadmin') {
-      return res.status(403).json({ message: 'You do not have permission to update this user.' });
-    }
+    // Removed permission check to allow any authenticated user to update any user
+    console.log('User role:', decoded.role);
+    console.log('Request body:', req.body);
 
     const targetUserId = req.params.userId;
     const { firstName, lastName, phoneNumber, dob } = req.body;
@@ -70,9 +69,8 @@ router.put('/updateAccount/:userId', async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields.' });
     }
 
-    // Validate date format
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(dob)) {
+    // Validate date format if provided as string
+    if (typeof dob === 'string' && !/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
       return res.status(400).json({ message: 'Invalid date format. Please use YYYY-MM-DD.' });
     }
 
