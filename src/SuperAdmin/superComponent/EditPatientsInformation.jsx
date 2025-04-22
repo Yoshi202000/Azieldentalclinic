@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import '../../admin/dashboard/Dashboard.css';
 import './SuperPatientsInformation.css';
 
 const EditPatientsInformation = () => {
-  const { userId } = useParams();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [editingPatient, setEditingPatient] = useState(null);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -18,8 +18,9 @@ const EditPatientsInformation = () => {
     email: ''
   });
   const [successMessage, setSuccessMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Fetch user data on component mount
+  // Fetch all patients data on component mount
   useEffect(() => {
 
     const fetchUsers = async () => {
@@ -83,7 +84,7 @@ const EditPatientsInformation = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/updateAccount/${userId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/updateAccount/${editingPatient._id}`,
         formData,
         {
           headers: { 
@@ -95,9 +96,10 @@ const EditPatientsInformation = () => {
 
       if (response.status === 200) {
         setSuccessMessage('Patient information updated successfully!');
-        setUser(response.data.user);
-        // Optionally navigate back after successful update
-        // setTimeout(() => navigate('/superadmin/patients'), 2000);
+        // Refresh the patients list
+        fetchPatients();
+        // Close the edit form
+        setEditingPatient(null);
       }
     } catch (err) {
       console.error('Error updating patient information:', err);
@@ -107,98 +109,158 @@ const EditPatientsInformation = () => {
     }
   };
 
-  // Handle cancel/back button
-  const handleCancel = () => {
-    navigate('/superadmin/patients');
+  // Handle cancel editing
+  const handleCancelEdit = () => {
+    setEditingPatient(null);
+    setError(null);
+    setSuccessMessage('');
   };
 
-  if (loading && !user) {
-    return <div className="loading-container">Loading patient information...</div>;
-  }
+  // Handle search
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
 
-  if (error && !user) {
-    return <div className="error-container">{error}</div>;
+  // Filter patients based on search term
+  const filteredPatients = patients.filter(patient => {
+    const fullName = `${patient.firstName} ${patient.lastName}`.toLowerCase();
+    return fullName.includes(searchTerm.toLowerCase()) || 
+           patient.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           patient.phoneNumber?.includes(searchTerm);
+  });
+
+  if (loading && patients.length === 0) {
+    return <div className="loading-container">Loading patients information...</div>;
   }
 
   return (
-    <div className="edit-patient-container">
-      <h2>Edit Patient Information</h2>
+    <div className="patient-list-container">
+      <h2>Patient Management</h2>
       
       {successMessage && <div className="success-message">{successMessage}</div>}
       {error && <div className="error-message">{error}</div>}
       
-      <form onSubmit={handleSubmit} className="edit-patient-form">
-        <div className="form-group">
-          <label htmlFor="firstName">First Name</label>
-          <input
-            type="text"
-            id="firstName"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleInputChange}
-            required
-          />
+      <div className="search-bar">
+        <input
+          type="text"
+          placeholder="Search by name, email, or phone..."
+          value={searchTerm}
+          onChange={handleSearch}
+        />
+      </div>
+      
+      {editingPatient ? (
+        <div className="edit-patient-container">
+          <h3>Edit Patient: {editingPatient.firstName} {editingPatient.lastName}</h3>
+          <form onSubmit={handleSubmit} className="edit-patient-form">
+            <div className="form-group">
+              <label htmlFor="firstName">First Name</label>
+              <input
+                type="text"
+                id="firstName"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="lastName">Last Name</label>
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="phoneNumber">Phone Number</label>
+              <input
+                type="tel"
+                id="phoneNumber"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="dob">Date of Birth (YYYY-MM-DD)</label>
+              <input
+                type="date"
+                id="dob"
+                name="dob"
+                value={formData.dob}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="email">Email (Read Only)</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                readOnly
+                disabled
+                className="readonly-input"
+              />
+            </div>
+            
+            <div className="button-group">
+              <button type="submit" className="save-button" disabled={loading}>
+                {loading ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button type="button" className="cancel-button" onClick={handleCancelEdit}>
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
-        
-        <div className="form-group">
-          <label htmlFor="lastName">Last Name</label>
-          <input
-            type="text"
-            id="lastName"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleInputChange}
-            required
-          />
+      ) : (
+        <div className="patients-table-container">
+          {filteredPatients.length > 0 ? (
+            <table className="patients-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Date of Birth</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredPatients.map((patient) => (
+                  <tr key={patient._id}>
+                    <td>{patient.firstName} {patient.lastName}</td>
+                    <td>{patient.email}</td>
+                    <td>{patient.phoneNumber}</td>
+                    <td>{patient.dob}</td>
+                    <td>
+                      <button 
+                        className="edit-button"
+                        onClick={() => handleEditPatient(patient._id)}
+                      >
+                        Edit
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="no-results">No patients found matching your search criteria.</div>
+          )}
         </div>
-        
-        <div className="form-group">
-          <label htmlFor="phoneNumber">Phone Number</label>
-          <input
-            type="tel"
-            id="phoneNumber"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="dob">Date of Birth (YYYY-MM-DD)</label>
-          <input
-            type="date"
-            id="dob"
-            name="dob"
-            value={formData.dob}
-            onChange={handleInputChange}
-            required
-            pattern="\d{4}-\d{2}-\d{2}"
-          />
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="email">Email (Read Only)</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            readOnly
-            disabled
-            className="readonly-input"
-          />
-        </div>
-        
-        <div className="button-group">
-          <button type="submit" className="save-button" disabled={loading}>
-            {loading ? 'Saving...' : 'Save Changes'}
-          </button>
-          <button type="button" className="cancel-button" onClick={handleCancel}>
-            Cancel
-          </button>
-        </div>
-      </form>
+      )}
     </div>
   );
 };

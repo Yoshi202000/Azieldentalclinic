@@ -8,7 +8,7 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.edit-patient-container h2 {
+.edit-patient-container h2, .edit-patient-container h3 {
   color: #2c3e50;
   margin-bottom: 20px;
   text-align: center;
@@ -57,7 +57,8 @@
 }
 
 .save-button,
-.cancel-button {
+.cancel-button,
+.edit-button {
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
@@ -93,6 +94,18 @@
   transform: translateY(-2px);
 }
 
+.edit-button {
+  background-color: #3498db;
+  color: white;
+  padding: 8px 15px;
+  font-size: 14px;
+}
+
+.edit-button:hover {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+}
+
 .success-message,
 .error-message {
   padding: 12px;
@@ -123,8 +136,81 @@
   color: #555;
 }
 
+/* New styles for patient list */
+.patient-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.patient-list-container h2 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.search-bar {
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.search-bar input:focus {
+  border-color: #3498db;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.patients-table-container {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.patients-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.patients-table th,
+.patients-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.patients-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.patients-table tr:hover {
+  background-color: #f5f5f5;
+}
+
+.patients-table tr:last-child td {
+  border-bottom: none;
+}
+
+.no-results {
+  padding: 30px;
+  text-align: center;
+  color: #7f8c8d;
+  font-size: 16px;
+}
+
 @media (max-width: 768px) {
-  .edit-patient-container {
+  .edit-patient-container,
+  .patient-list-container {
     padding: 15px;
   }
   
@@ -136,5 +222,16 @@
   .save-button,
   .cancel-button {
     width: 100%;
+  }
+
+  .patients-table th,
+  .patients-table td {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .patients-table {
+    display: block;
+    overflow-x: auto;
   }
 } 
