@@ -1,9 +1,60 @@
 import express from 'express';
 const router = express.Router();
 import ViewAppointment from '../models/ViewAppointment.js'; // Correct path and extension
+import nodemailer from 'nodemailer';
 
 // Variable to track initialization
 let statusCheckerInitialized = false;
+
+const transporter = nodemailer.createTransport({
+  service: 'Gmail', // or another email service
+  auth: {
+    user: process.env.EMAIL_USER, // Your email
+    pass: process.env.EMAIL_PASS, // Your email password or app password
+  },
+});
+
+// Function to send approval email
+async function sendApprovalEmail(appointment) {
+  try {
+    // Format date: Convert YYYY-MM-DD to more readable format (Month DD, YYYY)
+    const formattedDate = new Date(appointment.appointmentDate);
+    const readableDate = formattedDate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: appointment.patientEmail,
+      subject: 'Your Dental Appointment Has Been Approved',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 5px;">
+          <h2 style="color: #4a90e2;">Appointment Approved</h2>
+          <p>Dear ${appointment.patientFirstName} ${appointment.patientLastName},</p>
+          <p>We're pleased to inform you that your dental appointment has been approved.</p>
+          <p><strong>Appointment Details:</strong></p>
+          <ul>
+            <li>Date: ${readableDate}</li>
+            <li>Time: ${appointment.appointmentTimeFrom}</li>
+            <li>Type: ${appointment.appointmentType.join(', ')}</li>
+          </ul>
+          <p>Please arrive 15 minutes before your scheduled time.</p>
+          <p>If you need to reschedule or cancel, please contact us at least 24 hours in advance.</p>
+          <p>Thank you for choosing Aziel Dental Clinic!</p>
+        </div>
+      `
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Approval email sent:', info.response);
+    return true;
+  } catch (error) {
+    console.error('Error sending approval email:', error);
+    return false;
+  }
+}
 
 // Function to check and update appointment statuses to "no show"
 async function checkAndUpdateNoShowAppointments() {
@@ -102,6 +153,16 @@ router.post('/ViewAppointment/updateStatus', async (req, res) => {
     if (!updatedAppointment) {
       console.log(`Appointment not found: ${appointmentId}`);
       return res.status(404).json({ error: 'Appointment not found' });
+    }
+
+    // Send email notification if status is changed to Approved
+    if (newStatus === 'Approved') {
+      const emailSent = await sendApprovalEmail(updatedAppointment);
+      if (emailSent) {
+        console.log(`Approval email sent to ${updatedAppointment.patientEmail}`);
+      } else {
+        console.log(`Failed to send approval email to ${updatedAppointment.patientEmail}`);
+      }
     }
 
     console.log(`Appointment updated successfully:`, updatedAppointment);
