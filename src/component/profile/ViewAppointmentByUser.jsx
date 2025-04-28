@@ -289,7 +289,9 @@ function ViewAppointmentByUser() {
   };
 
   const handleEditAppointment = (appointment) => {
-    if (appointment.appointmentStatus === 'Completed') {
+    // Check if appointment is completed or if the date has passed
+    if (appointment.appointmentStatus === 'Completed' || new Date(appointment.appointmentDate) < new Date()) {
+      alert('Cannot edit completed appointments or appointments that have already passed.');
       return;
     }
     

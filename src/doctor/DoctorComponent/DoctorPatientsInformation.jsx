@@ -115,7 +115,17 @@ const DoctorPatientsInformation = () => {
   // Function to fetch users from the backend
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/UserInformation`); // Ensure the correct URL
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+      
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/UserInformation`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

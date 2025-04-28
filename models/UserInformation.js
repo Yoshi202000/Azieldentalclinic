@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
         default: null,
         required: false
     },
+    dob: { type: String, required: true },
     role: { type: String, default: 'patient' },
     doctorImage: { type: String }, // Add this field for doctor images
     

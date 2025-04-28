@@ -1,61 +1,211 @@
+/* Dental Chart Form Styles */
 .dentalChartForm-container {
-    max-width: 700px;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: #f9f9f9;
+    width: 100%;
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    font-family: 'Roboto', 'Arial', sans-serif;
+}
+
+.dentalChartForm-container h2 {
+    color: #2c3e50;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
     text-align: center;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 1rem;
+}
+
+.dentalChartForm-container h3 {
+    color: #3498db;
+    font-size: 1.3rem;
+    margin: 1.5rem 0 1rem;
+}
+
+/* Form sections */
+.dentalChartForm-section {
+    margin-bottom: 2rem;
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+/* Patient Info Section */
+.dentalChartForm-patientInfo {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
 }
 
 .dentalChartForm-typeSelection,
 .dentalChartForm-inputGroup {
-    margin-bottom: 15px;
+    margin-bottom: 1rem;
+}
+
+.dentalChartForm-inputGroup label, 
+.dentalChartForm-typeSelection label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+    font-size: 0.9rem;
 }
 
 .dentalChartForm-inputGroup input, 
-.dentalChartForm-typeSelection select {
-    padding: 8px;
-    width: 80%;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.dentalChartForm-typeSelection select,
+.dentalChartForm-toothBox select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border 0.3s, box-shadow 0.3s;
 }
 
-.dentalChartForm-submitButton {
-    padding: 10px 15px;
-    background: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    margin-top: 10px;
+.dentalChartForm-inputGroup input:focus, 
+.dentalChartForm-typeSelection select:focus,
+.dentalChartForm-toothBox select:focus,
+.dentalChartForm-toothBox input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
-.dentalChartForm-submitButton:hover {
-    background: #0056b3;
-}
-
+/* Tooth Grid Section */
 .dentalChartForm-toothGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 10px;
-    margin-top: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 1rem;
 }
 
 .dentalChartForm-toothBox {
     background: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    text-align: center;
-    border: 1px solid #ddd;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dentalChartForm-toothBox:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dentalChartForm-toothBox label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.7rem;
+    color: #3498db;
+    font-size: 0.95rem;
 }
 
 .dentalChartForm-toothBox select {
-    width: 100%;
-    margin-bottom: 5px;
+    margin-bottom: 0.7rem;
+    font-size: 0.85rem;
+    padding-right: 25px; /* More space for dropdown arrow */
 }
 
 .dentalChartForm-toothBox input {
-    width: calc(100% - 20px);
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+/* Dental Status Legend */
+.dentalChartForm-legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    margin: 1rem 0;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #eaeaea;
+}
+
+.legend-code {
+    font-weight: bold;
+    margin-right: 8px;
+    min-width: 30px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.legend-description {
+    font-size: 0.9rem;
+}
+
+/* Status Colors - Updated for dental codes */
+.status-H { background-color: rgba(46, 204, 113, 0.1); } /* Healthy */
+.status-C { background-color: rgba(231, 76, 60, 0.1); } /* Caries */
+.status-Co { background-color: rgba(241, 196, 15, 0.1); } /* Composite */
+.status-M { background-color: rgba(149, 165, 166, 0.1); } /* Missing */
+.status-Am { background-color: rgba(52, 152, 219, 0.1); } /* Amalgam */
+.status-A { background-color: rgba(155, 89, 182, 0.1); } /* Abutment */
+.status-Cr { background-color: rgba(230, 126, 34, 0.1); } /* Crown */
+.status-P { background-color: rgba(41, 128, 185, 0.1); } /* Pontic */
+.status-Ab { background-color: rgba(142, 68, 173, 0.1); } /* Abrasion */
+.status-X { background-color: rgba(192, 57, 43, 0.1); } /* Extraction */
+.status-U { background-color: rgba(189, 195, 199, 0.1); } /* Unerupted */
+.status-RF { background-color: rgba(211, 84, 0, 0.1); } /* Root Fragment */
+.status-B { background-color: rgba(22, 160, 133, 0.1); } /* Bridge */
+
+/* Submit Button */
+.dentalChartForm-submitButton {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 2rem auto 0;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dentalChartForm-submitButton:hover {
+    background: linear-gradient(135deg, #2980b9, #3498db);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dentalChartForm-submitButton:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dentalChartForm-container {
+        padding: 1.5rem;
+        margin: 1rem 0;
+    }
+    
+    .dentalChartForm-toothGrid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .dentalChartForm-toothGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }

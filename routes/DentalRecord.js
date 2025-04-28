@@ -51,22 +51,22 @@ router.get('/get-dental-chart/:email', authenticateUser, async (req, res) => {
             return res.status(400).json({ message: 'Email is required' });
         }
 
-        // Try to find the record in both adult and child collections
-        let adultRecord = await AdultDentalChart.findOne({ email });
-        let childRecord = await ChildDentalChart.findOne({ email });
+        // Get all records for the email from both collections
+        let adultRecords = await AdultDentalChart.find({ email }).sort({ date: -1 });
+        let childRecords = await ChildDentalChart.find({ email }).sort({ date: -1 });
 
-        if (!adultRecord && !childRecord) {
-            return res.status(404).json({ message: 'No dental record found for this email' });
+        if (adultRecords.length === 0 && childRecords.length === 0) {
+            return res.status(404).json({ message: 'No dental records found for this email' });
         }
 
         res.status(200).json({
-            message: 'Dental record fetched successfully',
-            adultDentalChart: adultRecord || null,
-            childDentalChart: childRecord || null,
+            message: 'Dental records fetched successfully',
+            adultDentalCharts: adultRecords || [],
+            childDentalCharts: childRecords || [],
         });
     } catch (error) {
-        console.error('Error fetching dental chart:', error);
-        res.status(500).json({ message: 'An error occurred while fetching the dental chart' });
+        console.error('Error fetching dental charts:', error);
+        res.status(500).json({ message: 'An error occurred while fetching the dental charts' });
     }
 });
 

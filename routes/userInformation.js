@@ -1,32 +1,15 @@
 import express from 'express';
-import User from '../models/User.js';
+import User from '../models/UserInformation.js';
 import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
-// Get all user information (for admin use)
 router.get('/UserInformation', async (req, res) => {
   try {
-    // Fetch all users with complete information
-    const users = await User.find().select('-password -emailVerified -services'); // Exclude sensitive information
-    
-    // Return complete user information including email, phone, and dob
-    const enhancedUsers = users.map(user => ({
-      _id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      dob: user.dob,
-      role: user.role,
-      clinic: user.clinic,
-      discountId: user.discountId
-    }));
-    
-    res.status(200).json(enhancedUsers);
+    const users = await User.find({});
+    res.status(200).json(users); 
   } catch (err) {
-    console.error('Error fetching users:', err);
-    res.status(500).json({ error: 'Failed to fetch users' });
+    res.status(500).json({ error: 'Failed to fetch user information' });
   }
 });
 

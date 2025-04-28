@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, TextField, Button, Typography, Paper, Grid, Dialog, Select, MenuItem, FormControl, InputLabel, Chip } from '@mui/material';
+import { Box, TextField, Button, Typography, Paper, Grid, Dialog, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const UpdateFee = ({ selectedAppointment, onClose }) => {
@@ -11,9 +11,6 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
   const [error, setError] = useState(null);
   const [services, setServices] = useState([]);
   const [selectedFee, setSelectedFee] = useState(null);
-  const [medicines, setMedicines] = useState([]);
-  const [selectedMedicines, setSelectedMedicines] = useState([]);
-  const [selectedMedicineFees, setSelectedMedicineFees] = useState([]);
   const [totalFee, setTotalFee] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [discountType, setDiscountType] = useState(null);
@@ -21,7 +18,6 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
   const [discountId, setDiscountId] = useState('');
   const [showDiscountIdField, setShowDiscountIdField] = useState(false);
   const [discountIdError, setDiscountIdError] = useState('');
-  const [selectedAppointmentType, setSelectedAppointmentType] = useState('');
   const [serviceFees, setServiceFees] = useState([]);
   const navigate = useNavigate();
 
@@ -38,19 +34,6 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
     }
   };
 
-  // Fetch medicines
-  const fetchMedicines = async () => {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/clinic`);
-      if (response.data && response.data.medicines) {
-        setMedicines(response.data.medicines);
-      }
-    } catch (error) {
-      console.error('Error fetching medicines:', error);
-      setError('Failed to fetch medicines');
-    }
-  };
-
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -61,7 +44,6 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
 
     fetchAppointments(token);
     fetchServices();
-    fetchMedicines();
   }, [navigate]);
 
   const fetchAppointments = async (token) => {
@@ -116,7 +98,7 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
             setDiscountType(null);
           }
           // Recalculate total fee after setting discount
-          calculateTotalFee(selectedMedicines, selectedFee?.amount || 0);
+          calculateTotalFee(serviceFees);
         } catch (error) {
           console.error('Error fetching user discount ID:', error);
           setDiscount(0);
@@ -175,104 +157,109 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
   };
 
   // Calculate total fee with discount
-  const calculateTotalFee = (selectedMeds, totalServiceFees = 0) => {
-    // Calculate medicine fees
-    const medicineFees = selectedMeds.reduce((sum, medicine) => 
-      sum + (parseFloat(medicine.medicineAmount) || 0), 0
-    );
-
+  const calculateTotalFee = (fees = serviceFees) => {
     // Calculate total service fees from all selected services
-    const totalServices = serviceFees.reduce((sum, fee) => 
+    const totalServices = fees.reduce((sum, fee) => 
       sum + (parseFloat(fee?.amount) || 0), 0
     );
 
     // Calculate discountable amounts
-    const discountableMedicineFees = selectedMeds
-      .filter(medicine => medicine.isDiscountable || medicine.discountApplicable)
-      .reduce((sum, medicine) => sum + (parseFloat(medicine.medicineAmount) || 0), 0);
-
-    const discountableServiceFees = serviceFees
+    const discountableServiceFees = fees
       .filter(fee => fee?.discountApplicable)
       .reduce((sum, fee) => sum + (parseFloat(fee?.amount) || 0), 0);
 
     // Calculate non-discountable amounts
-    const nonDiscountableMedicineFees = medicineFees - discountableMedicineFees;
     const nonDiscountableServiceFees = totalServices - discountableServiceFees;
 
     // Calculate total discountable amount
-    const discountableSubtotal = discountableMedicineFees + discountableServiceFees;
+    const discountableSubtotal = discountableServiceFees;
 
     // Calculate discount amount only if discount ID exists and discount is set
     const discountAmount = (discountId && discount) ? (discountableSubtotal * discount) : 0;
 
     // Calculate final total
-    const total = (discountableSubtotal - discountAmount) + nonDiscountableMedicineFees + nonDiscountableServiceFees;
+    const total = (discountableSubtotal - discountAmount) + nonDiscountableServiceFees;
     
     setTotalFee(total);
     setFee(total.toString());
   };
 
-  // Update medicine selection handler to allow duplicates
-  const handleMedicineSelection = (event) => {
-    const selectedMedicine = event.target.value[event.target.value.length - 1];
-    if (selectedMedicine) {
-      // Add a unique identifier to the medicine instance
-      const medicineWithId = {
-        ...selectedMedicine,
-        instanceId: Date.now(), // Add unique instance ID
-        isDiscountable: selectedMedicine.discountApplicable // Map discountApplicable to isDiscountable for UI consistency
-      };
-      const updatedMedicines = [...selectedMedicines, medicineWithId];
-      setSelectedMedicines(updatedMedicines);
-      calculateTotalFee(updatedMedicines, selectedFee?.amount || 0);
-    }
-  };
-
-  // Update remove medicine handler to use instanceId
-  const handleRemoveMedicine = (medicineToRemove) => {
-    const updatedMedicines = selectedMedicines.filter(
-      medicine => medicine.instanceId !== medicineToRemove.instanceId
-    );
-    setSelectedMedicines(updatedMedicines);
-    calculateTotalFee(updatedMedicines, selectedFee?.amount || 0);
-  };
-
   // Update service fee selection handler to properly handle discountability
   const handleFeeSelection = (selectedFee, index) => {
-    const updatedFees = [...serviceFees];
+    // Create a new array with the same length as the appointment types
+    let updatedFees = [...serviceFees];
+    
+    // Ensure the array has entries for all appointment types
+    if (selectedAppointment?.appointmentType && selectedAppointment.appointmentType.length > updatedFees.length) {
+      updatedFees = Array(selectedAppointment.appointmentType.length).fill(null).map((_, i) => updatedFees[i] || null);
+    }
+    
+    // Update the specific index with the new fee
     updatedFees[index] = {
       ...selectedFee,
-      discountApplicable: true
+      discountApplicable: selectedFee.discountApplicable ?? true
     };
-    setServiceFees(updatedFees);
     
-    // Calculate total fee with all service fees
-    const totalServiceFees = updatedFees.reduce((sum, fee) => sum + (parseFloat(fee?.amount) || 0), 0);
-    calculateTotalFee(selectedMedicines, totalServiceFees);
+    // Calculate total immediately with the updated fees before setting state
+    calculateTotalFee(updatedFees);
+    
+    // Now update the state
+    setServiceFees(updatedFees);
   };
 
   // Handle discount selection
   const handleDiscount = (type) => {
-    if (discountType === type) {
-      // Remove discount if same button is clicked
-      setDiscount(0);
-      setDiscountType(null);
-      setShowDiscountIdField(false);
-      setDiscountId('');
-      setDiscountIdError('');
-    } else {
-      setDiscountType(type);
-      setShowDiscountIdField(true);
+    let newDiscount = 0;
+    let newDiscountType = null;
+    let newShowDiscountIdField = false;
+    let newDiscountId = discountId;
+    let newDiscountIdError = '';
+
+    if (discountType !== type) {
+      // Apply new discount type
+      newDiscountType = type;
+      newShowDiscountIdField = true;
       // Only apply discount if there's an existing discount ID
       if (discountId) {
-        setDiscount(0.20);
+        newDiscount = 0.20;
       }
+    } else {
+      // Remove discount if same button is clicked
+      newDiscountId = '';
     }
-    // Recalculate total with current medicines and service fees
-    const totalServiceFees = serviceFees.reduce((sum, fee) => 
+
+    // Update state
+    setDiscount(newDiscount);
+    setDiscountType(newDiscountType);
+    setShowDiscountIdField(newShowDiscountIdField);
+    setDiscountId(newDiscountId);
+    setDiscountIdError(newDiscountIdError);
+    
+    // Recalculate with new discount values
+    // Save current discount values
+    const oldDiscount = discount;
+    const oldDiscountId = discountId;
+    
+    // Temporarily set the new values for calculation
+    const tempDiscountAmount = newDiscount;
+    const tempDiscountId = newDiscountId;
+    
+    // Calculate with the new values
+    const totalServices = serviceFees.reduce((sum, fee) => 
       sum + (parseFloat(fee?.amount) || 0), 0
     );
-    calculateTotalFee(selectedMedicines, totalServiceFees);
+
+    const discountableServiceFees = serviceFees
+      .filter(fee => fee?.discountApplicable)
+      .reduce((sum, fee) => sum + (parseFloat(fee?.amount) || 0), 0);
+
+    const nonDiscountableServiceFees = totalServices - discountableServiceFees;
+    const discountableSubtotal = discountableServiceFees;
+    const discountAmount = (tempDiscountId && tempDiscountAmount) ? (discountableSubtotal * tempDiscountAmount) : 0;
+    const total = (discountableSubtotal - discountAmount) + nonDiscountableServiceFees;
+    
+    setTotalFee(total);
+    setFee(total.toString());
   };
 
   // Handle discount ID change and update
@@ -299,31 +286,37 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
       );
 
       // Apply or remove discount based on whether ID exists
-      if (newDiscountId) {
-        setDiscount(0.20);
-      } else {
-        setDiscount(0);
-      }
+      const newDiscount = newDiscountId ? 0.20 : 0;
+      setDiscount(newDiscount);
       
-      // Recalculate total with current medicines and service fees
-      const totalServiceFees = serviceFees.reduce((sum, fee) => 
+      // Recalculate with new discount values directly
+      const totalServices = serviceFees.reduce((sum, fee) => 
         sum + (parseFloat(fee?.amount) || 0), 0
       );
-      calculateTotalFee(selectedMedicines, totalServiceFees);
+
+      const discountableServiceFees = serviceFees
+        .filter(fee => fee?.discountApplicable)
+        .reduce((sum, fee) => sum + (parseFloat(fee?.amount) || 0), 0);
+
+      const nonDiscountableServiceFees = totalServices - discountableServiceFees;
+      const discountableSubtotal = discountableServiceFees;
+      const discountAmount = (newDiscountId && newDiscount) ? (discountableSubtotal * newDiscount) : 0;
+      const total = (discountableSubtotal - discountAmount) + nonDiscountableServiceFees;
+      
+      setTotalFee(total);
+      setFee(total.toString());
     } catch (error) {
       console.error('Error updating discount ID:', error);
       setDiscountIdError(error.response?.data?.message || 'Invalid discount ID');
       setDiscount(0);
-      calculateTotalFee(selectedMedicines, serviceFees.reduce((sum, fee) => 
+      
+      // Recalculate with no discount
+      const totalServices = serviceFees.reduce((sum, fee) => 
         sum + (parseFloat(fee?.amount) || 0), 0
-      ));
+      );
+      setTotalFee(totalServices);
+      setFee(totalServices.toString());
     }
-  };
-
-  const handleAppointmentTypeChange = (event) => {
-    setSelectedAppointmentType(event.target.value);
-    // Reset the selected fee when appointment type changes
-    setSelectedFee(null);
   };
 
   if (loading) return <div>Loading...</div>;
@@ -366,21 +359,17 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
                 Time: {selectedAppointment.appointmentTimeFrom}
               </Typography>
               
-              {/* New Appointment Type Selection */}
-              <FormControl fullWidth sx={{ my: 2 }}>
-                <InputLabel>Select Service Type</InputLabel>
-                <Select
-                  value={selectedAppointmentType}
-                  onChange={handleAppointmentTypeChange}
-                  label="Select Service Type"
-                >
-                  {selectedAppointment.appointmentType.map((type, index) => (
-                    <MenuItem key={index} value={type}>
-                      {type}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              {/* Service Types Display */}
+              <Box sx={{ my: 2 }}>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Service Types:
+                </Typography>
+                {selectedAppointment.appointmentType.map((type, index) => (
+                  <Typography key={index} sx={{ ml: 2 }}>
+                    • {type}
+                  </Typography>
+                ))}
+              </Box>
 
               <Typography>
                 Status: {selectedAppointment.appointmentStatus}
@@ -430,9 +419,7 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
           <Paper sx={{ p: 2, mb: 2, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
             <Typography variant="h6">
               Subtotal: ₱{(
-                selectedMedicines.reduce((sum, medicine) => 
-                  sum + (parseFloat(medicine.medicineAmount) || 0), 0
-                ) + serviceFees.reduce((sum, fee) => 
+                serviceFees.reduce((sum, fee) => 
                   sum + (parseFloat(fee?.amount) || 0), 0
                 )
               ).toFixed(2)}
@@ -443,13 +430,6 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
                 <Typography variant="body2" sx={{ mt: 1 }}>
                   Discountable Items:
                 </Typography>
-                {selectedMedicines
-                  .filter(medicine => medicine.isDiscountable || medicine.discountApplicable)
-                  .map((medicine, index) => (
-                    <Typography key={`${medicine.instanceId}-disc`} variant="body2" sx={{ ml: 2 }}>
-                      {medicine.medicineName}: ₱{medicine.medicineAmount}
-                    </Typography>
-                  ))}
                 {serviceFees.map((fee, index) => (
                   fee?.discountApplicable && (
                     <Typography key={`service-fee-${index}`} variant="body2" sx={{ ml: 2 }}>
@@ -459,13 +439,9 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
                 ))}
                 <Typography variant="body2" color="error" sx={{ mt: 1 }}>
                   {discountType} Discount (20%): -₱{(
-                    (selectedMedicines
-                      .filter(medicine => medicine.isDiscountable || medicine.discountApplicable)
-                      .reduce((sum, medicine) => sum + (parseFloat(medicine.medicineAmount) || 0), 0) +
                     serviceFees
                       .filter(fee => fee?.discountApplicable)
-                      .reduce((sum, fee) => sum + (parseFloat(fee?.amount) || 0), 0)
-                    ) * 0.20
+                      .reduce((sum, fee) => sum + (parseFloat(fee?.amount) || 0), 0) * 0.20
                   ).toFixed(2)}
                 </Typography>
               </>
@@ -474,13 +450,6 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
             <Typography variant="body2" sx={{ mt: 1 }}>
               Non-Discountable Items:
             </Typography>
-            {selectedMedicines
-              .filter(medicine => !(medicine.isDiscountable || medicine.discountApplicable))
-              .map((medicine, index) => (
-                <Typography key={`${medicine.instanceId}-non-disc`} variant="body2" sx={{ ml: 2 }}>
-                  {medicine.medicineName}: ₱{medicine.medicineAmount}
-                </Typography>
-              ))}
             {serviceFees.map((fee, index) => (
               !fee?.discountApplicable && fee && (
                 <Typography key={`service-fee-non-disc-${index}`} variant="body2" sx={{ ml: 2 }}>
@@ -493,43 +462,6 @@ const UpdateFee = ({ selectedAppointment, onClose }) => {
               Total Fee: ₱{totalFee.toFixed(2)}
             </Typography>
           </Paper>
-
-          {/* Medicine Selection with Discountable Information */}
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>Select Medicines</InputLabel>
-            <p>{}</p>
-            <Select
-              multiple
-              value={selectedMedicines}
-              onChange={handleMedicineSelection}
-              label="Select Medicines"
-              renderValue={(selected) => (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((medicine) => (
-                    <Chip
-                      key={medicine.instanceId}
-                      label={`${medicine.medicineName} - ₱${medicine.medicineAmount} ${!(medicine.isDiscountable || medicine.discountApplicable) ? '(Non-Discountable)' : ''}`}
-                      onDelete={() => handleRemoveMedicine(medicine)}
-                      onMouseDown={(event) => {
-                        event.stopPropagation();
-                      }}
-                    />
-                  ))}
-                </Box>
-              )}
-            >
-              {medicines.map((medicine) => (
-                <MenuItem key={medicine._id} value={medicine}>
-                  {medicine.medicineName} - ₱{medicine.medicineAmount}
-                  {!(medicine.discountApplicable) && (
-                    <Typography variant="caption" color="error" sx={{ ml: 1 }}>
-                      (Non-Discountable)
-                    </Typography>
-                  )}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
 
           {/* Discount Buttons and ID Field */}
           <Box sx={{ mb: 2 }}>

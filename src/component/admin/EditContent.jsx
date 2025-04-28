@@ -39,6 +39,12 @@ const EditContent = () => {
     const[questionTen, setQuestionTen] = useState(null);
     const [medicines, setMedicines] = useState([]);
     const [faqs, setFaqs] = useState([]); // For storing FAQ items
+
+    // Validation states
+    const [errors, setErrors] = useState({});
+    const [touched, setTouched] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    
     const [editedService, setEditedService] = useState({
       name: '',
       description: '',
@@ -61,6 +67,261 @@ const EditContent = () => {
         description: ''
       }]
     };
+
+  // Validation functions
+  const validateField = (name, value) => {
+    let error = '';
+    
+    switch (name) {
+      case 'nameOne':
+      case 'nameTwo':
+        if (!value || value.trim() === '') {
+          error = 'Clinic name is required';
+        } else if (value.length < 2) {
+          error = 'Clinic name must be at least 2 characters';
+        }
+        break;
+        
+      case 'clinicAddress':
+      case 'clinicAddressTwo':
+        if (!value || value.trim() === '') {
+          error = 'Address is required';
+        }
+        break;
+        
+      case 'nameOnePhone':
+      case 'nameTwoPhone':
+        if (!value || value.trim() === '' || value === 'null') {
+          error = 'Phone number is required';
+        } else if (!/^[0-9+\s()-]+$/.test(value)) {
+          error = 'Please enter a valid phone number';
+        }
+        break;
+        
+      case 'clinicDescription':
+        if (!value || value.trim() === '') {
+          error = 'Clinic description is required';
+        } else if (value.length < 10) {
+          error = 'Clinic description should be at least 10 characters';
+        }
+        break;
+        
+      case 'termsAndConditions':
+        if (!value || value.trim() === '' || value === 'null') {
+          error = 'Terms and conditions are required';
+        }
+        break;
+        
+      // Validate service fields
+      case 'serviceName':
+        if (!value || value.trim() === '') {
+          error = 'Service name is required';
+        }
+        break;
+        
+      case 'serviceDescription':
+        if (!value || value.trim() === '') {
+          error = 'Service description is required';
+        }
+        break;
+        
+      case 'feeType':
+        if (!value || value.trim() === '') {
+          error = 'Fee type is required';
+        }
+        break;
+        
+      case 'feeAmount':
+        if (isNaN(value) || parseFloat(value) < 0) {
+          error = 'Fee amount must be a positive number';
+        }
+        break;
+        
+      // Validate FAQ fields
+      case 'faqQuestion':
+        if (!value || value.trim() === '') {
+          error = 'Question is required';
+        }
+        break;
+        
+      case 'faqAnswer':
+        if (!value || value.trim() === '') {
+          error = 'Answer is required';
+        }
+        break;
+        
+      default:
+        break;
+    }
+    
+    return error;
+  };
+  
+  const validateServices = () => {
+    const serviceErrors = [];
+    
+    services.forEach((service, index) => {
+      const serviceError = {};
+      
+      if (!service.name || service.name.trim() === '') {
+        serviceError.name = 'Service name is required';
+      }
+      
+      if (!service.description || service.description.trim() === '') {
+        serviceError.description = 'Service description is required';
+      }
+      
+      // Validate fees
+      if (service.fees && service.fees.length > 0) {
+        const feeErrors = [];
+        
+        service.fees.forEach((fee, feeIndex) => {
+          const feeError = {};
+          
+          if (!fee.feeType || fee.feeType.trim() === '') {
+            feeError.feeType = 'Fee type is required';
+          }
+          
+          if (isNaN(fee.amount) || parseFloat(fee.amount) < 0) {
+            feeError.amount = 'Fee amount must be a positive number';
+          }
+          
+          if (Object.keys(feeError).length > 0) {
+            feeErrors[feeIndex] = feeError;
+          }
+        });
+        
+        if (feeErrors.length > 0) {
+          serviceError.fees = feeErrors;
+        }
+      }
+      
+      if (Object.keys(serviceError).length > 0) {
+        serviceErrors[index] = serviceError;
+      }
+    });
+    
+    return serviceErrors.length > 0 ? serviceErrors : null;
+  };
+  
+  const validateFaqs = () => {
+    const faqErrors = [];
+    
+    faqs.forEach((faq, index) => {
+      const faqError = {};
+      
+      if (!faq.question || faq.question.trim() === '') {
+        faqError.question = 'Question is required';
+      }
+      
+      if (!faq.answer || faq.answer.trim() === '') {
+        faqError.answer = 'Answer is required';
+      }
+      
+      if (Object.keys(faqError).length > 0) {
+        faqErrors[index] = faqError;
+      }
+    });
+    
+    return faqErrors.length > 0 ? faqErrors : null;
+  };
+  
+  const validateForm = () => {
+    // Validate basic fields
+    const newErrors = {};
+    
+    // Validate clinic names
+    newErrors.nameOne = validateField('nameOne', nameOne);
+    newErrors.nameTwo = validateField('nameTwo', nameTwo);
+    
+    // Validate phone numbers
+    newErrors.nameOnePhone = validateField('nameOnePhone', nameOnePhone);
+    newErrors.nameTwoPhone = validateField('nameTwoPhone', nameTwoPhone);
+    
+    // Validate addresses
+    newErrors.clinicAddress = validateField('clinicAddress', clinicAddress);
+    newErrors.clinicAddressTwo = validateField('clinicAddressTwo', clinicAddressTwo);
+    
+    // Validate description and terms
+    newErrors.clinicDescription = validateField('clinicDescription', clinicDescription);
+    newErrors.termsAndConditions = validateField('termsAndConditions', termsAndConditions);
+    
+    // Validate services
+    const serviceErrors = validateServices();
+    if (serviceErrors) {
+      newErrors.services = serviceErrors;
+    }
+    
+    // Validate FAQs
+    const faqErrors = validateFaqs();
+    if (faqErrors) {
+      newErrors.faqs = faqErrors;
+    }
+    
+    // Filter out empty error messages
+    const filteredErrors = Object.entries(newErrors).reduce((acc, [key, value]) => {
+      if (value !== '') {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+    
+    setErrors(filteredErrors);
+    
+    // Return true if no errors, false otherwise
+    return Object.keys(filteredErrors).length === 0;
+  };
+  
+  const handleBlur = (fieldName) => {
+    // Set the field as touched
+    setTouched(prev => ({
+      ...prev,
+      [fieldName]: true
+    }));
+    
+    // Validate individual field
+    if (fieldName === 'nameOne') {
+      setErrors(prev => ({
+        ...prev,
+        nameOne: validateField('nameOne', nameOne)
+      }));
+    } else if (fieldName === 'nameTwo') {
+      setErrors(prev => ({
+        ...prev,
+        nameTwo: validateField('nameTwo', nameTwo)
+      }));
+    } else if (fieldName === 'nameOnePhone') {
+      setErrors(prev => ({
+        ...prev,
+        nameOnePhone: validateField('nameOnePhone', nameOnePhone)
+      }));
+    } else if (fieldName === 'nameTwoPhone') {
+      setErrors(prev => ({
+        ...prev,
+        nameTwoPhone: validateField('nameTwoPhone', nameTwoPhone)
+      }));
+    } else if (fieldName === 'clinicAddress') {
+      setErrors(prev => ({
+        ...prev,
+        clinicAddress: validateField('clinicAddress', clinicAddress)
+      }));
+    } else if (fieldName === 'clinicAddressTwo') {
+      setErrors(prev => ({
+        ...prev,
+        clinicAddressTwo: validateField('clinicAddressTwo', clinicAddressTwo)
+      }));
+    } else if (fieldName === 'clinicDescription') {
+      setErrors(prev => ({
+        ...prev,
+        clinicDescription: validateField('clinicDescription', clinicDescription)
+      }));
+    } else if (fieldName === 'termsAndConditions') {
+      setErrors(prev => ({
+        ...prev,
+        termsAndConditions: validateField('termsAndConditions', termsAndConditions)
+      }));
+    }
+  };
 
   // Fetches existing clinic data from the backend when the component mounts
   // and initializes the state with the fetched data.
@@ -363,9 +624,29 @@ const EditContent = () => {
     return `${import.meta.env.VITE_BACKEND_URL}/api/uploads/${imagePath}`;
   };
 
-  // Update handleSubmit to properly handle image uploads
+  // Update handleSubmit to properly handle image uploads and include validation
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Validate the form before submission
+    const isValid = validateForm();
+    
+    if (!isValid) {
+      console.error('Form has validation errors:', errors);
+      setIsSubmitting(false);
+      // Set all fields as touched to show all errors
+      const allFieldsTouched = Object.keys(errors).reduce((acc, key) => {
+        acc[key] = true;
+        return acc;
+      }, {});
+      setTouched(prev => ({...prev, ...allFieldsTouched}));
+      
+      // Show alert for validation errors
+      alert('Please fix the validation errors before submitting the form.');
+      return;
+    }
+    
     console.log('Submitting form data');
     const formData = new FormData();
 
@@ -505,6 +786,8 @@ const EditContent = () => {
       console.error('Error updating clinic:', error);
       console.error('Error details:', error.response?.data || error.message);
       alert('Error updating clinic: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setIsSubmitting(false);
     }
   };
   
@@ -648,95 +931,111 @@ const EditContent = () => {
   };
 
   return (
-    <div  className='edit-content-container'>
+    <div className='edit-content-container'>
       <h2>Edit Clinic Content</h2>
       <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <label>
-          Clinic Name One:
+        <label className={errors.nameOne && touched.nameOne ? 'error-label' : ''}>
+          Clinic Name One: {errors.nameOne && touched.nameOne && <span className="error-text">*{errors.nameOne}</span>}
           <input
             type="text"
-            className='form-control-plaintext'
+            className={`form-control-plaintext ${errors.nameOne && touched.nameOne ? 'is-invalid' : ''}`}
             name="nameOne"
             value={nameOne}
             onChange={(e) => setNameOne(e.target.value)}
+            onBlur={() => handleBlur('nameOne')}
+            required
           />
         </label>
-        <label>
-          Clinic One PhoneNumber
+        <label className={errors.nameOnePhone && touched.nameOnePhone ? 'error-label' : ''}>
+          Clinic One PhoneNumber: {errors.nameOnePhone && touched.nameOnePhone && <span className="error-text">*{errors.nameOnePhone}</span>}
           <input
             type="text"
-            className='form-control-plaintext'
+            className={`form-control-plaintext ${errors.nameOnePhone && touched.nameOnePhone ? 'is-invalid' : ''}`}
             name="nameOnePhone"
             value={nameOnePhone}
             onChange={(e) => setNameOnePhone(e.target.value)}
-            />
+            onBlur={() => handleBlur('nameOnePhone')}
+            required
+          />
         </label>
-        <label>
-          Clinic Name Two:
+        <label className={errors.nameTwo && touched.nameTwo ? 'error-label' : ''}>
+          Clinic Name Two: {errors.nameTwo && touched.nameTwo && <span className="error-text">*{errors.nameTwo}</span>}
           <input
-            className='form-control-plaintext'
+            className={`form-control-plaintext ${errors.nameTwo && touched.nameTwo ? 'is-invalid' : ''}`}
             type="text"
             name="nameTwo"
             value={nameTwo}
             onChange={(e) => setNameTwo(e.target.value)}
+            onBlur={() => handleBlur('nameTwo')}
+            required
           />
         </label>
-        <label>
-          Clinic Two PhoneNumber
+        <label className={errors.nameTwoPhone && touched.nameTwoPhone ? 'error-label' : ''}>
+          Clinic Two PhoneNumber: {errors.nameTwoPhone && touched.nameTwoPhone && <span className="error-text">*{errors.nameTwoPhone}</span>}
           <input
             type="text"
-            className='form-control-plaintext'
+            className={`form-control-plaintext ${errors.nameTwoPhone && touched.nameTwoPhone ? 'is-invalid' : ''}`}
             name="nameTwoePhone"
             value={nameTwoPhone}
             onChange={(e) => setNameTwoPhone(e.target.value)}
-            />
+            onBlur={() => handleBlur('nameTwoPhone')}
+            required
+          />
         </label>
-        <label>
-          Address:
+        <label className={errors.clinicAddress && touched.clinicAddress ? 'error-label' : ''}>
+          Address: {errors.clinicAddress && touched.clinicAddress && <span className="error-text">*{errors.clinicAddress}</span>}
           <input
             type="text"
-            className='form-control-plaintext'
+            className={`form-control-plaintext ${errors.clinicAddress && touched.clinicAddress ? 'is-invalid' : ''}`}
             name="clinicAddress"
             value={clinicAddress}
             onChange={(e) => setClinicAddress(e.target.value)}
+            onBlur={() => handleBlur('clinicAddress')}
+            required
           />
         </label>
-        <label>
-          Address Two:
+        <label className={errors.clinicAddressTwo && touched.clinicAddressTwo ? 'error-label' : ''}>
+          Address Two: {errors.clinicAddressTwo && touched.clinicAddressTwo && <span className="error-text">*{errors.clinicAddressTwo}</span>}
           <input
             type="text"
-            className='form-control-plaintext'
+            className={`form-control-plaintext ${errors.clinicAddressTwo && touched.clinicAddressTwo ? 'is-invalid' : ''}`}
             name="clinicAddressTwo"
             value={clinicAddressTwo}
             onChange={(e) => setClinicAddressTwo(e.target.value)}
+            onBlur={() => handleBlur('clinicAddressTwo')}
+            required
           />
         </label>
-        <label>
-          Terms and Conditions:
+        <label className={errors.termsAndConditions && touched.termsAndConditions ? 'error-label' : ''}>
+          Terms and Conditions: {errors.termsAndConditions && touched.termsAndConditions && <span className="error-text">*{errors.termsAndConditions}</span>}
           <textarea
-          className="form-control"  
+            className={`form-control ${errors.termsAndConditions && touched.termsAndConditions ? 'is-invalid' : ''}`}
             name="termsAndConditions"
             rows="5"
             cols="30"
             value={termsAndConditions}
             onChange={(e) => setTermsAndConditions(e.target.value)}
+            onBlur={() => handleBlur('termsAndConditions')}
+            required
           ></textarea>
         </label>
-        <label>
-          Clinic Description:
+        <label className={errors.clinicDescription && touched.clinicDescription ? 'error-label' : ''}>
+          Clinic Description: {errors.clinicDescription && touched.clinicDescription && <span className="error-text">*{errors.clinicDescription}</span>}
           <textarea
-          className="form-control"
+            className={`form-control ${errors.clinicDescription && touched.clinicDescription ? 'is-invalid' : ''}`}
             name="clinicDescription"
             rows="5"
             cols="30"
             value={clinicDescription}
             onChange={(e) => setClinicDescription(e.target.value)}
+            onBlur={() => handleBlur('clinicDescription')}
+            required
           ></textarea>
         </label>
         <label>
           Home Page Welcome Message:
           <textarea
-          className="form-control"
+            className="form-control"
             type="text"
             name="welcomeMessage"
             value={welcomeMessage}
@@ -746,8 +1045,7 @@ const EditContent = () => {
         <label>
           Clinic Catch Line:
           <input
-                      className='form-control-plaintext'
-
+            className='form-control-plaintext'
             type="text"
             name="clinicCatchLine"
             value={clinicCatchLine}
@@ -757,8 +1055,7 @@ const EditContent = () => {
         <label>
           Login Message:
           <input
-                      className='form-control-plaintext'
-
+            className='form-control-plaintext'
             type="text"
             name="loginMessage"
             value={loginMessage}
@@ -768,7 +1065,7 @@ const EditContent = () => {
         <label>
           Login Description:
           <input
-                      className='form-control-plaintext'
+            className='form-control-plaintext'
             type="text"
             name="LoginDescription"
             value={loginDescription}
@@ -778,8 +1075,7 @@ const EditContent = () => {
         <label>
           Signup Message:
           <input
-                      className='form-control-plaintext'
-
+            className='form-control-plaintext'
             type="text"
             name="signupMessage"
             value={signupMessage}
@@ -789,8 +1085,7 @@ const EditContent = () => {
         <label>
           Signup Description:
           <input
-                      className='form-control-plaintext'
-
+            className='form-control-plaintext'
             type="text"
             name="SignupDescription"
             value={signupDescription}
@@ -800,8 +1095,7 @@ const EditContent = () => {
         <label>
           Clinic Header:
           <input
-                      className='form-control-plaintext'
-
+            className='form-control-plaintext'
             type="text"
             name="clinicHeader"
             value={clinicHeader}
@@ -827,88 +1121,90 @@ const EditContent = () => {
           )}
         </div>
         <div>
-  <label htmlFor="responsiveBg">Responsive Background:</label>
-  <input
-    type="file"
-    id="responsiveBg"
-    name="responsiveBg" // Must match the expected field name
-    accept="image/png, image/jpeg, image/jpg"
-    onChange={handleResponsiveBgChange}
-  />
-  {responsiveBgPreview && (
-    <div>
-      <p>Preview:</p>
-      <img
-        src={responsiveBgPreview}
-        alt="Responsive Background Preview"
-        style={{ width: '100%', maxWidth: '300px', height: 'auto' }}
-      />
-    </div>
-  )}
-</div>
+          <label htmlFor="responsiveBg">Responsive Background:</label>
+          <input
+            type="file"
+            id="responsiveBg"
+            name="responsiveBg" // Must match the expected field name
+            accept="image/png, image/jpeg, image/jpg"
+            onChange={handleResponsiveBgChange}
+          />
+          {responsiveBgPreview && (
+            <div>
+              <p>Preview:</p>
+              <img
+                src={responsiveBgPreview}
+                alt="Responsive Background Preview"
+                style={{ width: '100%', maxWidth: '300px', height: 'auto' }}
+              />
+            </div>
+          )}
+        </div>
 
-<div>
-  <label htmlFor="mainImg">Main Small Image:</label>
-  <input
-    type="file"
-    id="mainImg"
-    name="mainImg" // Must match the expected field name
-    accept="image/png, image/jpeg, image/jpg"
-    onChange={handlemainImgChange}
-  />
-  {mainImgPreview && (
-    <div>
-      <p>Preview:</p>
-      <img
-        src={mainImgPreview}
-        alt="mainImg preview"
-        style={{ width: '100%', maxWidth: '300px', height: 'auto' }}
-      />
-    </div>
-  )}
-</div>
+        <div>
+          <label htmlFor="mainImg">Main Small Image:</label>
+          <input
+            type="file"
+            id="mainImg"
+            name="mainImg" // Must match the expected field name
+            accept="image/png, image/jpeg, image/jpg"
+            onChange={handlemainImgChange}
+          />
+          {mainImgPreview && (
+            <div>
+              <p>Preview:</p>
+              <img
+                src={mainImgPreview}
+                alt="mainImg preview"
+                style={{ width: '100%', maxWidth: '300px', height: 'auto' }}
+              />
+            </div>
+          )}
+        </div>
 
-<div>
-  <label htmlFor="gcashQR">Gcash QR Code:</label>
-  <input
-    type="file"
-    id="gcashQR"
-    name="gcashQR" // Must match the expected field name
-    accept="image/png, image/jpeg, image/jpg"
-    onChange={handleGcashQRChange}
-  />
-  {gcashQRPreview && (
-    <div>
-      <p>Preview:</p>
-      <img
-        src={gcashQRPreview}
-        alt="Gcash QR Code Preview"
-        style={{ width: '100%', maxWidth: '300px', height: 'auto' }}
-      />
-    </div>
-  )}
-</div>
+        <div>
+          <label htmlFor="gcashQR">Gcash QR Code:</label>
+          <input
+            type="file"
+            id="gcashQR"
+            name="gcashQR" // Must match the expected field name
+            accept="image/png, image/jpeg, image/jpg"
+            onChange={handleGcashQRChange}
+          />
+          {gcashQRPreview && (
+            <div>
+              <p>Preview:</p>
+              <img
+                src={gcashQRPreview}
+                alt="Gcash QR Code Preview"
+                style={{ width: '100%', maxWidth: '300px', height: 'auto' }}
+              />
+            </div>
+          )}
+        </div>
 
         <div className="servicesSection">
           <h3>Clinic Services</h3>
           {services.map((service, index) => (
             <div key={index} className="serviceInput">
-              <label>
-                Clinic Service {index + 1}:
+              <label className={errors.services && errors.services[index]?.name ? 'error-label' : ''}>
+                Clinic Service {index + 1}: {errors.services && errors.services[index]?.name && <span className="error-text">*{errors.services[index].name}</span>}
                 <input
                   type="text"
-                  className="form-control-plaintext"
+                  className={`form-control-plaintext ${errors.services && errors.services[index]?.name ? 'is-invalid' : ''}`}
                   value={service.name || ''}
                   onChange={(e) => handleServiceChange(index, 'name', e.target.value)}
+                  required
                 />
               </label>
               
-              <label>
-                Service Description:
+              <label className={errors.services && errors.services[index]?.description ? 'error-label' : ''}>
+                Service Description: {errors.services && errors.services[index]?.description && <span className="error-text">*{errors.services[index].description}</span>}
                 <textarea
-                  className="form-control"
+                  className={`form-control ${errors.services && errors.services[index]?.description ? 'is-invalid' : ''}`}
                   value={service.description || ''}
                   onChange={(e) => handleServiceChange(index, 'description', e.target.value)}
+                  required
                 ></textarea>
               </label>
 
@@ -925,31 +1221,35 @@ const EditContent = () => {
                 </select>
               </label>
 
-              {/* Fees Section */}
+              {/* Fees Section with Validation */}
               <div className="fees-section mt-3">
                 <h5>Service Fees</h5>
                 {(service.fees || []).map((fee, feeIndex) => (
                   <div key={feeIndex} className="feeInput p-3 border rounded mb-2">
-                    <label>
-                      Fee Type:
+                    <label className={errors.services && errors.services[index]?.fees && errors.services[index].fees[feeIndex]?.feeType ? 'error-label' : ''}>
+                      Fee Type: {errors.services && errors.services[index]?.fees && errors.services[index].fees[feeIndex]?.feeType && 
+                        <span className="error-text">*{errors.services[index].fees[feeIndex].feeType}</span>}
                       <input
                         type="text"
-                        className="form-control"
+                        className={`form-control ${errors.services && errors.services[index]?.fees && errors.services[index].fees[feeIndex]?.feeType ? 'is-invalid' : ''}`}
                         value={fee.feeType || ''}
                         onChange={(e) => handleFeeChange(index, feeIndex, 'feeType', e.target.value)}
                         placeholder="Enter fee type"
+                        required
                       />
                     </label>
-                    <label>
-                      Amount:
+                    <label className={errors.services && errors.services[index]?.fees && errors.services[index].fees[feeIndex]?.amount ? 'error-label' : ''}>
+                      Amount: {errors.services && errors.services[index]?.fees && errors.services[index].fees[feeIndex]?.amount && 
+                        <span className="error-text">*{errors.services[index].fees[feeIndex].amount}</span>}
                       <input
                         type="number"
-                        className="form-control"
+                        className={`form-control ${errors.services && errors.services[index]?.fees && errors.services[index].fees[feeIndex]?.amount ? 'is-invalid' : ''}`}
                         value={fee.amount || 0}
                         onChange={(e) => handleFeeChange(index, feeIndex, 'amount', parseFloat(e.target.value) || 0)}
                         placeholder="Enter amount"
                         min="0"
                         step="0.01"
+                        required
                       />
                     </label>
                     <label>
@@ -1035,189 +1335,129 @@ const EditContent = () => {
           </button>
         </div>
         <label>
-  Question 1: Health Record Question 1
-  <input
-    type="text"
-    name="questionOne"
-    value={questionOne}
-    onChange={(e) => setQuestionOne(e.target.value)}
-  />
-</label>
+          Question 1: Health Record Question 1
+          <input
+            type="text"
+            name="questionOne"
+            value={questionOne}
+            onChange={(e) => setQuestionOne(e.target.value)}
+          />
+        </label>
 
-<label>
-  Question 2: Health Record Question 2
-  <input
-    type="text"
-    name="questionTwo"
-    value={questionTwo}
-    onChange={(e) => setQuestionTwo(e.target.value)}
-  />
-</label>
+        <label>
+          Question 2: Health Record Question 2
+          <input
+            type="text"
+            name="questionTwo"
+            value={questionTwo}
+            onChange={(e) => setQuestionTwo(e.target.value)}
+          />
+        </label>
 
-<label>
-  Question 3: Health Record Question 3
-  <input
-    type="text"
-    name="questionThree"
-    value={questionThree}
-    onChange={(e) => setQuestionThree(e.target.value)}
-  />
-</label>
+        <label>
+          Question 3: Health Record Question 3
+          <input
+            type="text"
+            name="questionThree"
+            value={questionThree}
+            onChange={(e) => setQuestionThree(e.target.value)}
+          />
+        </label>
 
-<label>
-  Question 4: Health Record Question 4
-  <input
-    type="text"
-    name="questionFour"
-    value={questionFour}
-    onChange={(e) => setQuestionFour(e.target.value)}
-  />
-</label>
+        <label>
+          Question 4: Health Record Question 4
+          <input
+            type="text"
+            name="questionFour"
+            value={questionFour}
+            onChange={(e) => setQuestionFour(e.target.value)}
+          />
+        </label>
 
-<label>
-  Question 5: Health Record Question 5
-  <input
-    type="text"
-    name="questionFive"
-    value={questionFive}
-    onChange={(e) => setQuestionFive(e.target.value)}
-  />
-</label>
+        <label>
+          Question 5: Health Record Question 5
+          <input
+            type="text"
+            name="questionFive"
+            value={questionFive}
+            onChange={(e) => setQuestionFive(e.target.value)}
+          />
+        </label>
 
-<label>
-  Question 6: Health Record Question 6
-  <input
-    type="text"
-    name="questionSix"
-    value={questionSix}
-    onChange={(e) => setQuestionSix(e.target.value)}
-  />
-</label>
+        <label>
+          Question 6: Health Record Question 6
+          <input
+            type="text"
+            name="questionSix"
+            value={questionSix}
+            onChange={(e) => setQuestionSix(e.target.value)}
+          />
+        </label>
 
-<label>
-  Question 7: Health Record Question 7
-  <input
-    type="text"
-    name="questionSeven"
-    value={questionSeven}
-    onChange={(e) => setQuestionSeven(e.target.value)}
-  />
-</label>
+        <label>
+          Question 7: Health Record Question 7
+          <input
+            type="text"
+            name="questionSeven"
+            value={questionSeven}
+            onChange={(e) => setQuestionSeven(e.target.value)}
+          />
+        </label>
 
-<label>
-  Question 8: Health Record Question 8
-  <input
-    type="text"
-    name="questionEight"
-    value={questionEight}
-    onChange={(e) => setQuestionEight(e.target.value)}
-  />
-</label>
+        <label>
+          Question 8: Health Record Question 8
+          <input
+            type="text"
+            name="questionEight"
+            value={questionEight}
+            onChange={(e) => setQuestionEight(e.target.value)}
+          />
+        </label>
 
-<label>
-  Question 9: Health Record Question 9
-  <input
-    type="text"
-    name="questionNine"
-    value={questionNine}
-    onChange={(e) => setQuestionNine(e.target.value)}
-  />
-</label>
+        <label>
+          Question 9: Health Record Question 9
+          <input
+            type="text"
+            name="questionNine"
+            value={questionNine}
+            onChange={(e) => setQuestionNine(e.target.value)}
+          />
+        </label>
 
-<label>
-  Question 10: Health Record Question 10
-  <input
-    type="text"
-    name="questionTen"
-    value={questionTen}
-    onChange={(e) => setQuestionTen(e.target.value)}
-  />
-</label>
-
-        <div className="medicineSection">
-          <h3>Medicine List</h3>
-          {medicines.map((medicine, medicineIndex) => (
-            <div key={medicineIndex} className="medicineInput">
-              <label>
-                Medicine Name:
-                <input
-                  type="text"
-                  className="form-control-plaintext"
-                  value={medicine.medicineName}
-                  onChange={(e) => handleMedicineChange(medicineIndex, 'medicineName', e.target.value)}
-                  placeholder="Enter medicine name"
-                />
-              </label>
-              <label>
-                Amount:
-                <input
-                  type="number"
-                  className="form-control-plaintext"
-                  value={medicine.medicineAmount}
-                  onChange={(e) => handleMedicineChange(medicineIndex, 'medicineAmount', parseFloat(e.target.value) || 0)}
-                  placeholder="Enter amount"
-                  min="0"
-                  step="0.01"
-                />
-              </label>
-              <label>
-                Description:
-                <textarea
-                  className="form-control"
-                  value={medicine.medicineDescription}
-                  onChange={(e) => handleMedicineChange(medicineIndex, 'medicineDescription', e.target.value)}
-                  placeholder="Enter medicine description"
-                />
-              </label>
-              <label className="checkbox-label">
-                Discount Applicable:
-                <input
-                  type="checkbox"
-                  checked={medicine.discountApplicable || false}
-                  onChange={(e) => handleMedicineChange(medicineIndex, 'discountApplicable', e.target.checked)}
-                />
-              </label>
-
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={() => removeMedicine(medicineIndex)}
-              >
-                Remove Medicine
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={addMedicine}
-          >
-            Add Medicine
-          </button>
-        </div>
+        <label>
+          Question 10: Health Record Question 10
+          <input
+            type="text"
+            name="questionTen"
+            value={questionTen}
+            onChange={(e) => setQuestionTen(e.target.value)}
+          />
+        </label>
 
         <div className="faqsSection">
           <h3>Frequently Asked Questions</h3>
           {faqs.map((faq, index) => (
             <div key={index} className="faqInput p-3 border rounded mb-3">
-              <label>
-                Question {index + 1}:
+              <label className={errors.faqs && errors.faqs[index]?.question ? 'error-label' : ''}>
+                Question {index + 1}: {errors.faqs && errors.faqs[index]?.question && <span className="error-text">*{errors.faqs[index].question}</span>}
                 <input
                   type="text"
-                  className="form-control"
+                  className={`form-control ${errors.faqs && errors.faqs[index]?.question ? 'is-invalid' : ''}`}
                   value={faq.question}
                   onChange={(e) => handleFaqChange(index, 'question', e.target.value)}
                   placeholder="Enter question"
+                  required
                 />
               </label>
-              <label>
-                Answer:
+              <label className={errors.faqs && errors.faqs[index]?.answer ? 'error-label' : ''}>
+                Answer: {errors.faqs && errors.faqs[index]?.answer && <span className="error-text">*{errors.faqs[index].answer}</span>}
                 <textarea
-                  className="form-control"
+                  className={`form-control ${errors.faqs && errors.faqs[index]?.answer ? 'is-invalid' : ''}`}
                   value={faq.answer}
                   onChange={(e) => handleFaqChange(index, 'answer', e.target.value)}
                   placeholder="Enter answer"
                   rows="4"
+                  required
                 ></textarea>
               </label>
               <div className="form-check mt-2">
@@ -1250,13 +1490,15 @@ const EditContent = () => {
           </button>
         </div>
 
-        <input type="submit" value="Update" />
+        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+          {isSubmitting ? 'Updating...' : 'Update'}
+        </button>
       </form>
     </div>
   );
 };
 
-// Add some CSS for the new fee section
+// Add some CSS for the new fee section and validation errors
 const styles = `
 .feesSection {
   margin: 10px 0;
@@ -1281,6 +1523,68 @@ const styles = `
 
 .feeInput input {
   margin-top: 5px;
+}
+
+/* Validation Error Styles */
+.error-label {
+  color: #dc3545;
+}
+
+.error-text {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-left: 5px;
+}
+
+.is-invalid {
+  border-color: #dc3545;
+  padding-right: calc(1.5em + 0.75rem);
+  background-repeat: no-repeat;
+  background-position: right calc(0.375em + 0.1875rem) center;
+  background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.edit-content-container form label {
+  display: block;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.edit-content-container form input,
+.edit-content-container form textarea,
+.edit-content-container form select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.edit-content-container form input.is-invalid,
+.edit-content-container form textarea.is-invalid,
+.edit-content-container form select.is-invalid {
+  border-color: #dc3545;
+  background-color: #fff8f8;
+}
+
+.edit-content-container form button[type="submit"] {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.edit-content-container form button[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+.edit-content-container form button[type="submit"]:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 `;
 
