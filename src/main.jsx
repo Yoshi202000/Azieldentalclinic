@@ -105,7 +105,7 @@ createRoot(document.getElementById('root')).render(
         <Route 
           path="/appointment" 
           element={
-            <ProtectedRoute allowedRoles={["patient"]}>
+            <ProtectedRoute allowedRoles={["patient", "doctor"]}>
               <Appointment />
             </ProtectedRoute>
           } 
