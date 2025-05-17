@@ -168,9 +168,13 @@ const AccountSettings = () => {
       doctorInformation: {
         doctorGreeting: formData.greetings || '',
         doctorDescription: formData.description || '',
-        services: Array.isArray(formData.services) ? formData.services : []
+        services: Array.isArray(formData.services) ? formData.services : [],
+        dob: formData.dob || ''
       }
     };
+
+    console.log('Sending request data:', requestData);
+    console.log('Token:', token);
 
     try {
       const response = await axios.put(
@@ -185,6 +189,8 @@ const AccountSettings = () => {
         }
       );
 
+      console.log('Server response:', response.data);
+
       if (response.data.user) {
         setFormData(prev => ({
           ...prev,
@@ -196,6 +202,7 @@ const AccountSettings = () => {
       }
     } catch (error) {
       console.error('Error updating doctor information:', error);
+      console.error('Error details:', error.response?.data);
       setMessage(error.response?.data?.message || 'An error occurred while updating information');
       setIsError(true);
     } finally {
@@ -227,6 +234,15 @@ const AccountSettings = () => {
           <label>Role:</label>
             <input type="role" value={formData.role} readOnly />
             </>)}
+
+      <label>Date of Birth:</label>
+      <input 
+        type="date" 
+        name="dob" 
+        value={formData.dob} 
+        onChange={handleInputChange}
+      />
+
       {isDoctorRole && (
         <>
           <label>Clinic:</label>

@@ -156,22 +156,46 @@ router.put('/update-doctor-information', authenticateUser, async (req, res) => {
   const { doctorInformation } = req.body;
   const userId = req.userId;
 
+  console.log('Received update request:', {
+    userId,
+    doctorInformation,
+    body: req.body
+  });
+
   try {
     // 1. Ensure user exists and is a doctor
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) {
+      console.log('User not found:', userId);
+      return res.status(404).json({ message: 'User not found' });
+    }
     if (user.role !== 'doctor') {
+      console.log('Invalid role:', user.role);
       return res.status(403).json({ message: 'Only doctors can update this information' });
     }
+
+    console.log('Found user:', {
+      id: user._id,
+      role: user.role,
+      currentServices: user.services
+    });
 
     // 2. Update doctor information
     user.doctorGreeting = doctorInformation.doctorGreeting;
     user.doctorDescription = doctorInformation.doctorDescription;
+    user.dob = doctorInformation.dob;
     
     // 3. Handle services update if provided
     if (doctorInformation.services && Array.isArray(doctorInformation.services)) {
       const clinic = await Clinic.findOne();
+      if (!clinic) {
+        console.log('Clinic not found');
+        return res.status(404).json({ message: 'Clinic not found' });
+      }
+
       const clinicServices = clinic?.services || [];
+      console.log('Available clinic services:', clinicServices);
+      console.log('Requested services:', doctorInformation.services);
       
       const validatedServices = doctorInformation.services
         .map(serviceName => {
@@ -185,15 +209,21 @@ router.put('/update-doctor-information', authenticateUser, async (req, res) => {
               isActive: true
             };
           }
+          console.log('Service not found:', serviceName);
           return null;
         })
         .filter(service => service !== null);
       
+      console.log('Validated services:', validatedServices);
       user.services = validatedServices;
     }
 
     // 4. Save the updates
     const updatedUser = await user.save();
+    console.log('User updated successfully:', {
+      id: updatedUser._id,
+      services: updatedUser.services
+    });
 
     // Generate new token with updated information
     const newToken = generateNewToken(updatedUser);
@@ -212,8 +242,12 @@ router.put('/update-doctor-information', authenticateUser, async (req, res) => {
       token: newToken
     });
   } catch (error) {
-    console.error('Error updating doctor information:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    console.error('Server error:', error);
+    return res.status(500).json({ 
+      message: 'Internal server error',
+      error: error.message,
+      stack: error.stack
+    });
   }
 });
 

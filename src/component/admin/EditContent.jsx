@@ -440,7 +440,7 @@ const EditContent = () => {
     if (serviceId) {
       // If the service has an ID, delete it from the backend
       const token = localStorage.getItem('token');
-      axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/services/${serviceId}`, {
+      axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/clinic/service/${serviceId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
